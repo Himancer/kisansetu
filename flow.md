@@ -12,6 +12,8 @@
 - [x] Added live weather fetch from the free Open-Meteo endpoint, including an offline fallback.
 - [x] Added browser voice-recognition support with typed fallback.
 - [x] Prepared no-build deployment configuration and GitHub Pages/Vercel instructions.
+- [x] Created and pushed the public GitHub repository: https://github.com/Himancer/kisansetu
+- [x] Enabled free GitHub Pages hosting: https://himancer.github.io/kisansetu/
 
 ## Next implementation milestones
 
