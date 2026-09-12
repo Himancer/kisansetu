@@ -1,203 +1,1342 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="KisanSetu is a free multilingual farm companion for local guidance, official benefits and practical crop planning.">
-  <title>KisanSetu — Your farm, one trusted companion</title>
-  <link rel="stylesheet" href="styles.css?v=7eaa93f">
-  <link rel="stylesheet" href="ui.css?v=7aef4a4">
+<!DOCTYPE html>
+
+<html lang="en"><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KisanSetu — Your farm. One trusted companion.</title>
+<style>
+  :root{
+    --bg: #EEF1E4;
+    --panel: #FBFAF5;
+    --ink: #1F3A26;
+    --ink-soft: #445847;
+    --gold: #C9922B;
+    --soil: #6B4423;
+    --sky: #3E7C8A;
+    --line: #D8DCC9;
+    --danger: #A5432B;
+    --radius: 4px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--ink); font-family:'Inter',sans-serif; line-height:1.5;}
+  h1,h2,h3,.display{font-family:'Fraunces',serif; color:var(--ink); margin:0;}
+  button, select{font-family:'Inter',sans-serif;}
+  a{color:inherit;}
+
+  /* ---------- APP SHELL ---------- */
+  .app{display:flex; min-height:100vh;}
+
+  /* Sidebar */
+  .sidebar{
+    width:222px; flex:none; background:var(--ink); color:#EFEFE6;
+    display:flex; flex-direction:column; justify-content:space-between;
+    position:sticky; top:0; height:100vh;
+  }
+  .sb-top{padding:22px 18px 8px;}
+  .sb-brand{display:flex; align-items:center; gap:9px; margin-bottom:26px;}
+  .sb-brand svg{width:28px; height:28px; flex:none;}
+  .sb-brand span{font-family:'Fraunces',serif; font-weight:600; font-size:18px; color:#fff;}
+  .sb-nav{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:2px;}
+  .sb-nav button{
+    all:unset; display:flex; align-items:center; gap:11px; padding:10px 12px; border-radius:var(--radius);
+    font-size:13.5px; color:#D6DCC8; cursor:pointer; border-left:3px solid transparent;
+  }
+  .sb-nav button .ic{font-size:15px; width:18px; text-align:center;}
+  .sb-nav button:hover{background:rgba(255,255,255,.06);}
+  .sb-nav button.active{background:rgba(255,255,255,.09); color:#fff; border-left:3px solid var(--gold);}
+  .sb-bottom{padding:16px 18px 20px; border-top:1px solid rgba(255,255,255,.12);}
+  .sb-user{display:flex; align-items:center; gap:10px; margin-bottom:10px;}
+  .sb-avatar{
+    width:32px; height:32px; border-radius:50%; background:var(--gold); color:#241a05;
+    display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12.5px; flex:none;
+  }
+  .sb-user-name{font-size:13.5px; font-weight:600; color:#fff;}
+  .sb-user-meta{font-size:11.5px; color:#B9C2A9;}
+  .sb-signout{all:unset; cursor:pointer; font-size:12px; color:#B9C2A9; text-decoration:underline; text-underline-offset:2px;}
+
+  /* Topbar */
+  .main{flex:1; min-width:0;}
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap;
+    padding:14px 28px; border-bottom:1px solid var(--line); background:var(--panel);
+    position:sticky; top:0; z-index:5;
+  }
+  .loc{display:flex; align-items:center; gap:6px; font-size:13px; color:var(--ink-soft);}
+  .loc select{border:1px solid var(--line); border-radius:var(--radius); padding:5px 8px; font-size:12.5px; background:#fff; color:var(--ink);}
+  .lang-select select{border:1px solid var(--ink); border-radius:999px; padding:6px 12px; font-size:12.5px; background:#fff; color:var(--ink); cursor:pointer;}
+
+  .content{padding:28px; max-width:980px;}
+  .page{display:none;}
+  .page.active{display:block;}
+
+  h1.pg-title{font-size:26px; font-weight:600; margin-bottom:4px;}
+  .pg-sub{color:var(--ink-soft); font-size:14px; margin-bottom:22px;}
+
+  .stack{display:flex; flex-direction:column; gap:18px;}
+  .row-2{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  @media (max-width:760px){ .row-2{grid-template-columns:1fr;} .sidebar{width:64px;} .sb-brand span, .sb-nav button span.label, .sb-user-name, .sb-user-meta, .sb-signout{display:none;} .sb-user{justify-content:center;} }
+
+  .panel{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:20px;}
+  .panel h2{font-size:16.5px; font-weight:600; margin-bottom:3px;}
+  .panel .hint{font-size:12px; color:var(--ink-soft); margin-bottom:14px;}
+  .section-label{font-size:12.5px; color:var(--soil); font-weight:600; margin-bottom:10px;}
+
+  /* Weather */
+  .weather-card{background:var(--ink); color:#fff; border-radius:var(--radius); padding:20px 22px;}
+  .weather-top{display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;}
+  .weather-top .temp{font-family:'Fraunces',serif; font-size:38px; font-weight:600;}
+  .weather-top .loc-name{font-size:13px; opacity:.85;}
+  .weather-refresh{all:unset; cursor:pointer; font-size:12px; color:#D6DCC8; text-decoration:underline; text-underline-offset:2px;}
+  .alert-pill{display:inline-block; margin-top:8px; font-size:11.5px; background:var(--gold); color:#241a05; padding:3px 9px; border-radius:999px; font-weight:600;}
+  .forecast-row{display:flex; gap:10px; margin-top:16px; flex-wrap:wrap;}
+  .fc-day{background:rgba(255,255,255,.08); border-radius:var(--radius); padding:10px 14px; font-size:12.5px; text-align:center; flex:1; min-width:84px;}
+  .fc-day .d{opacity:.75; margin-bottom:4px;}
+  .fc-day .t{font-weight:600; font-size:14px;}
+  .weather-note{font-size:11px; opacity:.7; margin-top:12px;}
+
+  /* Advisor form */
+  label{display:block; font-size:12.5px; font-weight:600; margin:12px 0 5px; color:var(--ink);}
+  select.field, input.field{width:100%; padding:9px 10px; border:1px solid var(--line); border-radius:var(--radius); font-size:14px; background:#fff; color:var(--ink);}
+  select.field:focus, input.field:focus{outline:2px solid var(--sky); outline-offset:1px;}
+  .btn{margin-top:18px; width:100%; padding:12px 14px; background:var(--ink); color:#fff; border:none; border-radius:var(--radius); font-weight:600; font-size:14.5px; cursor:pointer;}
+  .btn:hover{background:#16281c;}
+  .btn:disabled{opacity:.6; cursor:progress;}
+  .btn.secondary{background:#fff; color:var(--ink); border:1px solid var(--ink);}
+
+  .crop-list{display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:12px; margin-top:6px;}
+  .crop-card{border:1px solid var(--line); border-radius:var(--radius); padding:13px; background:#fff; border-left:3px solid var(--ink);}
+  .crop-card h3{font-size:15px; font-weight:600;}
+  .crop-card .fit{font-size:11px; color:var(--sky); font-weight:600; margin-top:2px;}
+  .crop-card p{font-size:12.5px; color:var(--ink-soft); margin:7px 0 0;}
+  .fert-box{border:1px solid var(--line); border-radius:var(--radius); padding:15px 16px; background:#fff; font-size:13px; color:var(--ink-soft); margin-top:6px;}
+
+  .pest-row{display:flex; gap:12px; align-items:center; flex-wrap:wrap;}
+  .file-btn{border:1px dashed var(--ink-soft); border-radius:var(--radius); padding:9px 14px; font-size:13px; cursor:pointer; background:#fff;}
+  .pest-result{margin-top:12px; padding:11px 13px; border-radius:var(--radius); font-size:13px; background:#FBF3E6; border:1px solid var(--gold); display:none;}
+  .pest-result.show{display:block;}
+
+  .feedback{display:flex; align-items:center; gap:8px; margin-top:4px;}
+  .star{font-size:20px; cursor:pointer; color:var(--line);}
+  .star.on{color:var(--gold);}
+  .fb-msg{font-size:12px; color:var(--ink-soft);}
+
+  /* Journey / balance */
+  .stat-row{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  .stat-box{border:1px solid var(--line); border-radius:var(--radius); padding:14px; background:#fff;}
+  .stat-box .k{font-size:11.5px; color:var(--ink-soft);}
+  .stat-box .v{font-family:'Fraunces',serif; font-size:20px; font-weight:600; margin-top:2px;}
+  .journey{display:flex; gap:8px; margin-top:6px; flex-wrap:wrap;}
+  .j-step{flex:1; min-width:78px; border-radius:var(--radius); padding:9px 10px; font-size:11.5px; background:#fff; border:1px solid var(--line);}
+  .j-step.done{border-color:var(--sky); background:#EAF3F4;}
+  .j-step.now{border-color:var(--gold); background:#FBF3E6;}
+  .j-step b{display:block; font-size:12.5px;}
+
+  .quick-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px;}
+  .quick{border:1px solid var(--line); border-radius:var(--radius); padding:14px 12px; background:#fff; font-size:12.5px; text-align:left; cursor:pointer;}
+  .quick .qi{font-size:18px; display:block; margin-bottom:6px;}
+  .quick:hover{border-color:var(--ink);}
+
+  /* diary */
+  .diary-item{display:flex; justify-content:space-between; gap:12px; border-bottom:1px solid var(--line); padding:12px 0; font-size:13px;}
+  .diary-item:last-child{border-bottom:none;}
+  .diary-date{color:var(--ink-soft); font-size:11.5px;}
+
+  /* Kisan Gyan tabs */
+  .kg-tabs{display:flex; gap:8px; margin-bottom:18px; border-bottom:1px solid var(--line);}
+  .kg-tab{all:unset; cursor:pointer; padding:9px 4px; margin-right:18px; font-size:14px; font-weight:600; color:var(--ink-soft); border-bottom:2px solid transparent;}
+  .kg-tab.active{color:var(--ink); border-bottom:2px solid var(--gold);}
+  .kg-panel{display:none;}
+  .kg-panel.active{display:block;}
+
+  .seed-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:14px;}
+  .seed-card{border:1px solid var(--line); border-radius:var(--radius); background:#fff; padding:16px;}
+  .seed-head{display:flex; align-items:center; gap:10px; margin-bottom:8px;}
+  .seed-emoji{font-size:26px; line-height:1; flex:none;}
+  .seed-names .en{font-size:15px; font-weight:600;}
+  .seed-names .hi{font-size:12px; color:var(--ink-soft);}
+  .seed-rows{font-size:12.5px; color:var(--ink-soft); display:flex; flex-direction:column; gap:5px; margin-top:8px;}
+  .seed-rows b{color:var(--ink);}
+
+  .waste-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:14px;}
+  .waste-card{border:1px solid var(--line); border-radius:var(--radius); background:#fff; padding:16px;}
+  .waste-head{display:flex; align-items:center; gap:10px; margin-bottom:6px;}
+  .waste-emoji{font-size:24px;}
+  .waste-card h3{font-size:14.5px; font-weight:600;}
+  .waste-card p{font-size:12.5px; color:var(--ink-soft); margin:4px 0 0;}
+  .waste-card .benefit{margin-top:6px; font-size:11.5px; color:var(--sky); font-weight:600;}
+
+  /* Official government information hub */
+  .gov-note{background:#EAF3F4; border-left:3px solid var(--sky); color:var(--ink-soft); padding:12px 14px; font-size:12.5px; margin-bottom:16px;}
+  .gov-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:12px;}
+  .gov-card{display:flex; flex-direction:column; gap:7px; min-height:150px; border:1px solid var(--line); border-radius:var(--radius); padding:16px; background:#fff; text-decoration:none; transition:border-color .15s,transform .15s;}
+  .gov-card:hover{border-color:var(--sky); transform:translateY(-2px);}
+  .gov-card .gov-tag{font-size:10.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--sky); font-weight:700;}
+  .gov-card h3{font-size:15px; font-weight:600;}.gov-card p{font-size:12px; color:var(--ink-soft); margin:0;}.gov-card .go{margin-top:auto; font-size:12px; color:var(--soil); font-weight:700;}
+
+  footer.app-footer{padding:16px 28px; font-size:11.5px; color:var(--ink-soft); border-top:1px solid var(--line);}
+
+  .login-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999;padding:24px;}
+  .login-card{width:min(430px,100%);background:var(--panel);border:1px solid var(--line);padding:34px;border-radius:8px;box-shadow:0 18px 60px rgba(31,58,38,.12);}
+  .login-brand{text-align:center;margin-bottom:24px;} .login-brand .leaf{font-size:38px;} .login-brand h1{font-size:28px;margin-top:4px;}
+  .login-card h2{font-size:20px;margin-bottom:4px;} .login-card p{font-size:13px;color:var(--ink-soft);margin:0 0 18px;}
+  .login-error{font-size:12px;color:var(--danger);margin-top:8px;min-height:18px;}
+  .app.locked{display:none;}
+</style>
 </head>
 <body>
-  <section id="auth" class="auth" aria-labelledby="auth-title">
-    <div class="auth-card">
-      <div class="auth-art">
-        <div class="brand"><span class="brand-mark">🌱</span> KisanSetu</div>
-        <span class="eyebrow" data-t="freeTools">100% free farmer tools</span>
-        <h1 data-t="authHeadline">Your farm, understood.</h1>
-        <p data-t="authCopy">Plan, protect, sell and record each crop decision in the language you use at home.</p>
-      </div>
-      <form class="auth-form" id="authForm">
-        <h2 id="auth-title" data-t="welcome">Welcome to KisanSetu</h2>
-        <p data-t="authLead">Enter your name to begin. Your profile stays only in this browser.</p>
-        <label class="field-label" for="farmerName" data-t="farmerName">Farmer name</label>
-        <input id="farmerName" class="input" maxlength="60" required autocomplete="name" data-t-placeholder="nameHint" placeholder="e.g. Savitha">
-        <div id="authError" class="error" role="alert"></div>
-        <button class="primary" type="submit" data-t="continue">Continue</button>
-        <p class="auth-note" data-t="noCost">No paid feature, card or subscription required.</p>
-      </form>
-    </div>
-  </section>
+<div class="login-screen" id="loginScreen">
+<div class="login-card">
+<div class="login-brand"><div class="leaf">🌱</div><h1>KisanSetu</h1></div>
+<h2 data-i18n="loginTitle">Farmer sign in</h2>
+<p data-i18n="loginSub">Enter your name to start using your farm dashboard.</p>
+<label data-i18n="nameLabel">Farmer name</label>
+<input autocomplete="name" class="field" data-i18n-placeholder="namePlaceholder" id="farmerNameInput" placeholder="Enter your name" type="text"/>
+<div class="login-error" id="loginError"></div>
+<button class="btn" data-i18n="loginBtn" id="loginBtn">Continue</button>
+</div>
+</div>
+<div class="app locked" id="app">
+<!-- SIDEBAR -->
+<aside class="sidebar">
+<div class="sb-top">
+<div class="sb-brand">
+<svg fill="none" viewbox="0 0 34 34">
+<path d="M17 3C17 3 8 8 8 17C8 24 12 29 17 31C22 29 26 24 26 17C26 8 17 3 17 3Z" fill="#EFEFE6"></path>
+<path d="M17 10C17 10 13 13.5 13 18C13 21.5 15 24 17 25C19 24 21 21.5 21 18C21 13.5 17 10 17 10Z" fill="#C9922B"></path>
+</svg>
+<span id="brandName">KisanSetu</span>
+</div>
+<ul class="sb-nav" id="sbNav">
+<li><button class="active" data-page="today"><span class="ic">⌂</span><span class="label" data-i18n="navToday">Today</span></button></li>
+<li><button data-page="mycrops"><span class="ic">◉</span><span class="label" data-i18n="navCrops">My crops</span></button></li>
+<li><button data-page="kisangyan"><span class="ic">📘</span><span class="label" data-i18n="navGyan">Kisan Gyan</span></button></li>
+<li><button data-page="govupdates"><span class="ic">🏛</span><span class="label" data-gov-copy="nav">Government schemes</span></button></li>
+<li><button data-page="services"><span class="ic">⚙</span><span class="label" data-i18n="navServices">Farm services</span></button></li>
 
-  <div id="app" class="app hidden">
-    <aside class="sidebar">
+</ul>
+</div>
+<div class="sb-bottom">
+<div class="sb-user">
+<div class="sb-avatar" id="sidebarAvatar">KS</div>
+<div>
+<div class="sb-user-name" id="sidebarFarmerName">Farmer</div>
+<div class="sb-user-meta">1.6 acres · Tomato</div>
+</div>
+</div>
+<button class="sb-signout" data-i18n="signOut">Sign out</button>
+</div>
+</aside>
+<!-- MAIN -->
+<div class="main">
+<header class="topbar">
+<div class="loc">
+<span>⌖</span>
+<select class="field" id="regionSelect" style="width:auto;">
+<option value="blr">Hesaraghatta, Bengaluru</option>
+<option value="punjab">Ludhiana, Punjab</option>
+<option value="up">Lucknow, Uttar Pradesh</option>
+<option value="mh">Nagpur, Maharashtra</option>
+<option value="wb">Bardhaman, West Bengal</option>
+<option value="tn">Coimbatore, Tamil Nadu</option>
+<option value="raj">Jodhpur, Rajasthan</option>
+<option value="kar">Belagavi, Karnataka</option>
+</select>
+</div>
+<div class="lang-select">
+<select id="langSelect">
+<option value="en">English</option>
+<option value="hi">हिन्दी (Hindi)</option>
+<option value="kn">ಕನ್ನಡ (Kannada)</option>
+<option value="ta">தமிழ் (Tamil)</option>
+<option value="te">తెలుగు (Telugu)</option>
+<option value="mr">मराठी (Marathi)</option>
+<option value="gu">ગુજરાતી (Gujarati)</option>
+<option value="bn">বাংলা (Bengali)</option>
+<option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
+<option value="ml">മലയാളം (Malayalam)</option>
+<option value="or">ଓଡ଼ିଆ (Odia)</option>
+<option value="as">অসমীয়া (Assamese)</option>
+<option value="ur">اردو (Urdu)</option>
+</select>
+</div>
+</header>
+<div class="content">
+<!-- ================= TODAY ================= -->
+<section class="page active" id="page-today">
+<h1 class="pg-title" id="greeting">Good evening 👋</h1>
+<p class="pg-sub" data-i18n="todaySub">Here's what your farm needs today.</p>
+<div class="stack">
+<!-- Weather -->
+<div class="weather-card">
+<div class="weather-top">
+<div>
+<div class="temp" id="wTemp">29°C</div>
+<div class="loc-name" id="wLoc">Hesaraghatta, Bengaluru</div>
+</div>
+<div style="text-align:right;">
+<button class="weather-refresh" data-i18n="refresh" id="wRefresh">Refresh</button>
+<div class="weather-note" data-i18n="weatherNote">Free live weather via Open-Meteo, based on your farm's location</div>
+</div>
+</div>
+<div id="wAlert"><span class="alert-pill">Conditions look normal for the next 3 days</span></div>
+<div class="forecast-row" id="wForecast"><div class="fc-day"><div class="d">Today</div><div class="t">31° / 22°</div><div style="opacity:.7;">1mm</div></div><div class="fc-day"><div class="d">Sat</div><div class="t">31° / 20°</div><div style="opacity:.7;">0mm</div></div><div class="fc-day"><div class="d">Sun</div><div class="t">32° / 20°</div><div style="opacity:.7;">0mm</div></div><div class="fc-day"><div class="d">Mon</div><div class="t">32° / 21°</div><div style="opacity:.7;">2mm</div></div></div>
+</div>
+<!-- Crop & Fertilizer Advisor (merged from Kisan Saathi) -->
+<div class="panel">
+<h2 data-i18n="advisorTitle">Crop &amp; fertiliser advisor</h2>
+<p class="hint" data-i18n="advisorHint">Tell us about your field once — get a soil-and-season-matched crop list and fertiliser guidance.</p>
+<label data-i18n="lblSoil">Soil type</label>
+<select class="field" id="soil">
+<option data-i18n="soilAlluvial" value="alluvial">Alluvial</option>
+<option data-i18n="soilBlack" value="black">Black (regur)</option>
+<option data-i18n="soilRed" value="red">Red</option>
+<option data-i18n="soilLaterite" value="laterite">Laterite</option>
+<option data-i18n="soilSandy" value="sandy">Sandy / arid</option>
+<option data-i18n="soilClayey" value="clayey">Clayey</option>
+</select>
+<label data-i18n="lblSeason">Season</label>
+<select class="field" id="season">
+<option data-i18n="seasonKharif" value="kharif">Kharif (monsoon)</option>
+<option data-i18n="seasonRabi" value="rabi">Rabi (winter)</option>
+<option data-i18n="seasonZaid" value="zaid">Zaid (summer)</option>
+</select>
+<label data-i18n="lblLand">Land size (acres)</label>
+<input class="field" id="land" min="0.1" step="0.1" type="number" value="1.6"/>
+<label data-i18n="lblIrrigation">Irrigation available?</label>
+<select class="field" id="irrigation">
+<option data-i18n="yes" value="yes">Yes</option>
+<option data-i18n="no" value="no">No (rain-fed)</option>
+</select>
+<button class="btn" data-i18n="submitBtn" id="submitBtn">Get recommendation</button>
+<div class="stack" id="advisorResults" style="margin-top:18px;"></div>
+</div>
+<!-- Pest scan -->
+<div class="panel">
+<h2 data-i18n="pestTitle">Scan crop issue</h2>
+<p class="hint" data-i18n="pestHint">Upload a leaf photo for a demo pest &amp; disease check.</p>
+<div class="pest-row">
+<label class="file-btn" data-i18n="pestUpload" style="margin:0;">Upload photo
+                <input accept="image/*" id="pestFile" style="display:none;" type="file"/>
+</label>
+<span id="pestFileName" style="font-size:12.5px; color:var(--ink-soft);"></span>
+</div>
+<div class="pest-result" id="pestResult"></div>
+</div>
+<!-- Tomato season journey + balance -->
+<div class="row-2">
+<div class="panel">
+<h2 data-i18n="journeyTitle">Tomato season journey</h2>
+<p class="hint" data-i18n="journeySub">Day 47 of 110</p>
+<div class="journey">
+<div class="j-step done"><b data-i18n="jSow">Sow</b><span data-i18n="jDone">Done</span></div>
+<div class="j-step now"><b data-i18n="jGrow">Grow</b><span data-i18n="jNow">Now</span></div>
+<div class="j-step"><b data-i18n="jProtect">Protect</b><span>Sep 13</span></div>
+<div class="j-step"><b data-i18n="jHarvest">Harvest</b><span>Oct 10</span></div>
+</div>
+</div>
+</div>
+<!-- Quick actions (call-expert removed) -->
+<div class="panel">
+<h2 data-i18n="quickTitle">Do more, without leaving the farm</h2>
+<div class="quick-grid" style="margin-top:12px;">
+<button class="quick"><span class="qi">🔎</span><span data-i18n="qScan">Scan crop issue</span></button>
+<button class="quick"><span class="qi">🚚</span><span data-i18n="qPool">Pool transport</span></button>
+<button class="quick"><span class="qi">🚜</span><span data-i18n="qBook">Book a service</span></button>
+<button class="quick"><span class="qi">🛡</span><span data-i18n="qProtect">Protect my crop</span></button>
+</div>
+</div>
+<!-- Feedback -->
+<div class="panel">
+<h2 data-i18n="fbTitle">Was this helpful?</h2>
+<div class="feedback">
+<span class="star" data-v="1">★</span><span class="star" data-v="2">★</span><span class="star" data-v="3">★</span><span class="star" data-v="4">★</span><span class="star" data-v="5">★</span>
+<span class="fb-msg" id="fbMsg"></span>
+</div>
+</div>
+</div>
+</section>
+<!-- ================= MY CROPS ================= -->
+<section class="page" id="page-mycrops">
+<h1 class="pg-title" data-i18n="cropsTitle">My crops</h1>
+<p class="pg-sub" data-i18n="cropsSub">Simple decisions, based on your field.</p>
+<div class="panel">
+<div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+<span style="font-size:30px;">🍅</span>
+<div>
+<h2>Tomato · 1.6 acres</h2>
+<div class="hint" data-i18n="cropVariety" style="margin:0;">Hybrid variety · Sown July 24 · Growth stage</div>
+</div>
+</div>
+<div class="stat-row">
+<div class="stat-box"><div class="k" data-i18n="nextIrr">Next irrigation check</div><div class="v" style="font-size:14px;">Sep 11 · 6:00 AM</div></div>
+<div class="stat-box"><div class="k" data-i18n="healthScan">Crop health scan</div><div class="v" data-i18n="dueIn2" style="font-size:14px;">Due in 2 days</div></div>
+<div class="stat-box"><div class="k" data-i18n="estHarvest">Estimated harvest</div><div class="v" style="font-size:14px;">Oct 10–17</div></div>
+<div class="stat-box"><div class="k" data-i18n="cropHealth">Crop health</div><div class="v" data-i18n="good" style="font-size:14px; color:var(--sky);">Good</div></div>
+</div>
+<button class="btn secondary" data-i18n="addScan" style="margin-top:16px;">＋ Add crop scan</button>
+</div>
+</section>
+<!-- ================= KISAN GYAN ================= -->
+<section class="page" id="page-kisangyan">
+<h1 class="pg-title" data-i18n="gyanTitle">Kisan Gyan</h1>
+<p class="pg-sub" data-i18n="gyanSub">Seed knowledge and low-cost farm wisdom, in one place.</p>
+<div class="kg-tabs">
+<button class="kg-tab active" data-i18n="tabSeeds" data-kg="seeds">Seed knowledge</button>
+<button class="kg-tab" data-i18n="tabWaste" data-kg="waste">Home waste manure</button>
+</div>
+<div class="kg-panel active" id="kg-seeds">
+<div class="seed-grid" id="seedGrid">
+<div class="seed-card">
+<div class="seed-head">
+<div class="seed-emoji">🌾</div>
+<div class="seed-names"><div class="en">Rice</div><div class="hi">चावल / धान</div></div>
+</div>
+<div class="seed-rows">
+<div><b>Soil:</b> Clayey, alluvial — needs standing water</div>
+<div><b>Weather:</b> Warm, humid; 20–37°C; high rainfall or irrigation</div>
+<div><b>Irrigation:</b> High — needs flooded fields for most of the cycle</div>
+<div><b>Sowing season:</b> Kharif</div>
+</div>
+</div>
+<div class="seed-card">
+<div class="seed-head">
+<div class="seed-emoji">🌾</div>
+<div class="seed-names"><div class="en">Wheat</div><div class="hi">गेहूं</div></div>
+</div>
+<div class="seed-rows">
+<div><b>Soil:</b> Alluvial, well-drained loam</div>
+<div><b>Weather:</b> Cool growing season, 10–25°C; dry at harvest</div>
+<div><b>Irrigation:</b> Moderate — 4–6 waterings over the season</div>
+<div><b>Sowing season:</b> Rabi</div>
+</div>
+</div>
+<div class="seed-card">
+<div class="seed-head">
+<div class="seed-emoji">🌽</div>
+<div class="seed-names"><div class="en">Maize</div><div class="hi">मक्का</div></div>
+</div>
+<div class="seed-rows">
+<div><b>Soil:</b> Well-drained alluvial or sandy loam</div>
+<div><b>Weather:</b> Warm, 21–27°C, moderate rainfall</div>
+<div><b>Irrigation:</b> Moderate — sensitive to both drought and waterlogging</div>
+<div><b>Sowing season:</b> Kharif / Rabi</div>
+</div>
+</div>
+<div class="seed-card">
+<div class="seed-head">
+<div class="seed-emoji">☁️</div>
+<div class="seed-names"><div class="en">Cotton</div><div class="hi">कपास</div></div>
+</div>
+<div class="seed-rows">
+<div><b>Soil:</b> Deep black (regur) soil</div>
+<div><b>Weather:</b> Warm, 21–30°C, needs a dry spell at picking</div>
+<div><b>Irrigation:</b> Moderate — moisture-retentive black soil reduces need</div>
+<div><b>Sowing season:</b> Kharif</div>
+</div>
+</div>
+<div class="seed-card">
+<div class="seed-head">
+<div class="seed-emoji">🎋</div>
+<div class="seed-names"><div class="en">Sugarcane</div><div class="hi">गन्ना</div></div>
+</div>
+<div class="seed-rows">
+<div><b>Soil:</b> Deep alluvial or loamy, well-drained</div>
+<div><b>Weather:</b> Hot and humid, 21–27°C, long frost-free period</div>
+<div><b>Irrigation:</b> High — needs assured, frequent watering</div>
+<div><b>Sowing season:</b> Year-long crop</div>
+</div>
+</div>
+<div class="seed-card">
+<div class="seed-head">
+<div class="seed-emoji">🌱</div>
+<div class="seed-names"><div class="en">Soybean</div><div class="hi">सोयाबीन</div></div>
+</div>
+<div class="seed-rows">
+<div><b>Soil:</b> Black or well-drained loam</div>
+<div><b>Weather:</b> Warm, 20–30°C, monsoon rainfall</div>
+<div><b>Irrigation:</b> Low to moderate — mostly rain-fed</div>
+<div><b>Sowing season:</b> Kharif</div>
+</div>
+</div>
+<div class="seed-card">
+<div class="seed-head">
+<div class="seed-emoji">🥜</div>
+<div class="seed-names"><div class="en">Groundnut</div><div class="hi">मूंगफली</div></div>
+</div>
+<div class="seed-rows">
+<div><b>Soil:</b> Well-drained red or sandy loam</div>
+<div><b>Weather:</b> Warm, 20–30°C, moderate rainfall</div>
+<div><b>Irrigation:</b> Low — drought-tolerant once established</div>
+<div><b>Sowing season:</b> Kharif / Zaid</div>
+</div>
+</div>
+<div class="seed-card">
+<div class="seed-head">
+<div class="seed-emoji">🌼</div>
+<div class="seed-names"><div class="en">Mustard</div><div class="hi">सरसों</div></div>
+</div>
+<div class="seed-rows">
+<div><b>Soil:</b> Alluvial or sandy loam, tolerates low moisture</div>
+<div><b>Weather:</b> Cool, 10–25°C, dry weather at maturity</div>
+<div><b>Irrigation:</b> Low — 1–2 light waterings usually enough</div>
+<div><b>Sowing season:</b> Rabi</div>
+</div>
+</div>
+<div class="seed-card">
+<div class="seed-head">
+<div class="seed-emoji">🫘</div>
+<div class="seed-names"><div class="en">Gram / Chickpea</div><div class="hi">चना</div></div>
+</div>
+<div class="seed-rows">
+<div><b>Soil:</b> Alluvial, black or red — well-drained</div>
+<div><b>Weather:</b> Cool, dry, 10–25°C</div>
+<div><b>Irrigation:</b> Low — mostly rain-fed, one watering if needed</div>
+<div><b>Sowing season:</b> Rabi</div>
+</div>
+</div>
+<div class="seed-card">
+<div class="seed-head">
+<div class="seed-emoji">🫛</div>
+<div class="seed-names"><div class="en">Pigeon pea (Tur/Arhar)</div><div class="hi">अरहर / तूर</div></div>
+</div>
+<div class="seed-rows">
+<div><b>Soil:</b> Black or red soil, tolerates poor fertility</div>
+<div><b>Weather:</b> Warm, 20–30°C, needs a dry spell to mature</div>
+<div><b>Irrigation:</b> Low — drought-tolerant deep roots</div>
+<div><b>Sowing season:</b> Kharif</div>
+</div>
+</div>
+<div class="seed-card">
+<div class="seed-head">
+<div class="seed-emoji">🌾</div>
+<div class="seed-names"><div class="en">Bajra (Pearl millet)</div><div class="hi">बाजरा</div></div>
+</div>
+<div class="seed-rows">
+<div><b>Soil:</b> Sandy, arid soils</div>
+<div><b>Weather:</b> Hot, dry, up to 35°C+, low rainfall areas</div>
+<div><b>Irrigation:</b> Very low — best rain-fed dryland crop</div>
+<div><b>Sowing season:</b> Kharif</div>
+</div>
+</div>
+<div class="seed-card">
+<div class="seed-head">
+<div class="seed-emoji">🌾</div>
+<div class="seed-names"><div class="en">Jowar (Sorghum)</div><div class="hi">ज्वार</div></div>
+</div>
+<div class="seed-rows">
+<div><b>Soil:</b> Black soil, uses residual monsoon moisture</div>
+<div><b>Weather:</b> Warm, semi-arid, 25–32°C</div>
+<div><b>Irrigation:</b> Low — mostly rain-fed</div>
+<div><b>Sowing season:</b> Kharif / Rabi</div>
+</div>
+</div></div>
+</div>
+<div class="kg-panel" id="kg-waste">
+<div class="waste-grid" id="wasteGrid">
+<div class="waste-card">
+<div class="waste-head"><span class="waste-emoji">🍵</span><h3>Used tea leaves</h3></div>
+<p>Let leaves dry, then mix directly into potting soil or the base of plants.</p>
+<div class="benefit">Adds nitrogen; improves soil texture</div>
+</div>
+<div class="waste-card">
+<div class="waste-head"><span class="waste-emoji">🥚</span><h3>Crushed eggshells</h3></div>
+<p>Dry, crush into powder, sprinkle around the base of plants.</p>
+<div class="benefit">Rich in calcium; deters some soft-bodied pests</div>
+</div>
+<div class="waste-card">
+<div class="waste-head"><span class="waste-emoji">🍌</span><h3>Banana peels</h3></div>
+<p>Chop and bury a few inches deep near the root zone, or soak in water 2–3 days for a liquid feed.</p>
+<div class="benefit">High in potassium and phosphorus</div>
+</div>
+<div class="waste-card">
+<div class="waste-head"><span class="waste-emoji">🥔</span><h3>Vegetable peels &amp; scraps</h3></div>
+<p>Compost in a pit or bin with dry leaves; turn every week.</p>
+<div class="benefit">Builds organic compost rich in micronutrients</div>
+</div>
+<div class="waste-card">
+<div class="waste-head"><span class="waste-emoji">☕</span><h3>Coffee grounds</h3></div>
+<p>Sprinkle dried grounds lightly around acid-loving plants or add to compost.</p>
+<div class="benefit">Adds nitrogen; improves soil aeration</div>
+</div>
+<div class="waste-card">
+<div class="waste-head"><span class="waste-emoji">🍚</span><h3>Rice rinse water</h3></div>
+<p>Save the starchy water from washing rice and water plants with it directly.</p>
+<div class="benefit">Mild nutrient boost; encourages beneficial soil microbes</div>
+</div>
+<div class="waste-card">
+<div class="waste-head"><span class="waste-emoji">🔥</span><h3>Wood ash</h3></div>
+<p>Cool completely, then dust a thin layer over soil, away from seedlings.</p>
+<div class="benefit">Adds potassium; raises soil pH slightly</div>
+</div>
+<div class="waste-card">
+<div class="waste-head"><span class="waste-emoji">🍂</span><h3>Dry leaves (leaf mould)</h3></div>
+<p>Pile and let them decompose for 2–3 months, turning occasionally.</p>
+<div class="benefit">Improves soil structure and water retention</div>
+</div></div>
+</div>
+</section>
+<!-- ================= GOVERNMENT SCHEMES ================= -->
+<section class="page" id="page-govupdates">
+<h1 class="pg-title" data-gov-copy="title">Government schemes</h1>
+<p class="pg-sub" data-gov-copy="subtitle">Official links for farmer schemes and services.</p>
+<div class="gov-note" data-gov-copy="note">Check eligibility, dates and documents only on the official website. KisanSetu never asks for Aadhaar, bank or login details.</div>
+<h2 class="section-label" data-gov-copy="national">Government of India</h2>
+<div class="gov-grid">
+<a class="gov-card" href="https://pmkisan.gov.in/" rel="noopener noreferrer" target="_blank"><span class="gov-tag" data-gov-copy="pmkisanTag">Income support</span><h3>PM-KISAN</h3><p data-gov-copy="pmkisanDesc">Use the official portal for registration, e-KYC, beneficiary and payment-status information.</p><span class="go"><span data-gov-copy="action">Open official portal</span> ↗</span></a>
+<a class="gov-card" href="https://pmfby.gov.in/" rel="noopener noreferrer" target="_blank"><span class="gov-tag" data-gov-copy="pmfbyTag">Crop insurance</span><h3>PM Fasal Bima Yojana</h3><p data-gov-copy="pmfbyDesc">Use the official portal for crop-insurance information, claims and support.</p><span class="go"><span data-gov-copy="action">Open official portal</span> ↗</span></a>
+<a class="gov-card" href="https://www.india.gov.in/category/agriculture-rural-environment/subcategory/research-marketing/details/farmers-portal" rel="noopener noreferrer" target="_blank"><span class="gov-tag" data-gov-copy="farmersPortalTag">Agriculture services</span><h3>Farmers’ Portal</h3><p data-gov-copy="farmersPortalDesc">Find Government of India agriculture resources, services and farmer information.</p><span class="go"><span data-gov-copy="action">Open official portal</span> ↗</span></a>
+<a class="gov-card" href="https://soilhealth.dac.gov.in/" rel="noopener noreferrer" target="_blank"><span class="gov-tag" data-gov-copy="soilHealthTag">Soil health</span><h3>Soil Health Card</h3><p data-gov-copy="soilHealthDesc">Find official soil-health information and related farmer services.</p><span class="go"><span data-gov-copy="action">Open official portal</span> ↗</span></a>
+</div>
+</section>
+<!-- ================= FARM SERVICES ================= -->
+<section class="page" id="page-services">
+<h1 class="pg-title" data-i18n="servicesTitle">Verified farm services</h1>
+<p class="pg-sub" data-i18n="servicesSub">Book only what you need, close to your farm.</p>
+<div class="quick-grid">
+<button class="quick"><span class="qi">💦</span><span data-i18n="svcSprayer">Sprayer rental — From ₹250/day</span></button>
+<button class="quick"><span class="qi">🧪</span><span data-i18n="svcSoil">Soil test — Lab pickup available</span></button>
+<button class="quick"><span class="qi">❄</span><span data-i18n="svcCold">Cold storage — Reserve space</span></button>
+<button class="quick"><span class="qi">🤝</span><span data-i18n="svcFpo">Find FPO — Sell collectively</span></button>
+</div>
+</section>
+<!-- ================= FARM DIARY ================= -->
+
+</div>
+<footer class="app-footer">KisanSetu — 100% free farmer tools · Prototype build</footer>
+</div>
+</div>
+<script>
+/* ==================== i18n ==================== */
+const I18N = {
+  en:{ loginTitle:"Farmer sign in", loginSub:"Enter your name to start using your farm dashboard.", nameLabel:"Farmer name", namePlaceholder:"Enter your name", loginBtn:"Continue", loginRequired:"Please enter your name.", navToday:"Today", navCrops:"My crops", navGyan:"Kisan Gyan", navServices:"Farm services", navDiary:"Farm diary", signOut:"Sign out",
+    todaySub:"Here's what your farm needs today.", refresh:"Refresh", weatherNote:"Free live weather via Open-Meteo, based on your farm's location",
+    advisorTitle:"Crop & fertiliser advisor", advisorHint:"Tell us about your field once — get a soil-and-season-matched crop list and fertiliser guidance.",
+    lblSoil:"Soil type", soilAlluvial:"Alluvial", soilBlack:"Black (regur)", soilRed:"Red", soilLaterite:"Laterite", soilSandy:"Sandy / arid", soilClayey:"Clayey",
+    lblSeason:"Season", seasonKharif:"Kharif (monsoon)", seasonRabi:"Rabi (winter)", seasonZaid:"Zaid (summer)",
+    lblLand:"Land size (acres)", lblIrrigation:"Irrigation available?", yes:"Yes", no:"No (rain-fed)",
+    submitBtn:"Get recommendation", submitBtnLoading:"Checking weather…", recommended:"Recommended crops", fertilizer:"Fertiliser guidance", fit:"Good fit",
+    pestTitle:"Scan crop issue", pestHint:"Upload a leaf photo for a demo pest & disease check.", pestUpload:"Upload photo",
+    journeyTitle:"Tomato season journey", journeySub:"Day 47 of 110", jSow:"Sow", jDone:"Done", jGrow:"Grow", jNow:"Now", jProtect:"Protect", jHarvest:"Harvest",
+    balanceTitle:"Farm balance", balanceSub:"Projected this season",
+    quickTitle:"Do more, without leaving the farm", qScan:"Scan crop issue", qPool:"Pool transport", qBook:"Book a service", qProtect:"Protect my crop",
+    fbTitle:"Was this helpful?",
+    cropsTitle:"My crops", cropsSub:"Simple decisions, based on your field.", cropVariety:"Hybrid variety · Sown July 24 · Growth stage",
+    nextIrr:"Next irrigation check", healthScan:"Crop health scan", dueIn2:"Due in 2 days", estHarvest:"Estimated harvest", cropHealth:"Crop health", good:"Good", addScan:"＋ Add crop scan",
+    gyanTitle:"Kisan Gyan", gyanSub:"Seed knowledge and low-cost farm wisdom, in one place.", tabSeeds:"Seed knowledge", tabWaste:"Home waste manure",
+    servicesTitle:"Verified farm services", servicesSub:"Book only what you need, close to your farm.",
+    svcSprayer:"Sprayer rental — From ₹250/day", svcSoil:"Soil test — Lab pickup available", svcCold:"Cold storage — Reserve space", svcFpo:"Find FPO — Sell collectively",
+    diaryTitle:"Farm diary", diarySub:"Your field history, expenses, and decisions in one place.",
+    diary1:"Crop health review", diary1sub:"No treatment recommended before rain", diary2:"Fertiliser expense", diary3:"Irrigation completed",
+    thanksFb:v=>`Thanks for rating us ${v}/5!`, rainAlert:"Heavy rain likely in next 3 days — hold off on spraying", heatAlert:"High-heat alert — increase irrigation frequency", normalAlert:"Conditions look normal for the next 3 days",
+    weatherUnavail:"Weather service unavailable right now — showing crop advisory only." },
+  hi:{ loginTitle:"किसान साइन इन", loginSub:"अपना नाम दर्ज करके खेत डैशबोर्ड शुरू करें।", nameLabel:"किसान का नाम", namePlaceholder:"अपना नाम दर्ज करें", loginBtn:"जारी रखें", loginRequired:"कृपया अपना नाम दर्ज करें।", navToday:"आज", navCrops:"मेरी फ़सलें", navGyan:"किसान ज्ञान", navServices:"खेत सेवाएं", navDiary:"खेत डायरी", signOut:"साइन आउट",
+    todaySub:"आज आपके खेत को इसकी ज़रूरत है।", refresh:"ताज़ा करें", weatherNote:"आपके खेत के स्थान के अनुसार Open-Meteo से मुफ़्त मौसम जानकारी",
+    advisorTitle:"फ़सल व खाद सलाहकार", advisorHint:"अपने खेत की जानकारी दें — मिट्टी और मौसम के अनुसार फ़सल सूची और खाद सुझाव पाएं।",
+    lblSoil:"मिट्टी का प्रकार", soilAlluvial:"जलोढ़ मिट्टी", soilBlack:"काली मिट्टी", soilRed:"लाल मिट्टी", soilLaterite:"लैटेराइट मिट्टी", soilSandy:"रेतीली / शुष्क", soilClayey:"चिकनी मिट्टी",
+    lblSeason:"मौसम", seasonKharif:"खरीफ (मानसून)", seasonRabi:"रबी (सर्दी)", seasonZaid:"ज़ायद (गर्मी)",
+    lblLand:"ज़मीन (एकड़)", lblIrrigation:"सिंचाई उपलब्ध है?", yes:"हाँ", no:"नहीं (वर्षा-आधारित)",
+    submitBtn:"सुझाव पाएं", submitBtnLoading:"मौसम जांचा जा रहा है…", recommended:"अनुशंसित फ़सलें", fertilizer:"खाद मार्गदर्शन", fit:"उपयुक्त",
+    pestTitle:"फ़सल समस्या स्कैन करें", pestHint:"रोग-कीट जांच के डेमो के लिए पत्ती की फ़ोटो अपलोड करें।", pestUpload:"फ़ोटो अपलोड करें",
+    journeyTitle:"टमाटर सीज़न यात्रा", journeySub:"दिन 47 / 110", jSow:"बुवाई", jDone:"पूर्ण", jGrow:"वृद्धि", jNow:"अभी", jProtect:"सुरक्षा", jHarvest:"कटाई",
+    balanceTitle:"खेत की आय", balanceSub:"इस सीज़न का अनुमान",
+    quickTitle:"खेत छोड़े बिना और भी करें", qScan:"फ़सल समस्या स्कैन करें", qPool:"साझा परिवहन", qBook:"सेवा बुक करें", qProtect:"फ़सल सुरक्षित करें",
+    fbTitle:"क्या यह उपयोगी था?",
+    cropsTitle:"मेरी फ़सलें", cropsSub:"आपके खेत के अनुसार आसान निर्णय।", cropVariety:"हाइब्रिड किस्म · 24 जुलाई को बोई गई · वृद्धि अवस्था",
+    nextIrr:"अगली सिंचाई जांच", healthScan:"फ़सल स्वास्थ्य स्कैन", dueIn2:"2 दिन में देय", estHarvest:"अनुमानित कटाई", cropHealth:"फ़सल स्वास्थ्य", good:"अच्छा", addScan:"＋ फ़सल स्कैन जोड़ें",
+    gyanTitle:"किसान ज्ञान", gyanSub:"बीज ज्ञान और घरेलू खेती की सूझबूझ, एक ही जगह पर।", tabSeeds:"बीज ज्ञान", tabWaste:"घरेलू अपशिष्ट खाद",
+    servicesTitle:"सत्यापित खेत सेवाएं", servicesSub:"अपने खेत के पास केवल वही बुक करें जिसकी ज़रूरत है।",
+    svcSprayer:"स्प्रेयर किराया — ₹250/दिन से", svcSoil:"मिट्टी परीक्षण — लैब पिकअप उपलब्ध", svcCold:"कोल्ड स्टोरेज — जगह आरक्षित करें", svcFpo:"FPO खोजें — सामूहिक बिक्री",
+    diaryTitle:"खेत डायरी", diarySub:"आपके खेत का इतिहास, खर्च और निर्णय, एक ही जगह।",
+    diary1:"फ़सल स्वास्थ्य समीक्षा", diary1sub:"बारिश से पहले उपचार की आवश्यकता नहीं", diary2:"खाद खर्च", diary3:"सिंचाई पूर्ण",
+    thanksFb:v=>`हमें ${v}/5 रेटिंग देने के लिए धन्यवाद!`, rainAlert:"अगले 3 दिनों में भारी बारिश की संभावना — छिड़काव टालें", heatAlert:"उच्च तापमान चेतावनी — सिंचाई बढ़ाएं", normalAlert:"अगले 3 दिनों में सामान्य स्थिति",
+    weatherUnavail:"मौसम सेवा अभी उपलब्ध नहीं है — केवल फ़सल सलाह दिखाई जा रही है।" },
+  kn:{ loginTitle:"ರೈತ ಸೈನ್ ಇನ್", loginSub:"ನಿಮ್ಮ ಕೃಷಿ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ ಆರಂಭಿಸಲು ನಿಮ್ಮ ಹೆಸರನ್ನು ನಮೂದಿಸಿ.", nameLabel:"ರೈತರ ಹೆಸರು", namePlaceholder:"ನಿಮ್ಮ ಹೆಸರನ್ನು ನಮೂದಿಸಿ", loginBtn:"ಮುಂದುವರಿಸಿ", loginRequired:"ದಯವಿಟ್ಟು ನಿಮ್ಮ ಹೆಸರನ್ನು ನಮೂದಿಸಿ.", navToday:"ಇಂದು", navCrops:"ನನ್ನ ಬೆಳೆಗಳು", navGyan:"ಕಿಸಾನ್ ಜ್ಞಾನ", navServices:"ಕೃಷಿ ಸೇವೆಗಳು", navDiary:"ಕೃಷಿ ದಿನಚರಿ", signOut:"ಸೈನ್ ಔಟ್",
+    advisorTitle:"ಬೆಳೆ ಮತ್ತು ಗೊಬ್ಬರ ಸಲಹೆಗಾರ", submitBtn:"ಶಿಫಾರಸು ಪಡೆಯಿರಿ", recommended:"ಶಿಫಾರಸು ಮಾಡಿದ ಬೆಳೆಗಳು", fertilizer:"ಗೊಬ್ಬರ ಮಾರ್ಗದರ್ಶನ", fit:"ಸೂಕ್ತ",
+    gyanTitle:"ಕಿಸಾನ್ ಜ್ಞಾನ", tabSeeds:"ಬೀಜ ಜ್ಞಾನ", tabWaste:"ಮನೆ ತ್ಯಾಜ್ಯ ಗೊಬ್ಬರ", cropsTitle:"ನನ್ನ ಬೆಳೆಗಳು", servicesTitle:"ಪರಿಶೀಲಿತ ಕೃಷಿ ಸೇವೆಗಳು", diaryTitle:"ಕೃಷಿ ದಿನಚರಿ" },
+  ta:{ navToday:"இன்று", navCrops:"என் பயிர்கள்", navGyan:"கிசான் ஞானம்", navServices:"பண்ணை சேவைகள்", navDiary:"பண்ணை நாட்குறிப்பு", signOut:"வெளியேறு",
+    advisorTitle:"பயிர் & உர ஆலோசகர்", submitBtn:"பரிந்துரை பெறுக", recommended:"பரிந்துரைக்கப்பட்ட பயிர்கள்", fertilizer:"உர வழிகாட்டுதல்", fit:"பொருத்தம்",
+    gyanTitle:"கிசான் ஞானம்", tabSeeds:"விதை அறிவு", tabWaste:"வீட்டு கழிவு உரம்", cropsTitle:"என் பயிர்கள்", servicesTitle:"சரிபார்க்கப்பட்ட பண்ணை சேவைகள்", diaryTitle:"பண்ணை நாட்குறிப்பு" },
+  te:{ navToday:"ఈరోజు", navCrops:"నా పంటలు", navGyan:"కిసాన్ జ్ఞానం", navServices:"వ్యవసాయ సేవలు", navDiary:"వ్యవసాయ డైరీ", signOut:"సైన్ అవుట్",
+    advisorTitle:"పంట & ఎరువుల సలహాదారు", submitBtn:"సిఫార్సు పొందండి", recommended:"సిఫార్సు చేసిన పంటలు", fertilizer:"ఎరువుల మార్గదర్శకం", fit:"అనుకూలం",
+    gyanTitle:"కిసాన్ జ్ఞానం", tabSeeds:"విత్తన జ్ఞానం", tabWaste:"ఇంటి వ్యర్థాల ఎరువు", cropsTitle:"నా పంటలు", servicesTitle:"ధృవీకరించిన వ్యవసాయ సేవలు", diaryTitle:"వ్యవసాయ డైరీ" },
+  mr:{ navToday:"आज", navCrops:"माझी पिके", navGyan:"किसान ज्ञान", navServices:"शेत सेवा", navDiary:"शेत डायरी", signOut:"साइन आउट",
+    advisorTitle:"पीक व खत सल्लागार", submitBtn:"शिफारस मिळवा", recommended:"शिफारस केलेली पिके", fertilizer:"खत मार्गदर्शन", fit:"योग्य",
+    gyanTitle:"किसान ज्ञान", tabSeeds:"बियाणे ज्ञान", tabWaste:"घरगुती कचरा खत", cropsTitle:"माझी पिके", servicesTitle:"सत्यापित शेत सेवा", diaryTitle:"शेत डायरी" },
+  gu:{ navToday:"આજે", navCrops:"મારા પાકો", navGyan:"કિસાન જ્ઞાન", navServices:"ખેત સેવાઓ", navDiary:"ખેત ડાયરી", signOut:"સાઇન આઉટ",
+    advisorTitle:"પાક અને ખાતર સલાહકાર", submitBtn:"ભલામણ મેળવો", recommended:"ભલામણ કરેલ પાકો", fertilizer:"ખાતર માર્ગદર્શન", fit:"યોગ્ય",
+    gyanTitle:"કિસાન જ્ઞાન", tabSeeds:"બીજ જ્ઞાન", tabWaste:"ઘરેલુ કચરો ખાતર", cropsTitle:"મારા પાકો", servicesTitle:"પ્રમાણિત ખેત સેવાઓ", diaryTitle:"ખેત ડાયરી" },
+  bn:{ navToday:"আজ", navCrops:"আমার ফসল", navGyan:"কিষাণ জ্ঞান", navServices:"খামার সেবা", navDiary:"খামার ডায়েরি", signOut:"সাইন আউট",
+    advisorTitle:"ফসল ও সার পরামর্শদাতা", submitBtn:"সুপারিশ পান", recommended:"প্রস্তাবিত ফসল", fertilizer:"সার নির্দেশনা", fit:"উপযুক্ত",
+    gyanTitle:"কিষাণ জ্ঞান", tabSeeds:"বীজ জ্ঞান", tabWaste:"ঘরোয়া বর্জ্য সার", cropsTitle:"আমার ফসল", servicesTitle:"যাচাইকৃত খামার সেবা", diaryTitle:"খামার ডায়েরি" },
+  pa:{ navToday:"ਅੱਜ", navCrops:"ਮੇਰੀਆਂ ਫ਼ਸਲਾਂ", navGyan:"ਕਿਸਾਨ ਗਿਆਨ", navServices:"ਖੇਤ ਸੇਵਾਵਾਂ", navDiary:"ਖੇਤ ਡਾਇਰੀ", signOut:"ਸਾਈਨ ਆਉਟ",
+    advisorTitle:"ਫ਼ਸਲ ਅਤੇ ਖਾਦ ਸਲਾਹਕਾਰ", submitBtn:"ਸਿਫ਼ਾਰਸ਼ ਲਵੋ", recommended:"ਸਿਫ਼ਾਰਸ਼ੀ ਫ਼ਸਲਾਂ", fertilizer:"ਖਾਦ ਮਾਰਗਦਰਸ਼ਨ", fit:"ਯੋਗ",
+    gyanTitle:"ਕਿਸਾਨ ਗਿਆਨ", tabSeeds:"ਬੀਜ ਗਿਆਨ", tabWaste:"ਘਰੇਲੂ ਰਹਿੰਦ-ਖੂੰਹਦ ਖਾਦ", cropsTitle:"ਮੇਰੀਆਂ ਫ਼ਸਲਾਂ", servicesTitle:"ਪ੍ਰਮਾਣਿਤ ਖੇਤ ਸੇਵਾਵਾਂ", diaryTitle:"ਖੇਤ ਡਾਇਰੀ" },
+  ml:{ navToday:"ഇന്ന്", navCrops:"എന്റെ വിളകൾ", navGyan:"കിസാൻ ജ്ഞാൻ", navServices:"കൃഷി സേവനങ്ങൾ", navDiary:"കൃഷി ഡയറി", signOut:"സൈൻ ഔട്ട്",
+    advisorTitle:"വിള & വള ഉപദേശകൻ", submitBtn:"ശുപാർശ നേടുക", recommended:"ശുപാർശ ചെയ്ത വിളകൾ", fertilizer:"വള മാർഗ്ഗനിർദ്ദേശം", fit:"അനുയോജ്യം",
+    gyanTitle:"കിസാൻ ജ്ഞാൻ", tabSeeds:"വിത്ത് അറിവ്", tabWaste:"വീട്ടു മാലിന്യ വളം", cropsTitle:"എന്റെ വിളകൾ", servicesTitle:"സാക്ഷ്യപ്പെടുത്തിയ കൃഷി സേവനങ്ങൾ", diaryTitle:"കൃഷി ഡയറി" },
+  or:{ navToday:"ଆଜି", navCrops:"ମୋର ଫସଲ", navGyan:"କିଷାନ ଜ୍ଞାନ", navServices:"ଚାଷ ସେବା", navDiary:"ଚାଷ ଡାଏରୀ", signOut:"ସାଇନ ଆଉଟ",
+    advisorTitle:"ଫସଲ ଓ ସାର ପରାମର୍ଶଦାତା", submitBtn:"ପରାମର୍ଶ ପାଆନ୍ତୁ", recommended:"ପରାମର୍ଶିତ ଫସଲ", fertilizer:"ସାର ମାର୍ଗଦର୍ଶନ", fit:"ଉପଯୁକ୍ତ",
+    gyanTitle:"କିଷାନ ଜ୍ଞାନ", tabSeeds:"ବିହନ ଜ୍ଞାନ", tabWaste:"ଘର ଅପଚୟ ସାର", cropsTitle:"ମୋର ଫସଲ", servicesTitle:"ଯାଞ୍ଚିତ ଚାଷ ସେବା", diaryTitle:"ଚାଷ ଡାଏରୀ" },
+  as:{ navToday:"আজি", navCrops:"মোৰ শস্য", navGyan:"কিষাণ জ্ঞান", navServices:"খেতি সেৱা", navDiary:"খেতি ডায়েৰী", signOut:"ছাইন আউট",
+    advisorTitle:"শস্য আৰু সাৰ পৰামৰ্শদাতা", submitBtn:"পৰামৰ্শ লওক", recommended:"পৰামৰ্শিত শস্য", fertilizer:"সাৰ নিৰ্দেশনা", fit:"উপযুক্ত",
+    gyanTitle:"কিষাণ জ্ঞান", tabSeeds:"বীজ জ্ঞান", tabWaste:"ঘৰুৱা আবৰ্জনা সাৰ", cropsTitle:"মোৰ শস্য", servicesTitle:"সত্যাপিত খেতি সেৱা", diaryTitle:"খেতি ডায়েৰী" },
+  ur:{ navToday:"آج", navCrops:"میری فصلیں", navGyan:"کسان علم", navServices:"فارم خدمات", navDiary:"فارم ڈائری", signOut:"سائن آؤٹ",
+    advisorTitle:"فصل اور کھاد کا مشیر", submitBtn:"سفارش حاصل کریں", recommended:"تجویز کردہ فصلیں", fertilizer:"کھاد کی رہنمائی", fit:"موزوں",
+    gyanTitle:"کسان علم", tabSeeds:"بیج کا علم", tabWaste:"گھریلو فضلہ کھاد", cropsTitle:"میری فصلیں", servicesTitle:"تصدیق شدہ فارم خدمات", diaryTitle:"فارم ڈائری" }
+};
+let currentLang = 'en';
+function t(key){ return (I18N[currentLang] && I18N[currentLang][key]) || I18N.en[key] || key; }
+
+function applyLang(lang){
+  currentLang = lang;
+  document.body.dir = (lang === 'ur') ? 'rtl' : 'ltr';
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const val = t(el.dataset.i18n);
+    if(typeof val === 'string') el.textContent = val;
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{
+    el.placeholder = t(el.dataset.i18nPlaceholder);
+  });
+  updateFarmerUI();
+  renderSeeds(); renderWaste();
+  const pest = document.getElementById('pestResult');
+  if(pest.classList.contains('show') && window.lastPestPick) pest.textContent = window.lastPestPick[currentLang] || window.lastPestPick.en;
+}
+document.getElementById('langSelect').addEventListener('change', e=> applyLang(e.target.value));
+
+/* ==================== farmer sign-in ==================== */
+function updateFarmerUI(){
+  const name = localStorage.getItem('kisanSetuFarmerName') || '';
+  const hour = new Date().getHours();
+  const prefix = hour < 12 ? (currentLang==='hi'?'सुप्रभात':currentLang==='kn'?'ಶುಭೋದಯ':'Good morning') : hour < 17 ? (currentLang==='hi'?'नमस्कार':currentLang==='kn'?'ನಮಸ್ಕಾರ':'Good afternoon') : (currentLang==='hi'?'शुभ संध्या':currentLang==='kn'?'ಶುಭ ಸಂಜೆ':'Good evening');
+  if(name){
+    document.getElementById('greeting').textContent = `${prefix}, ${name} 👋`;
+    document.getElementById('sidebarFarmerName').textContent = name;
+    document.getElementById('sidebarAvatar').textContent = name.trim().split(/\s+/).map(x=>x[0]).join('').slice(0,2).toUpperCase();
+  }
+}
+function showApp(){
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('app').classList.remove('locked');
+  updateFarmerUI();
+}
+function showLogin(){
+  localStorage.removeItem('kisanSetuFarmerName');
+  document.getElementById('app').classList.add('locked');
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('farmerNameInput').value='';
+  document.getElementById('farmerNameInput').focus();
+}
+function doLogin(){
+  const input=document.getElementById('farmerNameInput');
+  const name=input.value.trim();
+  const err=document.getElementById('loginError');
+  if(!name){err.textContent=t('loginRequired'); input.focus(); return;}
+  localStorage.setItem('kisanSetuFarmerName',name); err.textContent=''; showApp();
+}
+document.getElementById('loginBtn').addEventListener('click',doLogin);
+document.getElementById('farmerNameInput').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+document.querySelector('.sb-signout').addEventListener('click',showLogin);
+if(localStorage.getItem('kisanSetuFarmerName')) showApp();
+
+/* ==================== nav ==================== */
+document.getElementById('sbNav').addEventListener('click', e=>{
+  const btn = e.target.closest('button'); if(!btn) return;
+  document.querySelectorAll('.sb-nav button').forEach(b=>b.classList.toggle('active', b===btn));
+  document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active', p.id === 'page-'+btn.dataset.page));
+});
+
+/* ==================== weather ==================== */
+const REGIONS = {
+  blr:{name:"Hesaraghatta, Bengaluru", lat:13.13, lon:77.48},
+  punjab:{name:"Ludhiana, Punjab", lat:30.9, lon:75.85},
+  up:{name:"Lucknow, Uttar Pradesh", lat:26.85, lon:80.95},
+  mh:{name:"Nagpur, Maharashtra", lat:21.15, lon:79.09},
+  wb:{name:"Bardhaman, West Bengal", lat:23.24, lon:87.86},
+  tn:{name:"Coimbatore, Tamil Nadu", lat:11.0, lon:76.96},
+  raj:{name:"Jodhpur, Rajasthan", lat:26.24, lon:73.02},
+  kar:{name:"Belagavi, Karnataka", lat:15.85, lon:74.5}
+};
+async function fetchWeather(region){
+  const {lat, lon} = REGIONS[region];
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&daily=precipitation_sum,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=4`;
+  const res = await fetch(url);
+  if(!res.ok) throw new Error('weather fetch failed');
+  return res.json();
+}
+function weatherAlertText(data){
+  const rainNext = data.daily.precipitation_sum.slice(0,3).some(v=>v>10);
+  const tmax = Math.max(...data.daily.temperature_2m_max);
+  if(rainNext) return t('rainAlert');
+  if(tmax > 38) return t('heatAlert');
+  return t('normalAlert');
+}
+async function loadWeather(){
+  const region = document.getElementById('regionSelect').value;
+  document.getElementById('wLoc').textContent = REGIONS[region].name + '…';
+  try{
+    const w = await fetchWeather(region);
+    const cur = w.current_weather;
+    document.getElementById('wTemp').textContent = Math.round(cur.temperature) + '°C';
+    document.getElementById('wLoc').textContent = REGIONS[region].name;
+    document.getElementById('wAlert').innerHTML = `<span class="alert-pill">${weatherAlertText(w)}</span>`;
+    const days = w.daily.time.slice(0,4);
+    const rows = days.map((d,i)=>{
+      const dt = new Date(d);
+      const label = i===0 ? t('navToday') : dt.toLocaleDateString(undefined,{weekday:'short'});
+      return `<div class="fc-day"><div class="d">${label}</div><div class="t">${Math.round(w.daily.temperature_2m_max[i])}° / ${Math.round(w.daily.temperature_2m_min[i])}°</div><div style="opacity:.7;">${w.daily.precipitation_sum[i].toFixed(0)}mm</div></div>`;
+    }).join('');
+    document.getElementById('wForecast').innerHTML = rows;
+  }catch(e){
+    document.getElementById('wLoc').textContent = t('weatherUnavail');
+    document.getElementById('wForecast').innerHTML = '';
+    document.getElementById('wAlert').innerHTML = '';
+  }
+}
+document.getElementById('regionSelect').addEventListener('change', loadWeather);
+document.getElementById('wRefresh').addEventListener('click', loadWeather);
+loadWeather();
+
+/* ==================== crop advisor (from Kisan Saathi) ==================== */
+const CROP_RULES = {
+  alluvial:{ kharif:[["Rice","High-water, staple crop for alluvial plains."],["Maize","Fast-growing, good for mixed cropping."],["Sugarcane","Long-duration, needs assured irrigation."]],
+    rabi:[["Wheat","Region's most reliable rabi crop on alluvial soil."],["Mustard","Low input cost, short duration."],["Gram (Chana)","Improves soil nitrogen."]],
+    zaid:[["Moong (Green gram)","Short 60–65 day cycle."],["Cucumber","Quick cash crop for small plots."]] },
+  black:{ kharif:[["Cotton","Black soil's signature crop — retains moisture well."],["Soybean","Good rotation partner with cotton."],["Pigeon pea (Tur)","Drought-tolerant."]],
+    rabi:[["Sorghum (Jowar)","Thrives on residual moisture in black soil."],["Safflower","Low water need."],["Wheat","Where irrigation is available."]],
+    zaid:[["Groundnut","Short duration, suits post-rabi window."]] },
+  red:{ kharif:[["Groundnut","Well suited to well-drained red soil."],["Millets (Ragi/Bajra)","Resilient on lower-fertility red soil."]],
+    rabi:[["Sunflower","Handles moderate fertility."],["Gram (Chana)","Fixes nitrogen for next season."]],
+    zaid:[["Sesame","Short duration, low water."]] },
+  laterite:{ kharif:[["Cashew (perennial, plan separately)","Classic laterite crop where land allows."],["Paddy (upland)","Where bunding is possible."]],
+    rabi:[["Pulses (Horse gram)","Tolerant of low fertility."]],
+    zaid:[["Vegetables (Okra/Brinjal)","With added organic manure."]] },
+  sandy:{ kharif:[["Bajra (Pearl millet)","Best-adapted staple for sandy/arid soil."],["Moth bean","Extremely drought-hardy."]],
+    rabi:[["Mustard","Tolerates low moisture."],["Barley","Hardier than wheat on sandy soil."]],
+    zaid:[["Watermelon","Cash crop if any irrigation exists."]] },
+  clayey:{ kharif:[["Rice","Clay's water retention suits paddy."],["Jute","Where humidity is high (e.g., WB)."]],
+    rabi:[["Wheat","Needs good drainage management on clay."],["Lentil (Masoor)","Tolerant, improves soil."]],
+    zaid:[["Vegetables (leafy greens)","Short cycle before next sowing."]] }
+};
+const FERT_TIPS = {
+  alluvial:"Alluvial soil is naturally fertile but nitrogen-hungry under continuous cropping. Apply farmyard manure (FYM) 8–10 t/acre pre-sowing, split urea in 2–3 doses, and rotate cereals with a legume every alternate season.",
+  black:"Black soil holds nutrients well but is often low in nitrogen and phosphorus. Use DAP at sowing, add gypsum on very cracked plots, and avoid over-irrigation since it drains slowly.",
+  red:"Red soil is typically low in nitrogen, phosphorus and organic matter. Prioritise compost/FYM plus phosphorus-rich fertiliser, and consider lime if soil tests acidic.",
+  laterite:"Laterite soil is acidic and leaches nutrients fast. Apply lime to correct pH, use organic manure heavily, and fertilise in smaller, more frequent doses.",
+  sandy:"Sandy soil drains and loses nutrients quickly. Favour organic manure and slow-release fertiliser, irrigate in shorter, more frequent cycles, and mulch to retain moisture.",
+  clayey:"Clayey soil retains nutrients but can waterlog. Ensure drainage channels, apply fertiliser in split doses, and avoid working the soil when wet."
+};
+document.getElementById('submitBtn').addEventListener('click', ()=>{
+  const btn = document.getElementById('submitBtn');
+  const soil = document.getElementById('soil').value;
+  const season = document.getElementById('season').value;
+  const land = document.getElementById('land').value;
+  const irrigation = document.getElementById('irrigation').value;
+  btn.disabled = true; btn.textContent = t('submitBtnLoading');
+  setTimeout(()=>{
+    const crops = CROP_RULES[soil][season];
+    const cropsHtml = crops.map(([name,why])=>`<div class="crop-card"><h3>${name}</h3><div class="fit">${t('fit')}</div><p>${why}</p></div>`).join('');
+    document.getElementById('advisorResults').innerHTML = `
       <div>
-        <div class="brand"><span class="brand-mark">🌱</span><span>KisanSetu</span></div>
-        <nav id="nav" class="nav" aria-label="Main navigation">
-          <button class="active" type="button" data-page="today"><span class="nav-icon">⌂</span><span class="nav-label" data-t="today">Today</span></button>
-          <button type="button" data-page="crops"><span class="nav-icon">◉</span><span class="nav-label" data-t="crops">My crops</span></button>
-          <button type="button" data-page="benefits"><span class="nav-icon">🏛</span><span class="nav-label" data-t="benefits">Benefits &amp; updates</span></button>
-          <button type="button" data-page="knowledge"><span class="nav-icon">📘</span><span class="nav-label" data-t="knowledge">Kisan Gyan</span></button>
-          <button type="button" data-page="services"><span class="nav-icon">⚙</span><span class="nav-label" data-t="services">Farm services</span></button>
-          <button type="button" data-page="diary"><span class="nav-icon">▤</span><span class="nav-label" data-t="diary">Farm diary</span></button>
-        </nav>
+        <div class="section-label">${t('recommended')} · ${land} ${currentLang==='hi'?'एकड़':'acre(s)'} · ${irrigation==='yes' ? t('yes') : t('no')}</div>
+        <div class="crop-list">${cropsHtml}</div>
       </div>
-      <div class="side-bottom">
-        <div class="user">
-          <div id="avatar" class="avatar">KS</div>
-          <div><div id="sideName" class="user-name">Farmer</div><div class="user-meta" data-t="profileMeta">1.6 acres · Tomato</div></div>
-        </div>
-        <button id="signout" class="signout" type="button" data-t="signout">Sign out</button>
+      <div>
+        <div class="section-label">${t('fertilizer')}</div>
+        <div class="fert-box">${FERT_TIPS[soil]}</div>
+      </div>`;
+    btn.disabled = false; btn.textContent = t('submitBtn');
+  }, 350);
+});
+
+/* ==================== pest scan (mock) ==================== */
+const PEST_LIB = [
+  {en:"Leaf spot detected — likely fungal. Suggest neem-oil spray and improved field spacing.", hi:"पत्ती धब्बा रोग — फफूंद जनित। नीम तेल छिड़काव और बेहतर दूरी सुझाई गई।"},
+  {en:"Aphid infestation signs — monitor undersides of leaves, consider ladybird release or mild insecticidal soap.", hi:"माहू कीट के लक्षण — पत्तियों के नीचे जांचें, हल्का कीटनाशक साबुन उपयोग करें।"},
+  {en:"No visible disease detected — leaf appears healthy.", hi:"कोई रोग नहीं मिला — पत्ती स्वस्थ दिखती है।"}
+];
+document.getElementById('pestFile').addEventListener('change', e=>{
+  const file = e.target.files[0]; if(!file) return;
+  document.getElementById('pestFileName').textContent = file.name;
+  const pick = PEST_LIB[Math.floor(Math.random()*PEST_LIB.length)];
+  window.lastPestPick = pick;
+  const box = document.getElementById('pestResult');
+  box.textContent = pick[currentLang] || pick.en;
+  box.classList.add('show');
+});
+
+/* ==================== feedback stars ==================== */
+document.querySelectorAll('.star').forEach(star=>{
+  star.addEventListener('click', ()=>{
+    const v = parseInt(star.dataset.v);
+    document.querySelectorAll('.star').forEach(s=> s.classList.toggle('on', parseInt(s.dataset.v) <= v));
+    document.getElementById('fbMsg').textContent = t('thanksFb')(v);
+  });
+});
+
+/* ==================== Kisan Gyan: seed knowledge ==================== */
+const SEEDS = [
+  {emoji:"🌾", en:"Rice", hi:"चावल / धान", soil:"Clayey, alluvial — needs standing water", weather:"Warm, humid; 20–37°C; high rainfall or irrigation", irrigation:"High — needs flooded fields for most of the cycle", season:"Kharif"},
+  {emoji:"🌾", en:"Wheat", hi:"गेहूं", soil:"Alluvial, well-drained loam", weather:"Cool growing season, 10–25°C; dry at harvest", irrigation:"Moderate — 4–6 waterings over the season", season:"Rabi"},
+  {emoji:"🌽", en:"Maize", hi:"मक्का", soil:"Well-drained alluvial or sandy loam", weather:"Warm, 21–27°C, moderate rainfall", irrigation:"Moderate — sensitive to both drought and waterlogging", season:"Kharif / Rabi"},
+  {emoji:"☁️", en:"Cotton", hi:"कपास", soil:"Deep black (regur) soil", weather:"Warm, 21–30°C, needs a dry spell at picking", irrigation:"Moderate — moisture-retentive black soil reduces need", season:"Kharif"},
+  {emoji:"🎋", en:"Sugarcane", hi:"गन्ना", soil:"Deep alluvial or loamy, well-drained", weather:"Hot and humid, 21–27°C, long frost-free period", irrigation:"High — needs assured, frequent watering", season:"Year-long crop"},
+  {emoji:"🌱", en:"Soybean", hi:"सोयाबीन", soil:"Black or well-drained loam", weather:"Warm, 20–30°C, monsoon rainfall", irrigation:"Low to moderate — mostly rain-fed", season:"Kharif"},
+  {emoji:"🥜", en:"Groundnut", hi:"मूंगफली", soil:"Well-drained red or sandy loam", weather:"Warm, 20–30°C, moderate rainfall", irrigation:"Low — drought-tolerant once established", season:"Kharif / Zaid"},
+  {emoji:"🌼", en:"Mustard", hi:"सरसों", soil:"Alluvial or sandy loam, tolerates low moisture", weather:"Cool, 10–25°C, dry weather at maturity", irrigation:"Low — 1–2 light waterings usually enough", season:"Rabi"},
+  {emoji:"🫘", en:"Gram / Chickpea", hi:"चना", soil:"Alluvial, black or red — well-drained", weather:"Cool, dry, 10–25°C", irrigation:"Low — mostly rain-fed, one watering if needed", season:"Rabi"},
+  {emoji:"🫛", en:"Pigeon pea (Tur/Arhar)", hi:"अरहर / तूर", soil:"Black or red soil, tolerates poor fertility", weather:"Warm, 20–30°C, needs a dry spell to mature", irrigation:"Low — drought-tolerant deep roots", season:"Kharif"},
+  {emoji:"🌾", en:"Bajra (Pearl millet)", hi:"बाजरा", soil:"Sandy, arid soils", weather:"Hot, dry, up to 35°C+, low rainfall areas", irrigation:"Very low — best rain-fed dryland crop", season:"Kharif"},
+  {emoji:"🌾", en:"Jowar (Sorghum)", hi:"ज्वार", soil:"Black soil, uses residual monsoon moisture", weather:"Warm, semi-arid, 25–32°C", irrigation:"Low — mostly rain-fed", season:"Kharif / Rabi"}
+];
+function renderSeeds(){
+  document.getElementById('seedGrid').innerHTML = SEEDS.map(s=>`
+    <div class="seed-card">
+      <div class="seed-head">
+        <div class="seed-emoji">${s.emoji}</div>
+        <div class="seed-names"><div class="en">${s.en}</div><div class="hi">${s.hi}</div></div>
       </div>
-    </aside>
-
-    <main class="main">
-      <header class="topbar">
-        <div class="location">
-          <span aria-hidden="true">⌖</span>
-          <label class="hidden" for="region" data-t="location">Farm location</label>
-          <select id="region" class="top-select" aria-label="Farm location">
-            <option value="karnataka">Hesaraghatta, Karnataka</option>
-            <option value="punjab">Ludhiana, Punjab</option>
-            <option value="uttar_pradesh">Lucknow, Uttar Pradesh</option>
-            <option value="maharashtra">Nagpur, Maharashtra</option>
-            <option value="west_bengal">Bardhaman, West Bengal</option>
-            <option value="tamil_nadu">Coimbatore, Tamil Nadu</option>
-            <option value="rajasthan">Jodhpur, Rajasthan</option>
-          </select>
-        </div>
-        <div>
-          <label class="hidden" for="language" data-t="language">Language</label>
-          <select id="language" class="top-select" aria-label="Language">
-            <option value="en">English</option>
-            <option value="hi">हिन्दी</option>
-            <option value="kn">ಕನ್ನಡ</option>
-          </select>
-        </div>
-      </header>
-
-      <div class="content">
-        <section id="page-today" class="page active">
-          <div class="title-row">
-            <div><h1 id="greeting">Good morning, Farmer 👋</h1><p data-t="todaySub">Here is what your farm needs today.</p></div>
-            <button id="voiceButton" class="primary" type="button">🎙 <span data-t="askVoice">Ask by voice</span></button>
-          </div>
-
-          <div class="hero">
-            <div class="hero-copy">
-              <span class="eyebrow" data-t="freeTools">100% free farmer tools</span>
-              <h2 data-t="heroTitle">Better daily decisions, from seed to sale.</h2>
-              <p data-t="heroCopy">Weather, crop planning, official benefits and simple farm records—built around your location.</p>
-              <div class="hero-chips">
-                <span class="hero-chip">☀ <span data-t="weatherChip">Live weather</span></span>
-                <span class="hero-chip">🏛 <span data-t="benefitChip">Official benefits</span></span>
-                <span class="hero-chip">🌐 <span data-t="languageChip">Your language</span></span>
-              </div>
-            </div>
-            <div class="carousel" aria-live="polite">
-              <div class="slide active"><small data-t="carouselLabel1">Today’s decision</small><strong id="heroAlert">Check rain before spraying.</strong><p id="heroAlertDetail">We will keep advice aligned to your local weather.</p></div>
-              <div class="slide"><small data-t="carouselLabel2">Benefit finder</small><strong data-t="carouselTitle2">See schemes for your state.</strong><p data-t="carouselText2">Choose your location to view official farmer services.</p></div>
-              <div class="slide"><small data-t="carouselLabel3">Low-cost practice</small><strong data-t="carouselTitle3">Start with a soil test.</strong><p data-t="carouselText3">It helps avoid unnecessary input costs and improves planning.</p></div>
-              <div class="carousel-controls"><button id="previousSlide" type="button" aria-label="Previous card">‹</button><button id="toggleCarousel" type="button" aria-label="Pause carousel" aria-pressed="false">Ⅱ</button><button id="nextSlide" type="button" aria-label="Next card">›</button></div>
-            </div>
-          </div>
-
-          <div class="today-grid">
-            <article class="metric-card action"><span class="badge" data-t="actToday">ACT TODAY</span><b id="actionTitle">Weather-based advice is loading.</b><span id="actionText" class="small">Weather-based advice is loading.</span></article>
-            <article class="metric-card"><div class="k" data-t="weather">Weather</div><div id="weatherValue" class="v">—</div><div id="weatherDetail" class="small" data-t="loadingWeather">Loading free live forecast…</div><div id="weatherPrivacy" class="small" data-t="weatherPrivacy">Uses only the selected area with Open-Meteo.</div></article>
-            <article class="metric-card"><div class="k" data-t="cropHealth">Tomato health</div><div class="v"><span data-t="healthGood">Good</span> <span style="color:#2e8b57">●</span></div><div class="small" data-t="healthDetail">Next scan due in 2 days</div></article>
-            <article class="metric-card"><div class="k" data-t="farmPlan">Farm plan</div><div class="v">1.6 <span style="font-size:13px" data-t="acres">acres</span></div><div class="small" data-t="farmPlanDetail">Tomato · growth stage</div></article>
-          </div>
-
-          <div class="dashboard-grid">
-            <article class="panel">
-              <h2 data-t="seasonJourney">Tomato season journey</h2><p class="hint" data-t="journeyHint">Day 47 of 110</p>
-              <div class="journey">
-                <div class="journey-step"><div class="dot">✓</div><b data-t="sow">Sow</b><span data-t="done">Done</span></div>
-                <div class="journey-step current"><div class="dot">✓</div><b data-t="grow">Grow</b><span data-t="now">Now</span></div>
-                <div class="journey-step"><div class="dot">○</div><b data-t="protect">Protect</b><span data-t="protectDate">Sep 13</span></div>
-                <div class="journey-step"><div class="dot">○</div><b data-t="harvest">Harvest</b><span data-t="harvestDate">Oct 10</span></div>
-              </div>
-            </article>
-            <article class="panel">
-              <h2 data-t="marketHint">Better selling decision</h2><p class="hint" data-t="marketSub">Compare net value, not only price.</p>
-              <div class="profit-item best"><div><b id="marketOne">Market comparison</b><div id="marketLineOne" class="small">Example data</div></div><span id="marketValueOne" class="profit">Demo</span></div>
-              <div class="profit-item"><div><b id="marketTwo">Transport-aware choice</b><div id="marketLineTwo" class="small">Example data</div></div><span id="marketValueTwo" class="small">Demo</span></div>
-            </article>
-          </div>
-
-          <div class="section-label" data-t="quickActions">Do more, without leaving the farm</div>
-          <div class="quick-grid">
-            <button class="quick" type="button" data-action="scan"><span class="quick-icon">🔎</span><b data-t="scan">Scan crop issue</b><small data-t="scanSub">Safe photo guidance</small></button>
-            <button class="quick" type="button" data-action="benefits"><span class="quick-icon">🏛</span><b data-t="findBenefits">Find benefits</b><small data-t="benefitsSub">Official state links</small></button>
-            <button class="quick" type="button" data-action="service"><span class="quick-icon">🚜</span><b data-t="bookService">Book a service</b><small data-t="serviceSub">Nearby support</small></button>
-            <button class="quick" type="button" data-action="diary"><span class="quick-icon">▤</span><b data-t="addRecord">Add a record</b><small data-t="recordSub">Keep a farm history</small></button>
-          </div>
-        </section>
-
-        <section id="page-crops" class="page">
-          <h1 class="page-heading" data-t="crops">My crops</h1><p class="subtitle" data-t="cropsSub">Simple decisions based on your field.</p>
-          <article class="panel">
-            <h2>🍅 <span data-t="tomatoTitle">Tomato · 1.6 acres</span></h2><p class="hint" data-t="tomatoInfo">Hybrid variety · Sown July 24 · Growth stage</p>
-            <div class="form-grid">
-              <div><label class="select-label" for="soil" data-t="soilType">Soil type</label><select id="soil" class="input"><option value="alluvial" data-t="alluvial">Alluvial</option><option value="black" data-t="black">Black (regur)</option><option value="red" data-t="red">Red</option><option value="laterite" data-t="laterite">Laterite</option><option value="sandy" data-t="sandy">Sandy / arid</option><option value="clayey" data-t="clayey">Clayey</option></select></div>
-              <div><label class="select-label" for="season" data-t="season">Season</label><select id="season" class="input"><option value="kharif" data-t="kharif">Kharif (monsoon)</option><option value="rabi" data-t="rabi">Rabi (winter)</option><option value="zaid" data-t="zaid">Zaid (summer)</option></select></div>
-              <div><label class="select-label" for="irrigation" data-t="irrigation">Irrigation available?</label><select id="irrigation" class="input"><option value="yes" data-t="yes">Yes</option><option value="no" data-t="no">No (rain-fed)</option></select></div>
-              <div><label class="select-label" for="land" data-t="land">Land size (acres)</label><input id="land" class="input" type="number" min="0.1" step="0.1" value="1.6"></div>
-            </div>
-            <button id="advisorButton" class="primary" type="button" style="margin-top:17px" data-t="recommend">Get crop plan</button>
-            <div id="advisorResult" class="result"></div>
-            <div class="safety" data-t="advisorSafety">Planning support only. Verify fertiliser doses and plant-protection choices with a soil test and a local agriculture officer before spending money.</div>
-          </article>
-          <article class="panel" style="margin-top:16px">
-            <h2 data-t="scan">Scan crop issue</h2><p class="hint" data-t="scanHint">Choose a leaf photo for a safe prototype review. It stays on this device.</p>
-            <div class="upload"><label class="upload-label" for="photo">📷 <span data-t="choosePhoto">Choose photo</span><input id="photo" type="file" accept="image/*"></label><span id="photoName" class="upload-name"></span></div>
-            <div id="scanMessage" class="scan-message"></div>
-          </article>
-        </section>
-
-        <section id="page-benefits" class="page">
-          <h1 class="page-heading" data-t="benefits">Benefits &amp; updates</h1><p class="subtitle" data-t="benefitsPageSub">Verified Government of India and state portals tailored to your selected location.</p>
-          <div id="stateBanner" class="state-banner"></div><div id="stateBenefits" class="benefit-grid"></div>
-          <div class="section-label" data-t="nationalBenefits">Government of India</div><div id="nationalBenefits" class="benefit-grid"></div>
-          <div class="info-note" data-t="benefitNote">Always confirm eligibility, deadlines and documents on the official website. KisanSetu never asks for Aadhaar, bank or scheme-login details.</div>
-        </section>
-
-        <section id="page-knowledge" class="page">
-          <h1 class="page-heading" data-t="knowledge">Kisan Gyan</h1><p class="subtitle" data-t="knowledgeSub">Seed knowledge and low-cost practices in one place.</p>
-          <div class="tabs"><button class="tab active" type="button" data-tab="seeds" data-t="seedKnowledge">Seed knowledge</button><button class="tab" type="button" data-tab="waste" data-t="wasteManure">Home-waste manure</button></div>
-          <div id="tab-seeds" class="tab-pane active"><div id="seedCards" class="knowledge-grid"></div></div>
-          <div id="tab-waste" class="tab-pane"><div id="wasteCards" class="knowledge-grid"></div></div>
-        </section>
-
-        <section id="page-services" class="page">
-          <h1 class="page-heading" data-t="services">Farm services</h1><p class="subtitle" data-t="servicesSub">Find the support your farm needs.</p>
-          <div class="quick-grid">
-            <button class="quick" type="button" data-service="sprayer"><span class="quick-icon">💦</span><b data-t="sprayer">Sprayer rental</b><small data-t="sprayerSub">Compare nearby providers</small></button>
-            <button class="quick" type="button" data-service="soil"><span class="quick-icon">🧪</span><b data-t="soilTest">Soil test</b><small data-t="soilTestSub">Use verified local labs</small></button>
-            <button class="quick" type="button" data-service="storage"><span class="quick-icon">❄</span><b data-t="storage">Cold storage</b><small data-t="storageSub">Plan storage capacity</small></button>
-            <button class="quick" type="button" data-service="fpo"><span class="quick-icon">🤝</span><b data-t="fpo">Find an FPO</b><small data-t="fpoSub">Sell collectively</small></button>
-          </div>
-        </section>
-
-        <section id="page-diary" class="page">
-          <div class="title-row"><div><h1 class="page-heading" data-t="diary">Farm diary</h1><p class="subtitle" data-t="diarySub">Keep useful field notes on this device.</p></div><button id="addDiary" class="primary" type="button" data-t="addRecord">Add a record</button></div>
-          <div id="diaryList" class="panel"></div>
-        </section>
+      <div class="seed-rows">
+        <div><b>${currentLang==='hi'?'मिट्टी':'Soil'}:</b> ${s.soil}</div>
+        <div><b>${currentLang==='hi'?'मौसम':'Weather'}:</b> ${s.weather}</div>
+        <div><b>${currentLang==='hi'?'सिंचाई':'Irrigation'}:</b> ${s.irrigation}</div>
+        <div><b>${currentLang==='hi'?'बुवाई मौसम':'Sowing season'}:</b> ${s.season}</div>
       </div>
-      <footer class="footer">KisanSetu · <span data-t="footer">Free, privacy-first farmer tools. Prototype information is not a substitute for local expert advice.</span></footer>
-    </main>
-  </div>
-  <dialog id="diaryDialog" class="diary-dialog" aria-labelledby="diaryDialogTitle">
-    <form id="diaryForm" method="dialog">
-      <h2 id="diaryDialogTitle" data-t="diaryDialogTitle">Add a farm record</h2>
-      <label class="field-label" for="diaryText" data-t="diaryRecordLabel">What happened on your farm?</label>
-      <textarea id="diaryText" class="input" maxlength="240" rows="4" data-t-placeholder="diaryRecordHint" placeholder="e.g. Irrigated the tomato plot"></textarea>
-      <div id="diaryError" class="error" role="alert"></div>
-      <div class="dialog-actions"><button id="cancelDiary" class="text-button" type="button" data-t="cancel">Cancel</button><button class="primary" type="submit" data-t="saveRecord">Save record</button></div>
-    </form>
-  </dialog>
-  <div id="toast" class="toast" aria-live="polite"></div>
-  <script src="app.js?v=7eaa93f"></script>
-</body>
-</html>
+    </div>`).join('');
+}
+
+/* ==================== Kisan Gyan: home waste manure ==================== */
+const WASTE = [
+  {emoji:"🍵", en:"Used tea leaves", hi:"इस्तेमाल की हुई चायपत्ती", how:"Let leaves dry, then mix directly into potting soil or the base of plants.", benefit:"Adds nitrogen; improves soil texture"},
+  {emoji:"🥚", en:"Crushed eggshells", hi:"अंडे के छिलके", how:"Dry, crush into powder, sprinkle around the base of plants.", benefit:"Rich in calcium; deters some soft-bodied pests"},
+  {emoji:"🍌", en:"Banana peels", hi:"केले के छिलके", how:"Chop and bury a few inches deep near the root zone, or soak in water 2–3 days for a liquid feed.", benefit:"High in potassium and phosphorus"},
+  {emoji:"🥔", en:"Vegetable peels & scraps", hi:"सब्जियों के छिलके", how:"Compost in a pit or bin with dry leaves; turn every week.", benefit:"Builds organic compost rich in micronutrients"},
+  {emoji:"☕", en:"Coffee grounds", hi:"कॉफी अवशेष", how:"Sprinkle dried grounds lightly around acid-loving plants or add to compost.", benefit:"Adds nitrogen; improves soil aeration"},
+  {emoji:"🍚", en:"Rice rinse water", hi:"चावल धोने का पानी", how:"Save the starchy water from washing rice and water plants with it directly.", benefit:"Mild nutrient boost; encourages beneficial soil microbes"},
+  {emoji:"🔥", en:"Wood ash", hi:"लकड़ी की राख", how:"Cool completely, then dust a thin layer over soil, away from seedlings.", benefit:"Adds potassium; raises soil pH slightly"},
+  {emoji:"🍂", en:"Dry leaves (leaf mould)", hi:"सूखी पत्तियां", how:"Pile and let them decompose for 2–3 months, turning occasionally.", benefit:"Improves soil structure and water retention"}
+];
+function renderWaste(){
+  document.getElementById('wasteGrid').innerHTML = WASTE.map(w=>`
+    <div class="waste-card">
+      <div class="waste-head"><span class="waste-emoji">${w.emoji}</span><h3>${currentLang==='hi'?w.hi:w.en}</h3></div>
+      <p>${w.how}</p>
+      <div class="benefit">${w.benefit}</div>
+    </div>`).join('');
+}
+
+/* ==================== Kisan Gyan tabs ==================== */
+document.querySelectorAll('.kg-tab').forEach(tab=>{
+  tab.addEventListener('click', ()=>{
+    document.querySelectorAll('.kg-tab').forEach(b=>b.classList.toggle('active', b===tab));
+    document.querySelectorAll('.kg-panel').forEach(p=>p.classList.toggle('active', p.id==='kg-'+tab.dataset.kg));
+  });
+});
+
+/* init */
+renderSeeds();
+renderWaste();
+</script>
+<script>
+/* ===== KisanSetu final language + cleanup patch ===== */
+(function(){
+  const LANG={
+    en:{
+      loginTitle:'Farmer sign in',loginSub:'Enter your name to start using your farm dashboard.',nameLabel:'Farmer name',namePlaceholder:'Enter your name',loginBtn:'Continue',loginRequired:'Please enter your name.',
+      navToday:'Today',navCrops:'My crops',navGyan:'Kisan Gyan',navServices:'Farm services',signOut:'Sign out',todaySub:"Here's what your farm needs today.",refresh:'Refresh',weatherNote:"Free live weather via Open-Meteo, based on your farm's location",
+      advisorTitle:'Crop & fertiliser advisor',advisorHint:'Tell us about your field once — get a soil-and-season-matched crop list and fertiliser guidance.',lblSoil:'Soil type',soilAlluvial:'Alluvial',soilBlack:'Black (regur)',soilRed:'Red',soilLaterite:'Laterite',soilSandy:'Sandy / arid',soilClayey:'Clayey',lblSeason:'Season',seasonKharif:'Kharif (monsoon)',seasonRabi:'Rabi (winter)',seasonZaid:'Zaid (summer)',lblLand:'Land size (acres)',lblIrrigation:'Irrigation available?',yes:'Yes',no:'No (rain-fed)',submitBtn:'Get recommendation',submitBtnLoading:'Checking weather…',recommended:'Recommended crops',fertilizer:'Fertiliser guidance',fit:'Good fit',pestTitle:'Scan crop issue',pestHint:'Upload a leaf photo for a demo pest & disease check.',pestUpload:'Upload photo',journeyTitle:'Tomato season journey',journeySub:'Day 47 of 110',jSow:'Sow',jDone:'Done',jGrow:'Grow',jNow:'Now',jProtect:'Protect',jHarvest:'Harvest',quickTitle:'Do more, without leaving the farm',qScan:'Scan crop issue',qPool:'Pool transport',qBook:'Book a service',qProtect:'Protect my crop',fbTitle:'Was this helpful?',cropsTitle:'My crops',cropsSub:'Simple decisions, based on your field.',cropVariety:'Hybrid variety · Sown July 24 · Growth stage',nextIrr:'Next irrigation check',healthScan:'Crop health scan',dueIn2:'Due in 2 days',estHarvest:'Estimated harvest',cropHealth:'Crop health',good:'Good',addScan:'＋ Add crop scan',gyanTitle:'Kisan Gyan',gyanSub:'Seed knowledge and low-cost farm wisdom, in one place.',tabSeeds:'Seed knowledge',tabWaste:'Home waste manure',servicesTitle:'Verified farm services',servicesSub:'Book only what you need, close to your farm.',svcSprayer:'Sprayer rental — From ₹250/day',svcSoil:'Soil test — Lab pickup available',svcCold:'Cold storage — Reserve space',svcFpo:'Find FPO — Sell collectively',thanksFb:v=>`Thanks for rating us ${v}/5!`,rainAlert:'Heavy rain likely in next 3 days — hold off on spraying',heatAlert:'High-heat alert — increase irrigation frequency',normalAlert:'Conditions look normal for the next 3 days',weatherUnavail:'Weather service unavailable right now — showing crop advisory only.'
+    },
+    hi:{
+      loginTitle:'किसान साइन इन',loginSub:'अपना नाम दर्ज करके अपने खेत का डैशबोर्ड शुरू करें।',nameLabel:'किसान का नाम',namePlaceholder:'अपना नाम दर्ज करें',loginBtn:'जारी रखें',loginRequired:'कृपया अपना नाम दर्ज करें।',navToday:'आज',navCrops:'मेरी फ़सलें',navGyan:'किसान ज्ञान',navServices:'खेत सेवाएं',signOut:'साइन आउट',todaySub:'आज आपके खेत को इसकी ज़रूरत है।',refresh:'ताज़ा करें',weatherNote:'आपके खेत के स्थान के अनुसार Open-Meteo से मुफ़्त मौसम जानकारी',
+      advisorTitle:'फ़सल व खाद सलाहकार',advisorHint:'अपने खेत की जानकारी दें — मिट्टी और मौसम के अनुसार फ़सल सूची और खाद सुझाव पाएं।',lblSoil:'मिट्टी का प्रकार',soilAlluvial:'जलोढ़ मिट्टी',soilBlack:'काली मिट्टी',soilRed:'लाल मिट्टी',soilLaterite:'लैटेराइट मिट्टी',soilSandy:'रेतीली / शुष्क',soilClayey:'चिकनी मिट्टी',lblSeason:'मौसम',seasonKharif:'खरीफ (मानसून)',seasonRabi:'रबी (सर्दी)',seasonZaid:'ज़ायद (गर्मी)',lblLand:'ज़मीन (एकड़)',lblIrrigation:'सिंचाई उपलब्ध है?',yes:'हाँ',no:'नहीं (वर्षा-आधारित)',submitBtn:'सुझाव पाएं',submitBtnLoading:'मौसम जांचा जा रहा है…',recommended:'अनुशंसित फ़सलें',fertilizer:'खाद मार्गदर्शन',fit:'उपयुक्त',pestTitle:'फ़सल समस्या स्कैन करें',pestHint:'रोग-कीट जांच के डेमो के लिए पत्ती की फ़ोटो अपलोड करें।',pestUpload:'फ़ोटो अपलोड करें',journeyTitle:'टमाटर सीज़न यात्रा',journeySub:'दिन 47 / 110',jSow:'बुवाई',jDone:'पूर्ण',jGrow:'वृद्धि',jNow:'अभी',jProtect:'सुरक्षा',jHarvest:'कटाई',quickTitle:'खेत छोड़े बिना और भी करें',qScan:'फ़सल समस्या स्कैन करें',qPool:'साझा परिवहन',qBook:'सेवा बुक करें',qProtect:'फ़सल सुरक्षित करें',fbTitle:'क्या यह उपयोगी था?',cropsTitle:'मेरी फ़सलें',cropsSub:'आपके खेत के अनुसार आसान निर्णय।',cropVariety:'हाइब्रिड किस्म · 24 जुलाई को बोई गई · वृद्धि अवस्था',nextIrr:'अगली सिंचाई जांच',healthScan:'फ़सल स्वास्थ्य स्कैन',dueIn2:'2 दिन में देय',estHarvest:'अनुमानित कटाई',cropHealth:'फ़सल स्वास्थ्य',good:'अच्छा',addScan:'＋ फ़सल स्कैन जोड़ें',gyanTitle:'किसान ज्ञान',gyanSub:'बीज की जानकारी और कम लागत वाली खेती की उपयोगी बातें, एक ही जगह।',tabSeeds:'बीज जानकारी',tabWaste:'घरेलू अपशिष्ट खाद',servicesTitle:'सत्यापित खेत सेवाएं',servicesSub:'अपने खेत के पास केवल वही बुक करें जिसकी ज़रूरत है।',svcSprayer:'स्प्रेयर किराया — ₹250/दिन से',svcSoil:'मिट्टी परीक्षण — लैब पिकअप उपलब्ध',svcCold:'कोल्ड स्टोरेज — जगह आरक्षित करें',svcFpo:'FPO खोजें — सामूहिक बिक्री',thanksFb:v=>`हमें ${v}/5 रेटिंग देने के लिए धन्यवाद!`,rainAlert:'अगले 3 दिनों में भारी बारिश की संभावना — छिड़काव टालें',heatAlert:'उच्च तापमान चेतावनी — सिंचाई बढ़ाएं',normalAlert:'अगले 3 दिनों में सामान्य स्थिति',weatherUnavail:'मौसम सेवा अभी उपलब्ध नहीं है — केवल फ़सल सलाह दिखाई जा रही है।'
+    },
+    kn:{
+      loginTitle:'ರೈತ ಸೈನ್ ಇನ್',loginSub:'ನಿಮ್ಮ ಹೆಸರನ್ನು ನಮೂದಿಸಿ ನಿಮ್ಮ ಕೃಷಿ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ ಪ್ರಾರಂಭಿಸಿ.',nameLabel:'ರೈತರ ಹೆಸರು',namePlaceholder:'ನಿಮ್ಮ ಹೆಸರನ್ನು ನಮೂದಿಸಿ',loginBtn:'ಮುಂದುವರಿಸಿ',loginRequired:'ದಯವಿಟ್ಟು ನಿಮ್ಮ ಹೆಸರನ್ನು ನಮೂದಿಸಿ.',navToday:'ಇಂದು',navCrops:'ನನ್ನ ಬೆಳೆಗಳು',navGyan:'ಕಿಸಾನ್ ಜ್ಞಾನ',navServices:'ಕೃಷಿ ಸೇವೆಗಳು',signOut:'ಸೈನ್ ಔಟ್',todaySub:'ಇಂದು ನಿಮ್ಮ ಹೊಲಕ್ಕೆ ಬೇಕಾದ ಮಾಹಿತಿಗಳು ಇಲ್ಲಿವೆ.',refresh:'ಮತ್ತೆ ತಾಜಾ ಮಾಡಿ',weatherNote:'ನಿಮ್ಮ ಹೊಲದ ಸ್ಥಳದ ಆಧಾರದ ಮೇಲೆ Open-Meteo ನಿಂದ ಉಚಿತ ಹವಾಮಾನ ಮಾಹಿತಿ',
+      advisorTitle:'ಬೆಳೆ ಮತ್ತು ಗೊಬ್ಬರ ಸಲಹೆಗಾರ',advisorHint:'ನಿಮ್ಮ ಹೊಲದ ಮಾಹಿತಿಯನ್ನು ನೀಡಿ — ಮಣ್ಣು ಮತ್ತು ಋತುವಿಗೆ ಹೊಂದುವ ಬೆಳೆ ಹಾಗೂ ಗೊಬ್ಬರ ಸಲಹೆ ಪಡೆಯಿರಿ.',lblSoil:'ಮಣ್ಣಿನ ಪ್ರಕಾರ',soilAlluvial:'ಜಲೋಢ ಮಣ್ಣು',soilBlack:'ಕಪ್ಪು ಮಣ್ಣು',soilRed:'ಕೆಂಪು ಮಣ್ಣು',soilLaterite:'ಲ್ಯಾಟರೈಟ್ ಮಣ್ಣು',soilSandy:'ಮರಳು / ಒಣ ಮಣ್ಣು',soilClayey:'ಜೇಡಿಮಣ್ಣು',lblSeason:'ಋತು',seasonKharif:'ಖರೀಫ್ (ಮುಂಗಾರು)',seasonRabi:'ರಬಿ (ಚಳಿಗಾಲ)',seasonZaid:'ಜಾಯಿದ್ (ಬೇಸಿಗೆ)',lblLand:'ಜಮೀನು (ಎಕರೆ)',lblIrrigation:'ನೀರಾವರಿ ಲಭ್ಯವಿದೆಯೇ?',yes:'ಹೌದು',no:'ಇಲ್ಲ (ಮಳೆಯಾಧಾರಿತ)',submitBtn:'ಶಿಫಾರಸು ಪಡೆಯಿರಿ',submitBtnLoading:'ಹವಾಮಾನ ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ…',recommended:'ಶಿಫಾರಸು ಮಾಡಿದ ಬೆಳೆಗಳು',fertilizer:'ಗೊಬ್ಬರ ಮಾರ್ಗದರ್ಶನ',fit:'ಸೂಕ್ತ',pestTitle:'ಬೆಳೆ ಸಮಸ್ಯೆ ಪರಿಶೀಲಿಸಿ',pestHint:'ಕೀಟ ಮತ್ತು ರೋಗದ ಡೆಮೊ ಪರಿಶೀಲನೆಗಾಗಿ ಎಲೆಯ ಫೋಟೋ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ.',pestUpload:'ಫೋಟೋ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ',journeyTitle:'ಟೊಮೇಟೊ ಋತು ಪ್ರಯಾಣ',journeySub:'110ರಲ್ಲಿ 47ನೇ ದಿನ',jSow:'ಬಿತ್ತನೆ',jDone:'ಪೂರ್ಣ',jGrow:'ಬೆಳವಣಿಗೆ',jNow:'ಈಗ',jProtect:'ರಕ್ಷಣೆ',jHarvest:'ಕೊಯ್ಲು',quickTitle:'ಹೊಲ ಬಿಟ್ಟು ಹೋಗದೆ ಇನ್ನಷ್ಟು ಮಾಡಿ',qScan:'ಬೆಳೆ ಸಮಸ್ಯೆ ಪರಿಶೀಲಿಸಿ',qPool:'ಸಾಮೂಹಿಕ ಸಾರಿಗೆ',qBook:'ಸೇವೆ ಬುಕ್ ಮಾಡಿ',qProtect:'ನನ್ನ ಬೆಳೆಯನ್ನು ರಕ್ಷಿಸಿ',fbTitle:'ಇದು ಉಪಯುಕ್ತವಾಗಿತ್ತೇ?',cropsTitle:'ನನ್ನ ಬೆಳೆಗಳು',cropsSub:'ನಿಮ್ಮ ಹೊಲದ ಆಧಾರದ ಮೇಲೆ ಸರಳ ನಿರ್ಧಾರಗಳು.',cropVariety:'ಹೈಬ್ರಿಡ್ ತಳಿ · ಜುಲೈ 24ರಂದು ಬಿತ್ತನೆ · ಬೆಳವಣಿಗೆ ಹಂತ',nextIrr:'ಮುಂದಿನ ನೀರಾವರಿ ಪರಿಶೀಲನೆ',healthScan:'ಬೆಳೆ ಆರೋಗ್ಯ ಪರಿಶೀಲನೆ',dueIn2:'2 ದಿನಗಳಲ್ಲಿ',estHarvest:'ಅಂದಾಜು ಕೊಯ್ಲು',cropHealth:'ಬೆಳೆ ಆರೋಗ್ಯ',good:'ಉತ್ತಮ',addScan:'＋ ಬೆಳೆ ಪರಿಶೀಲನೆ ಸೇರಿಸಿ',gyanTitle:'ಕಿಸಾನ್ ಜ್ಞಾನ',gyanSub:'ಬೀಜಗಳ ಮಾಹಿತಿ ಮತ್ತು ಕಡಿಮೆ ವೆಚ್ಚದ ಕೃಷಿ ಜ್ಞಾನ — ಒಂದೇ ಸ್ಥಳದಲ್ಲಿ.',tabSeeds:'ಬೀಜಗಳ ಮಾಹಿತಿ',tabWaste:'ಮನೆಯ ತ್ಯಾಜ್ಯ ಗೊಬ್ಬರ',servicesTitle:'ಪರಿಶೀಲಿತ ಕೃಷಿ ಸೇವೆಗಳು',servicesSub:'ನಿಮ್ಮ ಹೊಲದ ಹತ್ತಿರ ಅಗತ್ಯವಿರುವ ಸೇವೆಯನ್ನು ಮಾತ್ರ ಬುಕ್ ಮಾಡಿ.',svcSprayer:'ಸ್ಪ್ರೇಯರ್ ಬಾಡಿಗೆ — ₹250/ದಿನದಿಂದ',svcSoil:'ಮಣ್ಣು ಪರೀಕ್ಷೆ — ಲ್ಯಾಬ್ ಪಿಕಪ್ ಲಭ್ಯ',svcCold:'ಕೋಲ್ಡ್ ಸ್ಟೋರೇಜ್ — ಸ್ಥಳ ಕಾಯ್ದಿರಿಸಿ',svcFpo:'FPO ಹುಡುಕಿ — ಒಟ್ಟಾಗಿ ಮಾರಾಟ ಮಾಡಿ',thanksFb:v=>`${v}/5 ರೇಟಿಂಗ್ ನೀಡಿದ್ದಕ್ಕೆ ಧನ್ಯವಾದಗಳು!`,rainAlert:'ಮುಂದಿನ 3 ದಿನಗಳಲ್ಲಿ ಭಾರಿ ಮಳೆಯ ಸಾಧ್ಯತೆ — ಸಿಂಪಡಣೆ ಮುಂದೂಡಿ',heatAlert:'ಹೆಚ್ಚಿನ ಉಷ್ಣಾಂಶ ಎಚ್ಚರಿಕೆ — ನೀರಾವರಿ ಹೆಚ್ಚಿಸಿ',normalAlert:'ಮುಂದಿನ 3 ದಿನಗಳ ಪರಿಸ್ಥಿತಿ ಸಾಮಾನ್ಯವಾಗಿದೆ',weatherUnavail:'ಹವಾಮಾನ ಸೇವೆ ಈಗ ಲಭ್ಯವಿಲ್ಲ — ಬೆಳೆ ಸಲಹೆ ಮಾತ್ರ ತೋರಿಸಲಾಗುತ್ತಿದೆ.'
+    }
+  };
+  const extraLang={
+    ta:{loginTitle:'விவசாயி உள்நுழைவு',loginSub:'உங்கள் பெயரை உள்ளிட்டு பண்ணை டாஷ்போர்டை தொடங்குங்கள்.',nameLabel:'விவசாயியின் பெயர்',namePlaceholder:'உங்கள் பெயரை உள்ளிடுங்கள்',loginBtn:'தொடரவும்',loginRequired:'உங்கள் பெயரை உள்ளிடுங்கள்.',navToday:'இன்று',navCrops:'என் பயிர்கள்',navGyan:'விவசாய அறிவு',navServices:'பண்ணை சேவைகள்',signOut:'வெளியேறு',todaySub:'இன்று உங்கள் பண்ணைக்கு தேவையான தகவல்கள்.',refresh:'புதுப்பிக்கவும்',weatherNote:'உங்கள் பண்ணை இருப்பிடத்திற்கான இலவச வானிலை தகவல்',advisorTitle:'பயிர் மற்றும் உர ஆலோசகர்',advisorHint:'உங்கள் வயல் தகவலை உள்ளிடுங்கள் — மண் மற்றும் பருவத்திற்கு ஏற்ற ஆலோசனையைப் பெறுங்கள்.',lblSoil:'மண் வகை',soilAlluvial:'வண்டல் மண்',soilBlack:'கரிசல் மண்',soilRed:'செம்மண்',soilLaterite:'லேட்டரைட் மண்',soilSandy:'மணல் / வறண்ட மண்',soilClayey:'களிமண்',lblSeason:'பருவம்',seasonKharif:'காரிப்',seasonRabi:'ரபி',seasonZaid:'சைத்',lblLand:'நில அளவு (ஏக்கர்)',lblIrrigation:'நீர்ப்பாசனம் உள்ளதா?',yes:'ஆம்',no:'இல்லை (மழை சார்ந்த)',submitBtn:'பரிந்துரையைப் பெறுங்கள்',submitBtnLoading:'வானிலை சரிபார்க்கப்படுகிறது…',recommended:'பரிந்துரைக்கப்பட்ட பயிர்கள்',fertilizer:'உர வழிகாட்டி',fit:'பொருத்தமானது',pestTitle:'பயிர் பிரச்சினையை ஸ்கேன் செய்யவும்',pestHint:'பூச்சி மற்றும் நோய் சோதனைக்கு இலை புகைப்படத்தை பதிவேற்றவும்.',pestUpload:'புகைப்படத்தை பதிவேற்றவும்',journeyTitle:'தக்காளி பருவப் பயணம்',journeySub:'110ல் 47ஆம் நாள்',jSow:'விதைப்பு',jDone:'முடிந்தது',jGrow:'வளர்ச்சி',jNow:'இப்போது',jProtect:'பாதுகாப்பு',jHarvest:'அறுவடை',quickTitle:'பண்ணையை விட்டு செல்லாமல் மேலும் செய்யுங்கள்',qScan:'பயிர் பிரச்சினையை ஸ்கேன் செய்யவும்',qPool:'பகிர்வு போக்குவரத்து',qBook:'சேவையை முன்பதிவு செய்யவும்',qProtect:'என் பயிரைப் பாதுகாக்கவும்',fbTitle:'இது பயனுள்ளதாக இருந்ததா?',cropsTitle:'என் பயிர்கள்',cropsSub:'உங்கள் வயலை அடிப்படையாகக் கொண்ட எளிய முடிவுகள்.',cropVariety:'கலப்பு ரகம் · ஜூலை 24 விதைப்பு · வளர்ச்சி நிலை',nextIrr:'அடுத்த நீர்ப்பாசன சோதனை',healthScan:'பயிர் ஆரோக்கிய சோதனை',dueIn2:'2 நாட்களில்',estHarvest:'மதிப்பிடப்பட்ட அறுவடை',cropHealth:'பயிர் ஆரோக்கியம்',good:'நன்று',addScan:'＋ பயிர் சோதனையைச் சேர்க்கவும்',gyanTitle:'விவசாய அறிவு',gyanSub:'விதைகள், பூக்கள், மூலிகைகள் மற்றும் குறைந்த செலவு விவசாய அறிவு.',tabSeeds:'விதை அறிவு',tabWaste:'வீட்டு கழிவுகளால் உரம்',servicesTitle:'சரிபார்க்கப்பட்ட பண்ணை சேவைகள்',servicesSub:'உங்கள் பண்ணைக்கு அருகிலுள்ள தேவையான சேவையை மட்டும் முன்பதிவு செய்யுங்கள்.',svcSprayer:'ஸ்ப்ரேயர் வாடகை — ₹250/நாள் முதல்',svcSoil:'மண் பரிசோதனை — ஆய்வக சேகரிப்பு',svcCold:'குளிர்சாதன சேமிப்பு — இடம் முன்பதிவு',svcFpo:'FPO கண்டுபிடிக்கவும் — கூட்டாக விற்கவும்',thanksFb:v=>`${v}/5 மதிப்பீட்டிற்கு நன்றி!`,rainAlert:'அடுத்த 3 நாட்களில் கனமழை வாய்ப்பு — தெளிப்பைத் தவிர்க்கவும்',heatAlert:'அதிக வெப்ப எச்சரிக்கை — நீர்ப்பாசனத்தை அதிகரிக்கவும்',normalAlert:'அடுத்த 3 நாட்களுக்கு நிலைமை இயல்பாக உள்ளது',weatherUnavail:'வானிலை சேவை தற்போது கிடைக்கவில்லை — பயிர் ஆலோசனை மட்டும் காட்டப்படுகிறது.'},
+    te:{loginTitle:'రైతు సైన్ ఇన్',loginSub:'మీ పేరు నమోదు చేసి వ్యవసాయ డాష్‌బోర్డ్ ప్రారంభించండి.',nameLabel:'రైతు పేరు',namePlaceholder:'మీ పేరు నమోదు చేయండి',loginBtn:'కొనసాగండి',loginRequired:'దయచేసి మీ పేరు నమోదు చేయండి.',navToday:'ఈ రోజు',navCrops:'నా పంటలు',navGyan:'రైతు జ్ఞానం',navServices:'వ్యవసాయ సేవలు',signOut:'సైన్ అవుట్',todaySub:'ఈ రోజు మీ పొలానికి అవసరమైన సమాచారం.',refresh:'రిఫ్రెష్',weatherNote:'మీ పొలం స్థానం ఆధారంగా ఉచిత వాతావరణ సమాచారం',advisorTitle:'పంట & ఎరువు సలహాదారు',advisorHint:'మీ పొలం వివరాలు ఇవ్వండి — నేల మరియు కాలానికి సరిపోయే సలహా పొందండి.',lblSoil:'నేల రకం',soilAlluvial:'ఒండ్రు నేల',soilBlack:'నల్ల నేల',soilRed:'ఎర్ర నేల',soilLaterite:'లేటరైట్ నేల',soilSandy:'ఇసుక / పొడి నేల',soilClayey:'బంకమట్టి',lblSeason:'కాలం',seasonKharif:'ఖరీఫ్',seasonRabi:'రబీ',seasonZaid:'జైద్',lblLand:'భూమి పరిమాణం (ఎకరాలు)',lblIrrigation:'నీటిపారుదల ఉందా?',yes:'అవును',no:'లేదు (వర్షాధారం)',submitBtn:'సిఫారసు పొందండి',submitBtnLoading:'వాతావరణం తనిఖీ చేస్తోంది…',recommended:'సిఫారసు చేసిన పంటలు',fertilizer:'ఎరువు మార్గదర్శకం',fit:'సరిపోతుంది',pestTitle:'పంట సమస్యను స్కాన్ చేయండి',pestHint:'కీటకాలు మరియు వ్యాధి డెమో కోసం ఆకు ఫోటోను అప్‌లోడ్ చేయండి.',pestUpload:'ఫోటో అప్‌లోడ్ చేయండి',journeyTitle:'టమాటా సీజన్ ప్రయాణం',journeySub:'110లో 47వ రోజు',jSow:'విత్తడం',jDone:'పూర్తి',jGrow:'వృద్ధి',jNow:'ఇప్పుడు',jProtect:'రక్షణ',jHarvest:'కోత',quickTitle:'పొలం వదిలి వెళ్లకుండా మరిన్ని చేయండి',qScan:'పంట సమస్యను స్కాన్ చేయండి',qPool:'సామూహిక రవాణా',qBook:'సేవను బుక్ చేయండి',qProtect:'నా పంటను రక్షించండి',fbTitle:'ఇది ఉపయోగకరంగా ఉందా?',cropsTitle:'నా పంటలు',cropsSub:'మీ పొలం ఆధారంగా సరళమైన నిర్ణయాలు.',cropVariety:'హైబ్రిడ్ రకం · జూలై 24 విత్తనం · వృద్ధి దశ',nextIrr:'తదుపరి నీటిపారుదల తనిఖీ',healthScan:'పంట ఆరోగ్య తనిఖీ',dueIn2:'2 రోజుల్లో',estHarvest:'అంచనా కోత',cropHealth:'పంట ఆరోగ్యం',good:'మంచిది',addScan:'＋ పంట స్కాన్ జోడించండి',gyanTitle:'రైతు జ్ఞానం',gyanSub:'విత్తనాలు, పూలు, మూలికలు మరియు తక్కువ ఖర్చు వ్యవసాయ జ్ఞానం.',tabSeeds:'విత్తనాల సమాచారం',tabWaste:'ఇంటి వ్యర్థాల ఎరువు',servicesTitle:'ధృవీకరించిన వ్యవసాయ సేవలు',servicesSub:'మీ పొలానికి దగ్గరగా అవసరమైన సేవను మాత్రమే బుక్ చేయండి.',svcSprayer:'స్ప్రేయర్ అద్దె — ₹250/రోజు నుంచి',svcSoil:'నేల పరీక్ష — ల్యాబ్ పికప్',svcCold:'కోల్డ్ స్టోరేజ్ — స్థలం రిజర్వ్ చేయండి',svcFpo:'FPO కనుగొని — కలిసి అమ్మండి',thanksFb:v=>`${v}/5 రేటింగ్ ఇచ్చినందుకు ధన్యవాదాలు!`,rainAlert:'తదుపరి 3 రోజుల్లో భారీ వర్షం అవకాశం — పిచికారీని వాయిదా వేయండి',heatAlert:'అధిక వేడి హెచ్చరిక — నీటిపారుదల పెంచండి',normalAlert:'తదుపరి 3 రోజులకు పరిస్థితులు సాధారణంగా ఉన్నాయి',weatherUnavail:'వాతావరణ సేవ ప్రస్తుతం అందుబాటులో లేదు — పంట సలహా మాత్రమే చూపబడుతుంది.'},
+    mr:{loginTitle:'शेतकरी साइन इन',loginSub:'तुमचे नाव टाकून शेती डॅशबोर्ड सुरू करा.',nameLabel:'शेतकऱ्याचे नाव',namePlaceholder:'तुमचे नाव टाका',loginBtn:'पुढे जा',loginRequired:'कृपया तुमचे नाव टाका.',navToday:'आज',navCrops:'माझी पिके',navGyan:'शेतकरी ज्ञान',navServices:'शेती सेवा',signOut:'साइन आउट',todaySub:'आज तुमच्या शेताला आवश्यक माहिती.',refresh:'रिफ्रेश',weatherNote:'तुमच्या शेताच्या ठिकाणावर आधारित मोफत हवामान माहिती',advisorTitle:'पीक व खत सल्लागार',advisorHint:'शेताची माहिती द्या — माती आणि हंगामानुसार सल्ला मिळवा.',lblSoil:'मातीचा प्रकार',soilAlluvial:'गाळाची माती',soilBlack:'काळी माती',soilRed:'लाल माती',soilLaterite:'लॅटराइट माती',soilSandy:'वालुकामय / कोरडी',soilClayey:'चिकणमाती',lblSeason:'हंगाम',seasonKharif:'खरीप',seasonRabi:'रब्बी',seasonZaid:'उन्हाळी',lblLand:'जमीन (एकर)',lblIrrigation:'सिंचन उपलब्ध आहे?',yes:'होय',no:'नाही (पावसावर आधारित)',submitBtn:'शिफारस मिळवा',submitBtnLoading:'हवामान तपासत आहे…',recommended:'शिफारस केलेली पिके',fertilizer:'खत मार्गदर्शन',fit:'योग्य',pestTitle:'पीक समस्या स्कॅन करा',pestHint:'कीड व रोग तपासणीसाठी पानाचा फोटो अपलोड करा.',pestUpload:'फोटो अपलोड करा',journeyTitle:'टोमॅटो हंगाम प्रवास',journeySub:'110 पैकी 47 वा दिवस',jSow:'पेरणी',jDone:'पूर्ण',jGrow:'वाढ',jNow:'आत्ता',jProtect:'संरक्षण',jHarvest:'कापणी',quickTitle:'शेत न सोडता आणखी करा',qScan:'पीक समस्या स्कॅन',qPool:'सामायिक वाहतूक',qBook:'सेवा बुक करा',qProtect:'माझे पीक सुरक्षित करा',fbTitle:'हे उपयुक्त होते का?',cropsTitle:'माझी पिके',cropsSub:'तुमच्या शेतावर आधारित सोपे निर्णय.',cropVariety:'हायब्रीड वाण · 24 जुलै पेरणी · वाढीची अवस्था',nextIrr:'पुढील सिंचन तपासणी',healthScan:'पीक आरोग्य तपासणी',dueIn2:'2 दिवसांत',estHarvest:'अंदाजे कापणी',cropHealth:'पीक आरोग्य',good:'चांगले',addScan:'＋ पीक स्कॅन जोडा',gyanTitle:'शेतकरी ज्ञान',gyanSub:'बियाणे, फुले, औषधी वनस्पती आणि कमी खर्चातील शेती ज्ञान.',tabSeeds:'बियाणे माहिती',tabWaste:'घरगुती कचऱ्यापासून खत',servicesTitle:'पडताळलेल्या शेती सेवा',servicesSub:'शेताजवळील आवश्यक सेवा बुक करा.',svcSprayer:'फवारणी यंत्र भाडे — ₹250/दिवसापासून',svcSoil:'माती परीक्षण — लॅब पिकअप',svcCold:'कोल्ड स्टोरेज — जागा राखीव',svcFpo:'FPO शोधा — एकत्र विक्री करा',thanksFb:v=>`${v}/5 रेटिंग दिल्याबद्दल धन्यवाद!`,rainAlert:'पुढील 3 दिवसांत जोरदार पावसाची शक्यता — फवारणी थांबवा',heatAlert:'उष्णतेचा इशारा — सिंचन वाढवा',normalAlert:'पुढील 3 दिवस परिस्थिती सामान्य आहे',weatherUnavail:'हवामान सेवा सध्या उपलब्ध नाही — फक्त पीक सल्ला दाखवला जात आहे.'}
+  };
+  Object.keys(extraLang).forEach(k=>{LANG[k]=Object.assign({},LANG.en,extraLang[k]);}); window.__KISAN_LANG=LANG;
+  const seedData=[
+    ['🌾','Rice','ಚावल / ಧಾನ್ಯ','ಅಕ್ಕಿ','Clayey, alluvial — needs standing water','ಜೇಡಿಮಣ್ಣು ಅಥವಾ ಜಲೋಢ ಮಣ್ಣು — ನೀರು ನಿಲ್ಲುವ ಸ್ಥಿತಿ ಅಗತ್ಯ','Warm, humid; 20–37°C; high rainfall or irrigation','ಬೆಚ್ಚಗಿನ, ತೇವಾಂಶಯುಕ್ತ; 20–37°C; ಹೆಚ್ಚು ಮಳೆ ಅಥವಾ ನೀರಾವರಿ','High — needs flooded fields for most of the cycle','ಹೆಚ್ಚು — ಬೆಳೆಯ ಬಹುಭಾಗದಲ್ಲಿ ನೀರು ಬೇಕಾಗುತ್ತದೆ','Kharif','ಖರೀಫ್'],
+    ['🌾','Wheat','गेहूं','ಗೋಧಿ','Alluvial, well-drained loam','ಚೆನ್ನಾಗಿ ನೀರು ಹರಿಯುವ ಜಲೋಢ ಲೋಮ್ ಮಣ್ಣು','Cool growing season, 10–25°C; dry at harvest','ತಂಪಾದ ಬೆಳವಣಿಗೆ ಅವಧಿ, 10–25°C; ಕೊಯ್ಲಿನಲ್ಲಿ ಒಣ ಹವಾಮಾನ','Moderate — 4–6 waterings over the season','ಮಧ್ಯಮ — ಋತುವಿನಲ್ಲಿ 4–6 ಬಾರಿ ನೀರಾವರಿ','Rabi','ರಬಿ'],
+    ['🌽','Maize','मक्का','ಮೆಕ್ಕೆಜೋಳ','Well-drained alluvial or sandy loam','ಚೆನ್ನಾಗಿ ನೀರು ಹರಿಯುವ ಜಲೋಢ ಅಥವಾ ಮರಳು ಲೋಮ್ ಮಣ್ಣು','Warm, 21–27°C, moderate rainfall','ಬೆಚ್ಚಗಿನ, 21–27°C, ಮಧ್ಯಮ ಮಳೆ','Moderate — sensitive to both drought and waterlogging','ಮಧ್ಯಮ — ಬರ ಮತ್ತು ನೀರು ನಿಲ್ಲುವಿಕೆಗೆ ಸಂವೇದನಾಶೀಲ','Kharif / Rabi','ಖರೀಫ್ / ರಬಿ'],
+    ['☁️','Cotton','कपास','ಹತ್ತಿ','Deep black (regur) soil','ಆಳವಾದ ಕಪ್ಪು ಮಣ್ಣು','Warm, 21–30°C, needs a dry spell at picking','ಬೆಚ್ಚಗಿನ, 21–30°C; ಕೀಳುವ ಸಮಯದಲ್ಲಿ ಒಣ ಅವಧಿ ಅಗತ್ಯ','Moderate — moisture-retentive black soil reduces need','ಮಧ್ಯಮ — ತೇವ ಉಳಿಸುವ ಕಪ್ಪು ಮಣ್ಣಿನಿಂದ ಅಗತ್ಯ ಕಡಿಮೆಯಾಗುತ್ತದೆ','Kharif','ಖರೀಫ್'],
+    ['🎋','Sugarcane','गन्ना','ಕಬ್ಬು','Deep alluvial or loamy, well-drained','ಆಳವಾದ ಜಲೋಢ ಅಥವಾ ಚೆನ್ನಾಗಿ ನೀರು ಹರಿಯುವ ಲೋಮ್ ಮಣ್ಣು','Hot and humid, 21–27°C, long frost-free period','ಬಿಸಿ ಮತ್ತು ತೇವಾಂಶಯುಕ್ತ, 21–27°C','High — needs assured, frequent watering','ಹೆಚ್ಚು — ನಿಯಮಿತವಾಗಿ ಸಾಕಷ್ಟು ನೀರು ಅಗತ್ಯ','Year-long crop','ವರ್ಷಪೂರ್ತಿ ಬೆಳೆ'],
+    ['🌱','Soybean','सोयाबीन','ಸೋಯಾಬೀನ್','Black or well-drained loam','ಕಪ್ಪು ಅಥವಾ ಚೆನ್ನಾಗಿ ನೀರು ಹರಿಯುವ ಲೋಮ್ ಮಣ್ಣು','Warm, 20–30°C, monsoon rainfall','ಬೆಚ್ಚಗಿನ, 20–30°C, ಮುಂಗಾರು ಮಳೆ','Low to moderate — mostly rain-fed','ಕಡಿಮೆದಿಂದ ಮಧ್ಯಮ — ಮುಖ್ಯವಾಗಿ ಮಳೆಯಾಧಾರಿತ','Kharif','ಖರೀಫ್'],
+    ['🥜','Groundnut','मूंगफली','ಕಡಲೆಕಾಯಿ','Well-drained red or sandy loam','ಚೆನ್ನಾಗಿ ನೀರು ಹರಿಯುವ ಕೆಂಪು ಅಥವಾ ಮರಳು ಲೋಮ್ ಮಣ್ಣು','Warm, 20–30°C, moderate rainfall','ಬೆಚ್ಚಗಿನ, 20–30°C, ಮಧ್ಯಮ ಮಳೆ','Low — drought-tolerant once established','ಕಡಿಮೆ — ಬೆಳೆ ನೆಲೆಯಾದ ಬಳಿಕ ಬರವನ್ನು ಸಹಿಸುತ್ತದೆ','Kharif / Zaid','ಖರೀಫ್ / ಜಾಯಿದ್'],
+    ['🌼','Mustard','सरसों','ಸಾಸಿವೆ','Alluvial or sandy loam, tolerates low moisture','ಜಲೋಢ ಅಥವಾ ಮರಳು ಲೋಮ್ ಮಣ್ಣು; ಕಡಿಮೆ ತೇವವನ್ನು ಸಹಿಸುತ್ತದೆ','Cool, 10–25°C, dry weather at maturity','ತಂಪಾದ, 10–25°C; ಪಕ್ವವಾಗುವಾಗ ಒಣ ಹವಾಮಾನ','Low — 1–2 light waterings usually enough','ಕಡಿಮೆ — ಸಾಮಾನ್ಯವಾಗಿ 1–2 ಹಗುರ ನೀರಾವರಿ ಸಾಕು','Rabi','ರಬಿ'],
+    ['🫘','Gram / Chickpea','चना','ಕಡಲೆ / ಹರಬೆ','Alluvial, black or red — well-drained','ಜಲೋಢ, ಕಪ್ಪು ಅಥವಾ ಕೆಂಪು — ಚೆನ್ನಾಗಿ ನೀರು ಹರಿಯುವ ಮಣ್ಣು','Cool, dry, 10–25°C','ತಂಪಾದ, ಒಣ, 10–25°C','Low — mostly rain-fed, one watering if needed','ಕಡಿಮೆ — ಮುಖ್ಯವಾಗಿ ಮಳೆಯಾಧಾರಿತ; ಅಗತ್ಯವಿದ್ದರೆ ಒಂದು ನೀರಾವರಿ','Rabi','ರಬಿ'],
+    ['🫛','Pigeon pea (Tur/Arhar)','अरहर / तूर','ತೊಗರಿ','Black or red soil, tolerates poor fertility','ಕಪ್ಪು ಅಥವಾ ಕೆಂಪು ಮಣ್ಣು; ಕಡಿಮೆ ಫಲವತ್ತತೆಯನ್ನು ಸಹಿಸುತ್ತದೆ','Warm, 20–30°C, needs a dry spell to mature','ಬೆಚ್ಚಗಿನ, 20–30°C; ಪಕ್ವತೆಗೆ ಒಣ ಅವಧಿ ಅಗತ್ಯ','Low — drought-tolerant deep roots','ಕಡಿಮೆ — ಆಳವಾದ ಬೇರುಗಳಿಂದ ಬರ ಸಹಿಷ್ಣು','Kharif','ಖರೀಫ್'],
+    ['🌾','Bajra (Pearl millet)','बाजरा','ಸಜ್ಜೆ','Sandy, arid soils','ಮರಳು, ಒಣ ಪ್ರದೇಶದ ಮಣ್ಣು','Hot, dry, up to 35°C+, low rainfall areas','ಬಿಸಿ, ಒಣ, 35°C+ ವರೆಗೆ; ಕಡಿಮೆ ಮಳೆಯ ಪ್ರದೇಶಗಳು','Very low — best rain-fed dryland crop','ಬಹಳ ಕಡಿಮೆ — ಮಳೆಯಾಧಾರಿತ ಒಣಭೂಮಿಗೆ ಉತ್ತಮ','Kharif','ಖರೀಫ್'],
+    ['🌾','Jowar (Sorghum)','ज्वार','ಜೋಳ','Black soil, uses residual monsoon moisture','ಕಪ್ಪು ಮಣ್ಣು; ಮುಂಗಾರು ಉಳಿದ ತೇವವನ್ನು ಬಳಸುತ್ತದೆ','Warm, semi-arid, 25–32°C','ಬೆಚ್ಚಗಿನ, ಅರೆ ಒಣ, 25–32°C','Low — mostly rain-fed','ಕಡಿಮೆ — ಮುಖ್ಯವಾಗಿ ಮಳೆಯಾಧಾರಿತ','Kharif / Rabi','ಖರೀಫ್ / ರಬಿ'],
+    ['🌼','Marigold','गेंदा','ಚೆಂಡುಹೂವು','Well-drained loamy soil','ಚೆನ್ನಾಗಿ ನೀರು ಹರಿಯುವ ಲೋಮ್ ಮಣ್ಣು','Warm, sunny conditions; about 18–30°C','ಬೆಚ್ಚಗಿನ, ಬಿಸಿಲಿನ ವಾತಾವರಣ; ಸುಮಾರು 18–30°C','Moderate — avoid waterlogging','ಮಧ್ಯಮ — ನೀರು ನಿಲ್ಲುವುದನ್ನು ತಪ್ಪಿಸಿ','Year-round with suitable season','ಸೂಕ್ತ ಋತುವಿನಲ್ಲಿ ವರ್ಷಪೂರ್ತಿ'],
+    ['🌿','Tulsi (Holy basil)','तुलसी','ತುಳಸಿ','Well-drained fertile soil with organic matter','ಸಾವಯವ ಪದಾರ್ಥ ಹೊಂದಿರುವ ಫಲವತ್ತಾದ, ಚೆನ್ನಾಗಿ ನೀರು ಹರಿಯುವ ಮಣ್ಣು','Warm and sunny; about 20–30°C','ಬೆಚ್ಚಗಿನ ಮತ್ತು ಬಿಸಿಲು; ಸುಮಾರು 20–30°C','Moderate — water when topsoil dries','ಮಧ್ಯಮ — ಮೇಲ್ಮಣ್ಣು ಒಣಗಿದಾಗ ನೀರು ನೀಡಿ','Warm season','ಬೆಚ್ಚಗಿನ ಋತು'],
+    ['🌿','Coriander','धनिया','ಕೊತ್ತಂಬರಿ','Well-drained loamy soil','ಚೆನ್ನಾಗಿ ನೀರು ಹರಿಯುವ ಲೋಮ್ ಮಣ್ಣು','Cool to mild; about 15–25°C','ತಂಪಿನಿಂದ ಮಿತವಾದ; ಸುಮಾರು 15–25°C','Moderate and regular for leaf growth','ಮಧ್ಯಮ ಮತ್ತು ಎಲೆ ಬೆಳವಣಿಗೆಗೆ ನಿಯಮಿತ','Rabi / cool season','ರಬಿ / ತಂಪಾದ ಋತು'],
+    ['🌿','Fenugreek (Methi)','मेथी','ಮೆಂತ್ಯ','Loamy, well-drained soil','ಲೋಮ್, ಚೆನ್ನಾಗಿ ನೀರು ಹರಿಯುವ ಮಣ್ಣು','Cool, dry weather; about 10–25°C','ತಂಪಾದ, ಒಣ ಹವಾಮಾನ; ಸುಮಾರು 10–25°C','Low to moderate','ಕಡಿಮೆದಿಂದ ಮಧ್ಯಮ','Rabi','ರಬಿ']
+  ];
+  const waste=[
+    ['🍵','Used tea leaves','इस्तेमाल की हुई चायपत्ती','ಬಳಸಿದ ಚಹಾ ಎಲೆಗಳು','Let leaves dry, then mix directly into potting soil or the base of plants.','ಎಲೆಗಳನ್ನು ಒಣಗಿಸಿ, ನಂತರ ಮಣ್ಣಿನಲ್ಲಿ ಅಥವಾ ಗಿಡದ ಬುಡದಲ್ಲಿ ಮಿಶ್ರಣ ಮಾಡಿ.','Adds nitrogen; improves soil texture','ನೈಟ್ರೋಜನ್ ಸೇರಿಸುತ್ತದೆ; ಮಣ್ಣಿನ ರಚನೆ ಸುಧಾರಿಸುತ್ತದೆ'],
+    ['🥚','Crushed eggshells','अंडे के छिलके','ಪುಡಿಮಾಡಿದ ಮೊಟ್ಟೆಯ ಚಿಪ್ಪು','Dry, crush into powder, sprinkle around the base of plants.','ಒಣಗಿಸಿ ಪುಡಿ ಮಾಡಿ ಗಿಡದ ಬುಡದ ಸುತ್ತ ಹಾಕಿ.','Rich in calcium; deters some soft-bodied pests','ಕ್ಯಾಲ್ಸಿಯಂ ಸಮೃದ್ಧ; ಕೆಲವು ಮೃದುದೇಹದ ಕೀಟಗಳನ್ನು ತಡೆಯಲು ಸಹಕಾರಿ'],
+    ['🍌','Banana peels','केले के छिलके','ಬಾಳೆಹಣ್ಣಿನ ಸಿಪ್ಪೆ','Chop and bury a few inches deep near the root zone, or soak in water 2–3 days for a liquid feed.','ಚೂರು ಮಾಡಿ ಬೇರುಗಳ ಬಳಿ ಕೆಲವು ಇಂಚು ಆಳದಲ್ಲಿ ಹೂಳಿ ಅಥವಾ 2–3 ದಿನ ನೀರಿನಲ್ಲಿ ನೆನೆಸಿ ದ್ರವ ಗೊಬ್ಬರವಾಗಿ ಬಳಸಿ.','High in potassium and phosphorus','ಪೊಟ್ಯಾಸಿಯಂ ಮತ್ತು ಫಾಸ್ಫರಸ್ ಸಮೃದ್ಧ'],
+    ['🥔','Vegetable peels & scraps','सब्जियों के छिलके','ತರಕಾರಿ ಸಿಪ್ಪೆಗಳು ಮತ್ತು ಅವಶೇಷಗಳು','Compost in a pit or bin with dry leaves; turn every week.','ಒಣ ಎಲೆಗಳೊಂದಿಗೆ ಗುಂಡಿ ಅಥವಾ ಕಾಂಪೋಸ್ಟ್ ಬಿನ್‌ನಲ್ಲಿ ಹಾಕಿ; ವಾರಕ್ಕೊಮ್ಮೆ ತಿರುಗಿಸಿ.','Builds organic compost rich in micronutrients','ಸೂಕ್ಷ್ಮ ಪೋಷಕಾಂಶಗಳಿರುವ ಸಾವಯವ ಕಾಂಪೋಸ್ಟ್ ತಯಾರಿಸುತ್ತದೆ'],
+    ['☕','Coffee grounds','कॉफी अवशेष','ಕಾಫಿ ಪುಡಿ ಅವಶೇಷ','Sprinkle dried grounds lightly around acid-loving plants or add to compost.','ಒಣ ಕಾಫಿ ಪುಡಿಯನ್ನು ಅಲ್ಪ ಪ್ರಮಾಣದಲ್ಲಿ ಗಿಡಗಳ ಸುತ್ತ ಹಾಕಿ ಅಥವಾ ಕಾಂಪೋಸ್ಟ್‌ಗೆ ಸೇರಿಸಿ.','Adds nitrogen; improves soil aeration','ನೈಟ್ರೋಜನ್ ಸೇರಿಸುತ್ತದೆ; ಮಣ್ಣಿನ ಗಾಳಿಚಲನೆ ಸುಧಾರಿಸುತ್ತದೆ'],
+    ['🍚','Rice rinse water','चावल धोने का पानी','ಅಕ್ಕಿ ತೊಳೆದ ನೀರು','Save the starchy water from washing rice and water plants with it directly.','ಅಕ್ಕಿ ತೊಳೆದ ಪಿಷ್ಟಯುಕ್ತ ನೀರನ್ನು ಉಳಿಸಿ ಗಿಡಗಳಿಗೆ ನೇರವಾಗಿ ನೀಡಿ.','Mild nutrient boost; encourages beneficial soil microbes','ಸ್ವಲ್ಪ ಪೋಷಕಾಂಶ ನೀಡುತ್ತದೆ; ಉಪಕಾರಿ ಮಣ್ಣಿನ ಸೂಕ್ಷ್ಮಜೀವಿಗಳನ್ನು ಉತ್ತೇಜಿಸುತ್ತದೆ'],
+    ['🥬','Vegetable cooking water','सब्जियाँ उबालने का पानी','ತರಕಾರಿ ಬೇಯಿಸಿದ ನೀರು','Cool unsalted vegetable cooking water completely, then use it to water plants.','ಉಪ್ಪಿಲ್ಲದ ತರಕಾರಿ ಬೇಯಿಸಿದ ನೀರನ್ನು ಸಂಪೂರ್ಣ ತಣ್ಣಗಾಗಿಸಿ ಗಿಡಗಳಿಗೆ ನೀಡಿ.','Provides small amounts of dissolved nutrients','ಕರಗಿದ ಪೋಷಕಾಂಶಗಳ ಸಣ್ಣ ಪ್ರಮಾಣವನ್ನು ಒದಗಿಸುತ್ತದೆ'],
+    ['🧅','Onion & garlic skins','प्याज और लहसुन के छिलके','ಈರುಳ್ಳಿ ಮತ್ತು ಬೆಳ್ಳುಳ್ಳಿ ಸಿಪ್ಪೆಗಳು','Dry the skins and add them to compost, or steep in water for a mild plant feed.','ಸಿಪ್ಪೆಗಳನ್ನು ಒಣಗಿಸಿ ಕಾಂಪೋಸ್ಟ್‌ಗೆ ಸೇರಿಸಿ ಅಥವಾ ನೀರಿನಲ್ಲಿ ನೆನೆಸಿ ಸೌಮ್ಯ ದ್ರವ ಗೊಬ್ಬರವಾಗಿ ಬಳಸಿ.','Adds organic matter and some minerals','ಸಾವಯವ ಪದಾರ್ಥ ಮತ್ತು ಕೆಲವು ಖನಿಜಗಳನ್ನು ಸೇರಿಸುತ್ತದೆ'],
+    ['🥭','Fruit peels','फलों के छिलके','ಹಣ್ಣಿನ ಸಿಪ್ಪೆಗಳು','Chop fruit peels and compost them with dry leaves and other organic matter.','ಹಣ್ಣಿನ ಸಿಪ್ಪೆಗಳನ್ನು ಕತ್ತರಿಸಿ ಒಣ ಎಲೆಗಳು ಮತ್ತು ಇತರ ಸಾವಯವ ಪದಾರ್ಥಗಳೊಂದಿಗೆ ಕಾಂಪೋಸ್ಟ್ ಮಾಡಿ.','Adds organic matter and supports composting','ಸಾವಯವ ಪದಾರ್ಥವನ್ನು ಹೆಚ್ಚಿಸಿ ಕಾಂಪೋಸ್ಟ್ ಮಾಡಲು ಸಹಾಯ ಮಾಡುತ್ತದೆ'],
+    ['🌿','Grass clippings','घास की कतरन','ಹುಲ್ಲಿನ ಕತ್ತರಿಸಿದ ಭಾಗ','Use thin layers of fresh clippings as mulch, or compost them before adding to soil.','ತಾಜಾ ಹುಲ್ಲಿನ ಕತ್ತರಿಸಿದ ಭಾಗವನ್ನು ತೆಳುವಾದ ಪದರದಲ್ಲಿ ಮಲ್ಚ್ ಆಗಿ ಬಳಸಿ ಅಥವಾ ಕಾಂಪೋಸ್ಟ್ ಮಾಡಿ.','Adds organic matter and helps retain soil moisture','ಸಾವಯವ ಪದಾರ್ಥವನ್ನು ಹೆಚ್ಚಿಸಿ ಮಣ್ಣಿನ ತೇವಾಂಶ ಉಳಿಸಲು ಸಹಾಯ ಮಾಡುತ್ತದೆ'],
+    ['🍂','Dry leaves','सूखे पत्ते','ಒಣ ಎಲೆಗಳು','Shred dry leaves and compost them, or use them as a dry mulch layer.','ಒಣ ಎಲೆಗಳನ್ನು ಚೂರು ಮಾಡಿ ಕಾಂಪೋಸ್ಟ್ ಮಾಡಿ ಅಥವಾ ಒಣ ಮಲ್ಚ್ ಪದರವಾಗಿ ಬಳಸಿ.','Excellent carbon source for compost and mulch','ಕಾಂಪೋಸ್ಟ್ ಮತ್ತು ಮಲ್ಚ್‌ಗೆ ಉತ್ತಮ ಕಾರ್ಬನ್ ಮೂಲ'],
+    ['🥥','Coconut husk & coir','नारियल की भूसी','ತೆಂಗಿನ ನಾರು ಮತ್ತು ಸಿಪ್ಪೆ','Chop or shred coconut material and compost it, or use coir to improve soil moisture retention.','ತೆಂಗಿನ ವಸ್ತುವನ್ನು ಕತ್ತರಿಸಿ ಕಾಂಪೋಸ್ಟ್ ಮಾಡಿ ಅಥವಾ ಮಣ್ಣಿನ ತೇವಾಂಶ ಉಳಿಸಲು ನಾರನ್ನು ಬಳಸಿ.','Improves soil structure and moisture retention','ಮಣ್ಣಿನ ರಚನೆ ಮತ್ತು ತೇವಾಂಶ ಉಳಿಕೆಯನ್ನು ಸುಧಾರಿಸುತ್ತದೆ'],
+    ['🫘','Pulse & bean leftovers','दाल और फलियों के अवशेष','ಬೇಳೆ ಮತ್ತು ಕಾಳುಗಳ ಅವಶೇಷಗಳು','Compost uncooked pulse husks and plant residues with dry organic material.','ಬೇಳೆಯ ಸಿಪ್ಪೆಗಳು ಮತ್ತು ಸಸ್ಯ ಅವಶೇಷಗಳನ್ನು ಒಣ ಸಾವಯವ ಪದಾರ್ಥಗಳೊಂದಿಗೆ ಕಾಂಪೋಸ್ಟ್ ಮಾಡಿ.','Adds organic matter and nutrients to compost','ಕಾಂಪೋಸ್ಟ್‌ಗೆ ಸಾವಯವ ಪದಾರ್ಥ ಮತ್ತು ಪೋಷಕಾಂಶಗಳನ್ನು ಸೇರಿಸುತ್ತದೆ'],
+    ['🪵','Wood ash (small amounts)','लकड़ी की राख (कम मात्रा)','ಮರದ ಬೂದಿ (ಕಡಿಮೆ ಪ್ರಮಾಣ)','Use only clean, untreated wood ash sparingly after checking soil needs; avoid over-application.','ಸ್ವಚ್ಛ, ರಾಸಾಯನಿಕ ಚಿಕಿತ್ಸೆ ನೀಡದ ಮರದ ಬೂದಿಯನ್ನು ಮಣ್ಣಿನ ಅಗತ್ಯ ಪರಿಶೀಲಿಸಿ ಅಲ್ಪ ಪ್ರಮಾಣದಲ್ಲಿ ಬಳಸಿ; ಹೆಚ್ಚು ಹಾಕಬೇಡಿ.','Can supply potassium and calcium; may raise soil pH','ಪೊಟ್ಯಾಸಿಯಂ ಮತ್ತು ಕ್ಯಾಲ್ಸಿಯಂ ಒದಗಿಸಬಹುದು; ಮಣ್ಣಿನ pH ಹೆಚ್ಚಿಸಬಹುದು'],
+    ['🔥','Wood ash','लकड़ी की राख','ಮರದ ಬೂದಿ','Cool completely, then dust a thin layer over soil, away from seedlings.','ಸಂಪೂರ್ಣವಾಗಿ ತಣ್ಣಗಾದ ನಂತರ ಮೊಳಕೆಗಳಿಂದ ದೂರ ಮಣ್ಣಿನ ಮೇಲೆ ತೆಳುವಾಗಿ ಹಾಕಿ.','Adds potassium; raises soil pH slightly','ಪೊಟ್ಯಾಸಿಯಂ ಸೇರಿಸುತ್ತದೆ; ಮಣ್ಣಿನ pH ಅನ್ನು ಸ್ವಲ್ಪ ಹೆಚ್ಚಿಸುತ್ತದೆ'],
+    ['🍂','Dry leaves (leaf mould)','सूखी पत्तियां','ಒಣ ಎಲೆಗಳು','Pile and let them decompose for 2–3 months, turning occasionally.','ಎಲೆಗಳನ್ನು ಗುಡ್ಡೆಯಾಗಿ ಹಾಕಿ 2–3 ತಿಂಗಳು ಕೊಳೆಯಲು ಬಿಡಿ; ಮಧ್ಯೆ ಮಧ್ಯೆ ತಿರುಗಿಸಿ.','Improves soil structure and water retention','ಮಣ್ಣಿನ ರಚನೆ ಮತ್ತು ನೀರು ಹಿಡಿದಿಡುವ ಸಾಮರ್ಥ್ಯ ಸುಧಾರಿಸುತ್ತದೆ']
+  ];
+  let lastLang='en';
+  function setKeyText(){
+    const L=LANG[lastLang]||LANG.en;
+    document.querySelectorAll('[data-i18n]').forEach(el=>{const v=L[el.dataset.i18n]; if(v!==undefined && typeof v==='string') el.textContent=v;});
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{const v=L[el.dataset.i18nPlaceholder]; if(v!==undefined) el.placeholder=v;});
+  }
+  const extraGyan = [
+    ['🌹','Rose','गुलाब','ಗುಲಾಬಿ'],['🌼','Chrysanthemum','गुलदाउदी','ಸೇವಂತಿಗೆ'],['🌺','Hibiscus','गुड़हल','ದಾಸವಾಳ'],
+    ['🌻','Sunflower','सूरजमुखी','ಸೂರ್ಯಕಾಂತಿ'],['🌸','Jasmine','चमेली','ಮಲ್ಲಿಗೆ'],['🌿','Mint','पुदीना','ಪುದೀನಾ'],
+    ['🌿','Aloe vera','एलोवेरा','ಲೋಳೆಸರ'],['🌿','Ashwagandha','अश्वगंधा','ಅಶ್ವಗಂಧ'],['🌿','Lemongrass','लेमनग्रास','ನಿಂಬೆ ಹುಲ್ಲು'],
+    ['🌿','Rosemary','रोज़मेरी','ರೋಸ್ಮೇರಿ'],['🌿','Thyme','थाइम','ಥೈಮ್'],['🌸','Lavender','लैवेंडर','ಲ್ಯಾವೆಂಡರ್']
+  ];
+  const seedNames = {
+    en:{Rice:'Rice',Wheat:'Wheat',Maize:'Maize',Cotton:'Cotton',Sugarcane:'Sugarcane',Soybean:'Soybean',Groundnut:'Groundnut',Mustard:'Mustard','Gram / Chickpea':'Gram / Chickpea','Pigeon pea (Tur/Arhar)':'Pigeon pea (Tur/Arhar)','Bajra (Pearl millet)':'Bajra (Pearl millet)',Jowar:'Jowar',Marigold:'Marigold','Tulsi (Holy basil)':'Tulsi (Holy basil)',Coriander:'Coriander','Fenugreek (Methi)':'Fenugreek (Methi)',Rose:'Rose',Chrysanthemum:'Chrysanthemum',Hibiscus:'Hibiscus',Sunflower:'Sunflower',Jasmine:'Jasmine',Mint:'Mint','Aloe vera':'Aloe vera',Ashwagandha:'Ashwagandha',Lemongrass:'Lemongrass',Rosemary:'Rosemary',Thyme:'Thyme',Lavender:'Lavender'},
+    hi:{Rice:'धान / चावल',Wheat:'गेहूं',Maize:'मक्का',Cotton:'कपास',Sugarcane:'गन्ना',Soybean:'सोयाबीन',Groundnut:'मूंगफली',Mustard:'सरसों','Gram / Chickpea':'चना','Pigeon pea (Tur/Arhar)':'अरहर / तूर','Bajra (Pearl millet)':'बाजरा',Jowar:'ज्वार',Marigold:'गेंदा','Tulsi (Holy basil)':'तुलसी',Coriander:'धनिया','Fenugreek (Methi)':'मेथी',Rose:'गुलाब',Chrysanthemum:'गुलदाउदी',Hibiscus:'गुड़हल',Sunflower:'सूरजमुखी',Jasmine:'चमेली',Mint:'पुदीना','Aloe vera':'एलोवेरा',Ashwagandha:'अश्वगंधा',Lemongrass:'लेमनग्रास',Rosemary:'रोज़मेरी',Thyme:'थाइम',Lavender:'लैवेंडर'},
+    kn:{Rice:'ಅಕ್ಕಿ',Wheat:'ಗೋಧಿ',Maize:'ಮೆಕ್ಕೆಜೋಳ',Cotton:'ಹತ್ತಿ',Sugarcane:'ಕಬ್ಬು',Soybean:'ಸೋಯಾಬೀನ್',Groundnut:'ಕಡಲೆಕಾಯಿ',Mustard:'ಸಾಸಿವೆ','Gram / Chickpea':'ಕಡಲೆ', 'Pigeon pea (Tur/Arhar)':'ತೊಗರಿ','Bajra (Pearl millet)':'ಸಜ್ಜೆ',Jowar:'ಜೋಳ',Marigold:'ಚೆಂಡುಹೂವು','Tulsi (Holy basil)':'ತುಳಸಿ',Coriander:'ಕೊತ್ತಂಬರಿ','Fenugreek (Methi)':'ಮೆಂತ್ಯ',Rose:'ಗುಲಾಬಿ',Chrysanthemum:'ಸೇವಂತಿಗೆ',Hibiscus:'ದಾಸವಾಳ',Sunflower:'ಸೂರ್ಯಕಾಂತಿ',Jasmine:'ಮಲ್ಲಿಗೆ',Mint:'ಪುದೀನಾ','Aloe vera':'ಲೋಳೆಸರ',Ashwagandha:'ಅಶ್ವಗಂಧ',Lemongrass:'ನಿಂಬೆ ಹುಲ್ಲು',Rosemary:'ರೋಸ್ಮೇರಿ',Thyme:'ಥೈಮ್',Lavender:'ಲ್ಯಾವೆಂಡರ್'},
+    ta:{Rice:'நெல் / அரிசி',Wheat:'கோதுமை',Maize:'மக்காச்சோளம்',Cotton:'பருத்தி',Sugarcane:'கரும்பு',Soybean:'சோயாபீன்',Groundnut:'நிலக்கடலை',Mustard:'கடுகு','Gram / Chickpea':'கொண்டைக்கடலை','Pigeon pea (Tur/Arhar)':'துவரை', 'Bajra (Pearl millet)':'கம்பு',Jowar:'சோளம்',Marigold:'சாமந்தி','Tulsi (Holy basil)':'துளசி',Coriander:'கொத்தமல்லி','Fenugreek (Methi)':'வெந்தயம்',Rose:'ரோஜா',Chrysanthemum:'சாமந்தி',Hibiscus:'செம்பருத்தி',Sunflower:'சூரியகாந்தி',Jasmine:'மல்லிகை',Mint:'புதினா','Aloe vera':'கற்றாழை',Ashwagandha:'அமுக்கரா',Lemongrass:'எலுமிச்சை புல்',Rosemary:'ரோஸ்மேரி',Thyme:'தைம்',Lavender:'லாவெண்டர்'},
+    te:{Rice:'వరి / బియ్యం',Wheat:'గోధుమ',Maize:'మొక్కజొన్న',Cotton:'పత్తి',Sugarcane:'చెరకు',Soybean:'సోయాబీన్',Groundnut:'వేరుశెనగ',Mustard:'ఆవాలు','Gram / Chickpea':'శనగ', 'Pigeon pea (Tur/Arhar)':'కందులు','Bajra (Pearl millet)':'సజ్జ',Jowar:'జొన్న',Marigold:'బంతి','Tulsi (Holy basil)':'తులసి',Coriander:'కొత్తిమీర','Fenugreek (Methi)':'మెంతికూర',Rose:'గులాబీ',Chrysanthemum:'చామంతి',Hibiscus:'మందారం',Sunflower:'సూర్యకాంతి',Jasmine:'మల్లె',Mint:'పుదీనా','Aloe vera':'కలబంద',Ashwagandha:'అశ్వగంధ',Lemongrass:'నిమ్మగడ్డి',Rosemary:'రోజ్మేరీ',Thyme:'థైమ్',Lavender:'లావెండర్'},
+    mr:{Rice:'तांदूळ / भात',Wheat:'गहू',Maize:'मका',Cotton:'कापूस',Sugarcane:'ऊस',Soybean:'सोयाबीन',Groundnut:'भुईमूग',Mustard:'मोहरी','Gram / Chickpea':'हरभरा','Pigeon pea (Tur/Arhar)':'तूर','Bajra (Pearl millet)':'बाजरी',Jowar:'ज्वारी',Marigold:'झेंडू','Tulsi (Holy basil)':'तुळस',Coriander:'कोथिंबीर','Fenugreek (Methi)':'मेथी',Rose:'गुलाब',Chrysanthemum:'शेवंती',Hibiscus:'जास्वंद',Sunflower:'सूर्यफूल',Jasmine:'मोगरा',Mint:'पुदिना','Aloe vera':'कोरफड',Ashwagandha:'अश्वगंधा',Lemongrass:'लेमनग्रास',Rosemary:'रोझमेरी',Thyme:'थायम',Lavender:'लॅव्हेंडर'},
+    gu:{Rice:'ચોખા / ડાંગર',Wheat:'ઘઉં',Maize:'મકાઈ',Cotton:'કપાસ',Sugarcane:'શેરડી',Soybean:'સોયાબીન',Groundnut:'મગફળી',Mustard:'રાઈ','Gram / Chickpea':'ચણા','Pigeon pea (Tur/Arhar)':'તુવેર','Bajra (Pearl millet)':'બાજરી',Jowar:'જુવાર',Marigold:'ગલગોટો','Tulsi (Holy basil)':'તુલસી',Coriander:'ધાણા','Fenugreek (Methi)':'મેથી',Rose:'ગુલાબ',Chrysanthemum:'ગુલદાઉદી',Hibiscus:'જાસૂદ',Sunflower:'સૂર્યમુખી',Jasmine:'મોગરો',Mint:'ફુદીનો','Aloe vera':'કુંવારપાઠું',Ashwagandha:'અશ્વગંધા',Lemongrass:'લેમનગ્રાસ',Rosemary:'રોઝમેરી',Thyme:'થાઇમ',Lavender:'લવેન્ડર'},
+    bn:{Rice:'ধান / চাল',Wheat:'গম',Maize:'ভুট্টা',Cotton:'তুলা',Sugarcane:'আখ',Soybean:'সয়াবিন',Groundnut:'চিনাবাদাম',Mustard:'সরিষা','Gram / Chickpea':'ছোলা','Pigeon pea (Tur/Arhar)':'অড়হর','Bajra (Pearl millet)':'বাজরা',Jowar:'জোয়ার',Marigold:'গাঁদা','Tulsi (Holy basil)':'তুলসী',Coriander:'ধনিয়া','Fenugreek (Methi)':'মেথি',Rose:'গোলাপ',Chrysanthemum:'চন্দ্রমল্লিকা',Hibiscus:'জবা',Sunflower:'সূর্যমুখী',Jasmine:'জুঁই',Mint:'পুদিনা','Aloe vera':'ঘৃতকুমারী',Ashwagandha:'অশ্বগন্ধা',Lemongrass:'লেমনগ্রাস',Rosemary:'রোজমেরি',Thyme:'থাইম',Lavender:'ল্যাভেন্ডার'},
+    pa:{Rice:'ਝੋਨਾ / ਚੌਲ',Wheat:'ਕਣਕ',Maize:'ਮੱਕੀ',Cotton:'ਕਪਾਹ',Sugarcane:'ਗੰਨਾ',Soybean:'ਸੋਇਆਬੀਨ',Groundnut:'ਮੂੰਗਫਲੀ',Mustard:'ਸਰੋਂ','Gram / Chickpea':'ਛੋਲੇ','Pigeon pea (Tur/Arhar)':'ਅਰਹਰ','Bajra (Pearl millet)':'ਬਾਜਰਾ',Jowar:'ਜਵਾਰ',Marigold:'ਗੇਂਦਾ','Tulsi (Holy basil)':'ਤੁਲਸੀ',Coriander:'ਧਨੀਆ','Fenugreek (Methi)':'ਮੇਥੀ',Rose:'ਗੁਲਾਬ',Chrysanthemum:'ਗੁਲਦਾਉਦੀ',Hibiscus:'ਗੁੜਹਲ',Sunflower:'ਸੂਰਜਮੁਖੀ',Jasmine:'ਚਮੇਲੀ',Mint:'ਪੁਦੀਨਾ','Aloe vera':'ਕੁਆਰ ਗੰਧਲ',Ashwagandha:'ਅਸ਼ਵਗੰਧਾ',Lemongrass:'ਲੈਮਨਗ੍ਰਾਸ',Rosemary:'ਰੋਜ਼ਮੇਰੀ',Thyme:'ਥਾਈਮ',Lavender:'ਲੈਵੈਂਡਰ'},
+    ml:{Rice:'നെല്ല് / അരി',Wheat:'ഗോതമ്പ്',Maize:'ചോളം',Cotton:'പരുത്തി',Sugarcane:'കരിമ്പ്',Soybean:'സോയാബീൻ',Groundnut:'നിലക്കടല',Mustard:'കടുക്','Gram / Chickpea':'കടല','Pigeon pea (Tur/Arhar)':'തുവര','Bajra (Pearl millet)':'കമ്പ്',Jowar:'ചോളം',Marigold:'ചെണ്ടുമല്ലി','Tulsi (Holy basil)':'തുളസി',Coriander:'മല്ലിയില','Fenugreek (Methi)':'ഉലുവ',Rose:'റോസ്',Chrysanthemum:'ചെണ്ടുമല്ലി',Hibiscus:'ചെമ്പരത്തി',Sunflower:'സൂര്യകാന്തി',Jasmine:'മുല്ല',Mint:'പുതിന','Aloe vera':'കറ്റാർവാഴ',Ashwagandha:'അശ്വഗന്ധ',Lemongrass:'ചെറുനാരങ്ങാപ്പുല്ല്',Rosemary:'റോസ്മേരി',Thyme:'തൈം',Lavender:'ലാവെൻഡർ'},
+    or:{Rice:'ଧାନ / ଚାଉଳ',Wheat:'ଗହମ',Maize:'ମକା',Cotton:'କପା',Sugarcane:'ଆଖୁ',Soybean:'ସୋୟାବିନ',Groundnut:'ଚିନାବାଦାମ',Mustard:'ସୋରିଷ','Gram / Chickpea':'ଚଣା','Pigeon pea (Tur/Arhar)':'ହରଡ଼','Bajra (Pearl millet)':'ବାଜରା',Jowar:'ଜୁଆର',Marigold:'ଗେଣ୍ଡୁ','Tulsi (Holy basil)':'ତୁଳସୀ',Coriander:'ଧନିଆ','Fenugreek (Methi)':'ମେଥି',Rose:'ଗୋଲାପ',Chrysanthemum:'ସେବତୀ',Hibiscus:'ମନ୍ଦାର',Sunflower:'ସୂର୍ଯ୍ୟମୁଖୀ',Jasmine:'ମଲ୍ଲୀ',Mint:'ପୁଦିନା','Aloe vera':'ଘିକୁଆଁରୀ',Ashwagandha:'ଅଶ୍ୱଗନ୍ଧା',Lemongrass:'ଲେମନଗ୍ରାସ',Rosemary:'ରୋଜମେରୀ',Thyme:'ଥାଇମ',Lavender:'ଲାଭେଣ୍ଡର'},
+    as:{Rice:'ধান / চাউল',Wheat:'ঘেঁহু',Maize:'মাকৈ',Cotton:'কপাহ',Sugarcane:'কুঁহিয়াৰ',Soybean:'ছয়াবিন',Groundnut:'বাদাম',Mustard:'সৰিয়হ','Gram / Chickpea':'বুট','Pigeon pea (Tur/Arhar)':'ৰহৰ','Bajra (Pearl millet)':'বাজৰা',Jowar:'জোৱাৰ',Marigold:'গেন্দা','Tulsi (Holy basil)':'তুলসী',Coriander:'ধনিয়া','Fenugreek (Methi)':'মেথি',Rose:'গোলাপ',Chrysanthemum:'গোলাপী ফুল',Hibiscus:'জবা',Sunflower:'সূৰ্যমুখী',Jasmine:'জুঁই',Mint:'পদিনা','Aloe vera':'ছালকুঁৱৰী',Ashwagandha:'অশ্বগন্ধা',Lemongrass:'লেমনগ্ৰাছ',Rosemary:'ৰোজমেৰী',Thyme:'থাইম',Lavender:'লেভেণ্ডাৰ'},
+    ur:{Rice:'چاول / دھان',Wheat:'گندم',Maize:'مکئی',Cotton:'کپاس',Sugarcane:'گنا',Soybean:'سویا بین',Groundnut:'مونگ پھلی',Mustard:'سرسوں','Gram / Chickpea':'چنا','Pigeon pea (Tur/Arhar)':'ارہر','Bajra (Pearl millet)':'باجرا',Jowar:'جوار',Marigold:'گیندا','Tulsi (Holy basil)':'تلسی',Coriander:'دھنیا','Fenugreek (Methi)':'میتھی',Rose:'گلاب',Chrysanthemum:'گلِ داؤدی',Hibiscus:'گڑہل',Sunflower:'سورج مکھی',Jasmine:'چنبیلی',Mint:'پودینہ','Aloe vera':'ایلوویرا',Ashwagandha:'اشوگندھا',Lemongrass:'لیمن گراس',Rosemary:'روزمیری',Thyme:'تھائم',Lavender:'لیونڈر'}
+  };
+  function localSeedText(lang, x){
+    const n=seedNames[lang]?.[x[1]] || seedNames.en[x[1]] || x[1];
+    const T={
+      en:['Soil: '+x[4],'Weather: '+x[6],'Irrigation: '+x[8],'Sowing season: '+x[10]],
+      hi:['मिट्टी: '+(x[1]==='Rice'?'चिकनी/जलोढ़ मिट्टी; खेत में पर्याप्त नमी रखें':'अच्छी जल-निकासी वाली उपयुक्त मिट्टी'),'मौसम: '+(x[1]==='Wheat'?'ठंडा मौसम, लगभग 10–25°C':'उपयुक्त तापमान और पर्याप्त धूप/वर्षा'),'सिंचाई: '+(x[1]==='Sugarcane'?'नियमित और अधिक':'फसल के अनुसार कम से मध्यम; जलभराव से बचें'),'बुवाई मौसम: '+x[10]],
+      kn:['ಮಣ್ಣು: '+(x[1]==='Rice'?'ಜೇಡಿಮಣ್ಣು/ಜಲೋಢ ಮಣ್ಣು; ಸಾಕಷ್ಟು ತೇವ ಅಗತ್ಯ':'ಚೆನ್ನಾಗಿ ನೀರು ಹರಿಯುವ ಸೂಕ್ತ ಮಣ್ಣು'),'ಹವಾಮಾನ: '+(x[1]==='Wheat'?'ತಂಪಾದ ವಾತಾವರಣ, ಸುಮಾರು 10–25°C':'ಸೂಕ್ತ ತಾಪಮಾನ ಮತ್ತು ಸಾಕಷ್ಟು ಸೂರ್ಯ/ಮಳೆ'),'ನೀರಾವರಿ: '+(x[1]==='Sugarcane'?'ಹೆಚ್ಚು ಮತ್ತು ನಿಯಮಿತ':'ಬೆಳೆಯ ಪ್ರಕಾರ ಕಡಿಮೆದಿಂದ ಮಧ್ಯಮ; ನೀರು ನಿಲ್ಲದಂತೆ ನೋಡಿಕೊಳ್ಳಿ'),'ಬಿತ್ತನೆ ಋತು: '+x[11]]
+    };
+    if(T[lang]) return T[lang];
+    const P={ta:['மண்: நல்ல வடிகால் வசதியுள்ள ஏற்ற மண்','வானிலை: ஏற்ற வெப்பநிலை, போதிய சூரியஒளி மற்றும் மழை','நீர்ப்பாசனம்: குறைவு முதல் மிதமானது; நீர் தேங்குவதை தவிர்க்கவும்','விதைப்பு பருவம்: பொருத்தமான பருவத்தில்'],te:['నేల: నీరు సులభంగా వెళ్లే అనుకూలమైన నేల','వాతావరణం: సరైన ఉష్ణోగ్రత, సూర్యకాంతి మరియు వర్షపాతం','నీటిపారుదల: తక్కువ నుండి మధ్యస్థం; నీరు నిల్వ ఉండకూడదు','విత్తే కాలం: అనుకూల కాలంలో'],mr:['माती: निचरा चांगला असलेली योग्य माती','हवामान: योग्य तापमान, पुरेसा सूर्यप्रकाश व पाऊस','सिंचन: कमी ते मध्यम; पाणी साचू देऊ नका','पेरणीचा हंगाम: योग्य हंगामात'],gu:['માટી: સારી નિકાસવાળી યોગ્ય જમીન','હવામાન: યોગ્ય તાપમાન, પૂરતો સૂર્યપ્રકાશ અને વરસાદ','સિંચાઈ: ઓછીથી મધ્યમ; પાણી ભરાવું ટાળો','વાવણી ઋતુ: યોગ્ય ઋતુમાં'],bn:['মাটি: ভালো জলনিকাশযুক্ত উপযুক্ত মাটি','আবহাওয়া: উপযুক্ত তাপমাত্রা, পর্যাপ্ত রোদ ও বৃষ্টি','সেচ: কম থেকে মাঝারি; জল জমতে দেবেন না','বপনের মরসুম: উপযুক্ত মরসুমে'],pa:['ਮਿੱਟੀ: ਚੰਗੀ ਨਿਕਾਸ ਵਾਲੀ ਢੁਕਵੀਂ ਮਿੱਟੀ','ਮੌਸਮ: ਢੁਕਵਾਂ ਤਾਪਮਾਨ, ਧੁੱਪ ਅਤੇ ਮੀਂਹ','ਸਿੰਚਾਈ: ਘੱਟ ਤੋਂ ਦਰਮਿਆਨੀ; ਪਾਣੀ ਖੜ੍ਹਾ ਨਾ ਹੋਣ ਦਿਓ','ਬਿਜਾਈ ਦਾ ਮੌਸਮ: ਢੁਕਵੇਂ ਮੌਸਮ ਵਿੱਚ'],ml:['മണ്ണ്: നല്ല നീർവാർച്ചയുള്ള അനുയോജ്യമായ മണ്ണ്','കാലാവസ്ഥ: അനുയോജ്യമായ താപനില, സൂര്യപ്രകാശം, മഴ','ജലസേചനം: കുറവ് മുതൽ മിതമായത്; വെള്ളക്കെട്ട് ഒഴിവാക്കുക','വിതയ്ക്കുന്ന കാലം: അനുയോജ്യമായ കാലത്ത്'],or:['ମାଟି: ଭଲ ଜଳ ନିଷ୍କାସନ ଥିବା ଉପଯୁକ୍ତ ମାଟି','ପାଗ: ଉପଯୁକ୍ତ ତାପମାତ୍ରା, ପର୍ଯ୍ୟାପ୍ତ ସୂର୍ଯ୍ୟ ଓ ବର୍ଷା','ଜଳସେଚନ: କମରୁ ମଧ୍ୟମ; ପାଣି ଜମିବା ଦିଅନ୍ତୁ ନାହିଁ','ବୁଣିବା ଋତୁ: ଉପଯୁକ୍ତ ଋତୁରେ'],as:['মাটি: ভাল পানী ওলাই যোৱা উপযুক্ত মাটি','বতৰ: উপযুক্ত উষ্ণতা, ৰ’দ আৰু বৰষুণ','জলসিঞ্চন: কমৰ পৰা মধ্যম; পানী জমা হ’ব নিদিব','সিঁচাৰ ঋতু: উপযুক্ত ঋতুত'],ur:['مٹی: اچھی نکاسی والی موزوں مٹی','موسم: مناسب درجہ حرارت، دھوپ اور بارش','آبپاشی: کم سے درمیانی؛ پانی کھڑا نہ ہونے دیں','بوائی کا موسم: موزوں موسم میں']};
+    return P[lang] || P.en;
+  }
+  function renderSeedsFull(){
+    const grid=document.getElementById('seedGrid'); if(!grid) return;
+    const combined=seedData.concat(extraGyan.map(x=>[x[0],x[1],x[2],x[3],'Well-drained soil','', 'Suitable warm/sunny conditions','', 'Moderate watering','', 'Suitable season','']));
+    const labels={en:['Soil:','Weather:','Irrigation:','Sowing season:'],hi:['मिट्टी:','मौसम:','सिंचाई:','बुवाई मौसम:'],kn:['ಮಣ್ಣು:','ಹವಾಮಾನ:','ನೀರಾವರಿ:','ಬಿತ್ತನೆ ಋತು:'],ta:['மண்:','வானிலை:','நீர்ப்பாசனம்:','விதைப்பு பருவம்:'],te:['నేల:','వాతావరణం:','నీటిపారుదల:','విత్తే కాలం:'],mr:['माती:','हवामान:','सिंचन:','पेरणीचा हंगाम:'],gu:['માટી:','હવામાન:','સિંચાઈ:','વાવણી ઋતુ:'],bn:['মাটি:','আবহাওয়া:','সেচ:','বপনের মরসুম:'],pa:['ਮਿੱਟੀ:','ਮੌਸਮ:','ਸਿੰਚਾਈ:','ਬਿਜਾਈ ਦਾ ਮੌਸਮ:'],ml:['മണ്ണ്:','കാലാവസ്ഥ:','ജലസേചനം:','വിതയ്ക്കുന്ന കാലം:'],or:['ମାଟି:','ପାଗ:','ଜଳସେଚନ:','ବୁଣିବା ଋତୁ:'],as:['মাটি:','বতৰ:','জলসিঞ্চন:','সিঁচাৰ ঋতু:'],ur:['مٹی:','موسم:','آبپاشی:','بوائی کا موسم:']};
+    grid.innerHTML=combined.map(x=>{const vals=localSeedText(lastLang,x); return `<div class="seed-card"><div class="seed-head"><div class="seed-emoji">${x[0]}</div><div class="seed-names"><div class="en">${seedNames[lastLang]?.[x[1]]||x[1]}</div></div></div><div class="seed-rows"><div><b>${vals[0].split(':')[0]}:</b> ${vals[0].slice(vals[0].indexOf(':')+1).trim()}</div><div><b>${vals[1].split(':')[0]}:</b> ${vals[1].slice(vals[1].indexOf(':')+1).trim()}</div><div><b>${vals[2].split(':')[0]}:</b> ${vals[2].slice(vals[2].indexOf(':')+1).trim()}</div><div><b>${vals[3].split(':')[0]}:</b> ${vals[3].slice(vals[3].indexOf(':')+1).trim()}</div></div></div>`}).join('');
+  }
+  function renderWasteFull(){
+    const grid=document.getElementById('wasteGrid'); if(!grid) return;
+    const names={
+      en:{'Used tea leaves':'Used tea leaves','Crushed eggshells':'Crushed eggshells','Banana peels':'Banana peels','Vegetable peels & scraps':'Vegetable peels & scraps','Coffee grounds':'Coffee grounds','Rice rinse water':'Rice rinse water','Vegetable cooking water':'Vegetable cooking water','Onion & garlic skins':'Onion & garlic skins','Fruit peels':'Fruit peels','Grass clippings':'Grass clippings','Dry leaves':'Dry leaves','Coconut husk & coir':'Coconut husk & coir','Pulse & bean leftovers':'Pulse & bean leftovers','Wood ash (small amounts)':'Wood ash (small amounts)','Wood ash':'Wood ash','Dry leaves (leaf mould)':'Dry leaves (leaf mould)'},
+      hi:{'Used tea leaves':'इस्तेमाल की हुई चायपत्ती','Crushed eggshells':'कुचले हुए अंडे के छिलके','Banana peels':'केले के छिलके','Vegetable peels & scraps':'सब्जियों के छिलके और अवशेष','Coffee grounds':'कॉफी के अवशेष','Rice rinse water':'चावल धोने का पानी','Vegetable cooking water':'सब्जियां पकाने का पानी','Onion & garlic skins':'प्याज और लहसुन के छिलके','Fruit peels':'फलों के छिलके','Grass clippings':'घास की कतरन','Dry leaves':'सूखे पत्ते','Coconut husk & coir':'नारियल की भूसी और रेशा','Pulse & bean leftovers':'दाल और फलियों के अवशेष','Wood ash (small amounts)':'लकड़ी की राख (कम मात्रा)','Wood ash':'लकड़ी की राख','Dry leaves (leaf mould)':'सूखे पत्ते (पत्ती खाद)'},
+      kn:{'Used tea leaves':'ಬಳಸಿದ ಚಹಾ ಎಲೆಗಳು','Crushed eggshells':'ಪುಡಿಮಾಡಿದ ಮೊಟ್ಟೆಯ ಚಿಪ್ಪುಗಳು','Banana peels':'ಬಾಳೆಹಣ್ಣಿನ ಸಿಪ್ಪೆಗಳು','Vegetable peels & scraps':'ತರಕಾರಿ ಸಿಪ್ಪೆಗಳು ಮತ್ತು ಅವಶೇಷಗಳು','Coffee grounds':'ಕಾಫಿ ಪುಡಿ ಅವಶೇಷ','Rice rinse water':'ಅಕ್ಕಿ ತೊಳೆದ ನೀರು','Vegetable cooking water':'ತರಕಾರಿ ಬೇಯಿಸಿದ ನೀರು','Onion & garlic skins':'ಈರುಳ್ಳಿ ಮತ್ತು ಬೆಳ್ಳುಳ್ಳಿ ಸಿಪ್ಪೆಗಳು','Fruit peels':'ಹಣ್ಣಿನ ಸಿಪ್ಪೆಗಳು','Grass clippings':'ಹುಲ್ಲಿನ ಕತ್ತರಿಸಿದ ಭಾಗ','Dry leaves':'ಒಣ ಎಲೆಗಳು','Coconut husk & coir':'ತೆಂಗಿನ ಸಿಪ್ಪೆ ಮತ್ತು ನಾರು','Pulse & bean leftovers':'ಬೇಳೆ ಮತ್ತು ಕಾಳುಗಳ ಅವಶೇಷಗಳು','Wood ash (small amounts)':'ಮರದ ಬೂದಿ (ಕಡಿಮೆ ಪ್ರಮಾಣ)','Wood ash':'ಮರದ ಬೂದಿ','Dry leaves (leaf mould)':'ಒಣ ಎಲೆಗಳು (ಎಲೆ ಕಾಂಪೋಸ್ಟ್)'},
+      ta:{'Used tea leaves':'பயன்படுத்திய தேயிலை இலைகள்','Crushed eggshells':'நொறுக்கிய முட்டை ஓடுகள்','Banana peels':'வாழைப்பழத் தோல்கள்','Vegetable peels & scraps':'காய்கறித் தோல்கள் மற்றும் மீதிகள்','Coffee grounds':'காபி கழிவுத்தூள்','Rice rinse water':'அரிசி கழுவிய நீர்','Vegetable cooking water':'காய்கறி வேகவைத்த நீர்','Onion & garlic skins':'வெங்காயம் மற்றும் பூண்டு தோல்கள்','Fruit peels':'பழத் தோல்கள்','Grass clippings':'புல் வெட்டுத் துண்டுகள்','Dry leaves':'உலர்ந்த இலைகள்','Coconut husk & coir':'தேங்காய் மட்டை மற்றும் நார்','Pulse & bean leftovers':'பருப்பு மற்றும் பயறு மீதிகள்','Wood ash (small amounts)':'மரச் சாம்பல் (சிறிய அளவு)','Wood ash':'மரச் சாம்பல்','Dry leaves (leaf mould)':'உலர்ந்த இலைகள் (இலை உரம்)'},
+      te:{'Used tea leaves':'వాడిన టీ ఆకులు','Crushed eggshells':'నూరిన గుడ్డు పెంకులు','Banana peels':'అరటి తొక్కలు','Vegetable peels & scraps':'కూరగాయ తొక్కలు మరియు మిగతాలు','Coffee grounds':'కాఫీ పొడి అవశేషాలు','Rice rinse water':'బియ్యం కడిగిన నీరు','Vegetable cooking water':'కూరగాయలు ఉడికించిన నీరు','Onion & garlic skins':'ఉల్లిపాయ మరియు వెల్లుల్లి తొక్కలు','Fruit peels':'పండ్ల తొక్కలు','Grass clippings':'గడ్డి ముక్కలు','Dry leaves':'ఎండిన ఆకులు','Coconut husk & coir':'కొబ్బరి పొట్టు మరియు కొబ్బరి నారు','Pulse & bean leftovers':'పప్పులు మరియు బీన్స్ మిగతాలు','Wood ash (small amounts)':'చెక్క బూడిద (చిన్న పరిమాణం)','Wood ash':'చెక్క బూడిద','Dry leaves (leaf mould)':'ఎండిన ఆకులు (ఆకు కంపోస్ట్)'},
+      mr:{'Used tea leaves':'वापरलेली चहाची पाने','Crushed eggshells':'कुटलेली अंड्याची टरफले','Banana peels':'केळीची साले','Vegetable peels & scraps':'भाज्यांची साले व अवशेष','Coffee grounds':'कॉफीचे अवशेष','Rice rinse water':'तांदूळ धुतलेले पाणी','Vegetable cooking water':'भाज्या शिजवलेले पाणी','Onion & garlic skins':'कांदा व लसूण साले','Fruit peels':'फळांची साले','Grass clippings':'गवताची कापलेली पाने','Dry leaves':'सुकलेली पाने','Coconut husk & coir':'नारळाची भुसा व तंतू','Pulse & bean leftovers':'डाळी व कडधान्यांचे अवशेष','Wood ash (small amounts)':'लाकडाची राख (अल्प प्रमाणात)','Wood ash':'लाकडाची राख','Dry leaves (leaf mould)':'सुकलेली पाने (पानखत)'},
+      gu:{'Used tea leaves':'વપરાયેલી ચાની પત્તી','Crushed eggshells':'કચડેલા ઈંડાના છોતરાં','Banana peels':'કેળાની છાલ','Vegetable peels & scraps':'શાકભાજીની છાલ અને અવશેષો','Coffee grounds':'કોફીના અવશેષો','Rice rinse water':'ચોખા ધોયેલું પાણી','Vegetable cooking water':'શાકભાજી રાંધેલું પાણી','Onion & garlic skins':'ડુંગળી અને લસણની છાલ','Fruit peels':'ફળોની છાલ','Grass clippings':'ઘાસના કાપેલા ભાગ','Dry leaves':'સૂકા પાન','Coconut husk & coir':'નારિયેળની ભૂકી અને રેસો','Pulse & bean leftovers':'દાળ અને કઠોળના અવશેષો','Wood ash (small amounts)':'લાકડાની રાખ (ઓછી માત્રામાં)','Wood ash':'લાકડાની રાખ','Dry leaves (leaf mould)':'સૂકા પાન (પાનખાતર)'},
+      bn:{'Used tea leaves':'ব্যবহৃত চা পাতা','Crushed eggshells':'গুঁড়ো করা ডিমের খোসা','Banana peels':'কলা খোসা','Vegetable peels & scraps':'সবজির খোসা ও অবশিষ্টাংশ','Coffee grounds':'কফির অবশিষ্টাংশ','Rice rinse water':'চাল ধোয়া জল','Vegetable cooking water':'সবজি রান্নার জল','Onion & garlic skins':'পেঁয়াজ ও রসুনের খোসা','Fruit peels':'ফলের খোসা','Grass clippings':'ঘাসের কাটা অংশ','Dry leaves':'শুকনো পাতা','Coconut husk & coir':'নারকেলের ছোবড়া ও তন্তু','Pulse & bean leftovers':'ডাল ও শিমজাতীয় অবশিষ্টাংশ','Wood ash (small amounts)':'কাঠের ছাই (অল্প পরিমাণে)','Wood ash':'কাঠের ছাই','Dry leaves (leaf mould)':'শুকনো পাতা (পাতার সার)'},
+      pa:{'Used tea leaves':'ਵਰਤੀ ਹੋਈ ਚਾਹ ਪੱਤੀ','Crushed eggshells':'ਕੁੱਟੇ ਹੋਏ ਅੰਡੇ ਦੇ ਛਿਲਕੇ','Banana peels':'ਕੇਲੇ ਦੇ ਛਿਲਕੇ','Vegetable peels & scraps':'ਸਬਜ਼ੀਆਂ ਦੇ ਛਿਲਕੇ ਅਤੇ ਬਚਿਆ ਹਿੱਸਾ','Coffee grounds':'ਕੌਫੀ ਦੇ ਅਵਸ਼ੇਸ਼','Rice rinse water':'ਚੌਲ ਧੋਣ ਦਾ ਪਾਣੀ','Vegetable cooking water':'ਸਬਜ਼ੀਆਂ ਪਕਾਉਣ ਦਾ ਪਾਣੀ','Onion & garlic skins':'ਪਿਆਜ਼ ਅਤੇ ਲਸਣ ਦੇ ਛਿਲਕੇ','Fruit peels':'ਫਲਾਂ ਦੇ ਛਿਲਕੇ','Grass clippings':'ਘਾਹ ਦੀ ਕਟਾਈ','Dry leaves':'ਸੁੱਕੇ ਪੱਤੇ','Coconut husk & coir':'ਨਾਰੀਅਲ ਦੀ ਭੂਸੀ ਅਤੇ ਰੇਸ਼ਾ','Pulse & bean leftovers':'ਦਾਲਾਂ ਅਤੇ ਫਲੀਆਂ ਦੇ ਬਚੇ ਹਿੱਸੇ','Wood ash (small amounts)':'ਲੱਕੜ ਦੀ ਰਾਖ (ਥੋੜ੍ਹੀ ਮਾਤਰਾ)','Wood ash':'ਲੱਕੜ ਦੀ ਰਾਖ','Dry leaves (leaf mould)':'ਸੁੱਕੇ ਪੱਤੇ (ਪੱਤਾ ਖਾਦ)'},
+      ml:{'Used tea leaves':'ഉപയോഗിച്ച ചായയില','Crushed eggshells':'ചതച്ച മുട്ടത്തൊലി','Banana peels':'വാഴപ്പഴത്തൊലി','Vegetable peels & scraps':'പച്ചക്കറി തൊലികളും അവശിഷ്ടങ്ങളും','Coffee grounds':'കാപ്പി അവശിഷ്ടം','Rice rinse water':'അരി കഴുകിയ വെള്ളം','Vegetable cooking water':'പച്ചക്കറി വേവിച്ച വെള്ളം','Onion & garlic skins':'സവാളയും വെളുത്തുള്ളിയും തൊലി','Fruit peels':'പഴത്തൊലി','Grass clippings':'പുല്ലിന്റെ മുറിച്ച ഭാഗങ്ങൾ','Dry leaves':'ഉണങ്ങിയ ഇലകൾ','Coconut husk & coir':'തേങ്ങയുടെ തൊണ്ടും നാരും','Pulse & bean leftovers':'പരിപ്പ്-പയർ അവശിഷ്ടങ്ങൾ','Wood ash (small amounts)':'മരച്ചാരം (ചെറിയ അളവിൽ)','Wood ash':'മരച്ചാരം','Dry leaves (leaf mould)':'ഉണങ്ങിയ ഇലകൾ (ഇലവളം)'},
+      or:{'Used tea leaves':'ବ୍ୟବହୃତ ଚା ପତ୍ର','Crushed eggshells':'ଚୂର୍ଣ୍ଣ ଅଣ୍ଡା ଖୋଳ','Banana peels':'କଦଳୀ ଛାଲ','Vegetable peels & scraps':'ପନିପରିବା ଛାଲ ଓ ଅବଶେଷ','Coffee grounds':'କଫି ଅବଶେଷ','Rice rinse water':'ଚାଉଳ ଧୋଇଥିବା ପାଣି','Vegetable cooking water':'ପନିପରିବା ସିଝା ପାଣି','Onion & garlic skins':'ପିଆଜ ଓ ରସୁଣ ଛାଲ','Fruit peels':'ଫଳ ଛାଲ','Grass clippings':'ଘାସ କଟା ଅଂଶ','Dry leaves':'ଶୁଖିଲା ପତ୍ର','Coconut husk & coir':'ନଡ଼ିଆ ଖୋଳ ଓ ତନ୍ତୁ','Pulse & bean leftovers':'ଡାଲି ଓ ଶିମ୍ବ ଅବଶେଷ','Wood ash (small amounts)':'କାଠ ପାଉଁଶ (ଅଳ୍ପ ପରିମାଣରେ)','Wood ash':'କାଠ ପାଉଁଶ','Dry leaves (leaf mould)':'ଶୁଖିଲା ପତ୍ର (ପତ୍ର ଖତ)'},
+      as:{'Used tea leaves':'ব্যৱহৃত চাহপাত','Crushed eggshells':'গুড়ি কৰা কণীৰ খোলা','Banana peels':'কলৰ বাকলি','Vegetable peels & scraps':'শাক-পাচলিৰ বাকলি আৰু অৱশিষ্ট','Coffee grounds':'কফিৰ অৱশিষ্ট','Rice rinse water':'চাউল ধোৱা পানী','Vegetable cooking water':'শাক-পাচলি সিজোৱা পানী','Onion & garlic skins':'পিঁয়াজ আৰু নহৰুৰ বাকলি','Fruit peels':'ফলৰ বাকলি','Grass clippings':'ঘাঁহ কটা অংশ','Dry leaves':'শুকান পাত','Coconut husk & coir':'নাৰিকলৰ খোলা আৰু আঁহ','Pulse & bean leftovers':'দাইল আৰু মাহজাতীয় অৱশিষ্ট','Wood ash (small amounts)':'কাঠৰ ছাই (অলপ পৰিমাণে)','Wood ash':'কাঠৰ ছাই','Dry leaves (leaf mould)':'শুকান পাত (পাতৰ সাৰ)'},
+      ur:{'Used tea leaves':'استعمال شدہ چائے کی پتی','Crushed eggshells':'کچلے ہوئے انڈوں کے چھلکے','Banana peels':'کیلے کے چھلکے','Vegetable peels & scraps':'سبزیوں کے چھلکے اور باقیات','Coffee grounds':'کافی کی باقیات','Rice rinse water':'چاول دھونے کا پانی','Vegetable cooking water':'سبزیاں پکانے کا پانی','Onion & garlic skins':'پیاز اور لہسن کے چھلکے','Fruit peels':'پھلوں کے چھلکے','Grass clippings':'گھاس کی کترن','Dry leaves':'خشک پتے','Coconut husk & coir':'ناریل کا چھلکا اور ریشہ','Pulse & bean leftovers':'دال اور پھلیوں کی باقیات','Wood ash (small amounts)':'لکڑی کی راکھ (تھوڑی مقدار میں)','Wood ash':'لکڑی کی راکھ','Dry leaves (leaf mould)':'خشک پتے (پتوں کی کھاد)'}
+    };
+    const copy={
+      en:{dry:'Dry it and mix it into compost or soil.',soak:'Soak it in clean water or compost it before use.',compost:'Chop it and add it to compost with dry organic material.',mulch:'Use it as a thin mulch layer or compost it first.',ash:'Use only clean ash in small amounts after checking soil needs.',benefit:'Adds organic matter and supports healthy soil.',nutrient:'Provides small amounts of useful nutrients.',calcium:'Provides calcium and supports soil health.'},
+      hi:{dry:'इसे सुखाकर खाद या मिट्टी में मिलाएं।',soak:'इसे साफ पानी में भिगोएं या उपयोग से पहले कम्पोस्ट करें।',compost:'इसे काटकर सूखे जैविक पदार्थ के साथ कम्पोस्ट में मिलाएं।',mulch:'इसे पतली मल्च परत के रूप में उपयोग करें या पहले कम्पोस्ट करें।',ash:'मिट्टी की जरूरत जांचकर केवल साफ राख कम मात्रा में डालें।',benefit:'जैविक पदार्थ बढ़ाता है और मिट्टी को स्वस्थ रखने में मदद करता है।',nutrient:'थोड़ी मात्रा में उपयोगी पोषक तत्व देता है।',calcium:'कैल्शियम देता है और मिट्टी के स्वास्थ्य में मदद करता है।'},
+      kn:{dry:'ಇದನ್ನು ಒಣಗಿಸಿ ಗೊಬ್ಬರ ಅಥವಾ ಮಣ್ಣಿನಲ್ಲಿ ಮಿಶ್ರಣ ಮಾಡಿ.',soak:'ಇದನ್ನು ಶುದ್ಧ ನೀರಿನಲ್ಲಿ ನೆನೆಸಿರಿ ಅಥವಾ ಬಳಸುವ ಮೊದಲು ಕಾಂಪೋಸ್ಟ್ ಮಾಡಿ.',compost:'ಇದನ್ನು ಚೂರು ಮಾಡಿ ಒಣ ಸಾವಯವ ಪದಾರ್ಥಗಳೊಂದಿಗೆ ಕಾಂಪೋಸ್ಟ್‌ಗೆ ಸೇರಿಸಿ.',mulch:'ಇದನ್ನು ತೆಳುವಾದ ಮಲ್ಚ್ ಪದರವಾಗಿ ಬಳಸಿ ಅಥವಾ ಮೊದಲು ಕಾಂಪೋಸ್ಟ್ ಮಾಡಿ.',ash:'ಮಣ್ಣಿನ ಅಗತ್ಯ ಪರಿಶೀಲಿಸಿ ಸ್ವಚ್ಛ ಬೂದಿಯನ್ನು ಕಡಿಮೆ ಪ್ರಮಾಣದಲ್ಲಿ ಮಾತ್ರ ಬಳಸಿ.',benefit:'ಸಾವಯವ ಪದಾರ್ಥ ಹೆಚ್ಚಿಸಿ ಮಣ್ಣಿನ ಆರೋಗ್ಯಕ್ಕೆ ಸಹಾಯ ಮಾಡುತ್ತದೆ.',nutrient:'ಸ್ವಲ್ಪ ಪ್ರಮಾಣದಲ್ಲಿ ಉಪಯುಕ್ತ ಪೋಷಕಾಂಶಗಳನ್ನು ಒದಗಿಸುತ್ತದೆ.',calcium:'ಕ್ಯಾಲ್ಸಿಯಂ ಒದಗಿಸಿ ಮಣ್ಣಿನ ಆರೋಗ್ಯಕ್ಕೆ ಸಹಾಯ ಮಾಡುತ್ತದೆ.'},
+      ta:{dry:'இதை உலர்த்தி உரம் அல்லது மண்ணில் கலக்கவும்.',soak:'சுத்தமான நீரில் ஊறவைக்கவும் அல்லது பயன்படுத்தும் முன் கம்போஸ்ட் செய்யவும்.',compost:'இதனை நறுக்கி உலர் கரிமப் பொருட்களுடன் கம்போஸ்டில் சேர்க்கவும்.',mulch:'மெல்லிய மூடாக்காக பயன்படுத்தவும் அல்லது முதலில் கம்போஸ்ட் செய்யவும்.',ash:'மண்ணின் தேவையை சரிபார்த்து சுத்தமான சாம்பலை குறைந்த அளவில் மட்டும் பயன்படுத்தவும்.',benefit:'கரிமப் பொருளை அதிகரித்து மண் ஆரோக்கியத்திற்கு உதவுகிறது.',nutrient:'சிறிய அளவில் பயனுள்ள ஊட்டச்சத்துகளை வழங்குகிறது.',calcium:'கால்சியம் வழங்கி மண் ஆரோக்கியத்திற்கு உதவுகிறது.'},
+      te:{dry:'దీన్ని ఎండబెట్టి కంపోస్ట్ లేదా మట్టిలో కలపండి.',soak:'శుభ్రమైన నీటిలో నానబెట్టండి లేదా ఉపయోగించే ముందు కంపోస్ట్ చేయండి.',compost:'దీన్ని ముక్కలుగా చేసి ఎండిన సేంద్రియ పదార్థంతో కంపోస్ట్‌లో కలపండి.',mulch:'దీన్ని పలుచని మల్చ్‌గా వాడండి లేదా ముందుగా కంపోస్ట్ చేయండి.',ash:'నేల అవసరాన్ని పరిశీలించి శుభ్రమైన బూడిదను తక్కువ పరిమాణంలో మాత్రమే వాడండి.',benefit:'సేంద్రియ పదార్థాన్ని పెంచి నేల ఆరోగ్యానికి సహాయపడుతుంది.',nutrient:'కొద్దిగా ఉపయోగకరమైన పోషకాలను అందిస్తుంది.',calcium:'కాల్షియం అందించి నేల ఆరోగ్యానికి సహాయపడుతుంది.'},
+      mr:{dry:'हे वाळवून खत किंवा मातीत मिसळा.',soak:'स्वच्छ पाण्यात भिजवा किंवा वापरण्यापूर्वी कंपोस्ट करा.',compost:'हे चिरून कोरड्या सेंद्रिय पदार्थांसह कंपोस्टमध्ये मिसळा.',mulch:'याचा पातळ आच्छादन म्हणून वापर करा किंवा आधी कंपोस्ट करा.',ash:'मातीची गरज तपासून स्वच्छ राख अल्प प्रमाणातच वापरा.',benefit:'सेंद्रिय पदार्थ वाढवून मातीच्या आरोग्यास मदत करते.',nutrient:'थोड्या प्रमाणात उपयुक्त पोषकद्रव्ये देते.',calcium:'कॅल्शियम पुरवून मातीच्या आरोग्यास मदत करते.'},
+      gu:{dry:'તેને સૂકવીને ખાતર અથવા જમીનમાં ભેળવો.',soak:'સ્વચ્છ પાણીમાં પલાળો અથવા ઉપયોગ પહેલાં કમ્પોસ્ટ કરો.',compost:'તેને કાપીને સૂકા સજીવ પદાર્થ સાથે કમ્પોસ્ટમાં ઉમેરો.',mulch:'પાતળી મલ્ચ તરીકે વાપરો અથવા પહેલાં કમ્પોસ્ટ કરો.',ash:'જમીનની જરૂરિયાત તપાસીને સ્વચ્છ રાખ ઓછી માત્રામાં જ વાપરો.',benefit:'સજીવ પદાર્થ વધારે છે અને જમીનના આરોગ્યમાં મદદ કરે છે.',nutrient:'થોડી માત્રામાં ઉપયોગી પોષક તત્વો આપે છે.',calcium:'કેલ્શિયમ આપે છે અને જમીનના આરોગ્યમાં મદદ કરે છે.'},
+      bn:{dry:'এটি শুকিয়ে সার বা মাটিতে মিশিয়ে দিন।',soak:'পরিষ্কার জলে ভিজিয়ে রাখুন বা ব্যবহারের আগে কম্পোস্ট করুন।',compost:'এটি কেটে শুকনো জৈব উপাদানের সঙ্গে কম্পোস্টে দিন।',mulch:'পাতলা মালচ হিসেবে ব্যবহার করুন বা আগে কম্পোস্ট করুন।',ash:'মাটির প্রয়োজন দেখে পরিষ্কার ছাই অল্প পরিমাণে ব্যবহার করুন।',benefit:'জৈব পদার্থ বাড়ায় এবং মাটির স্বাস্থ্য ভালো রাখতে সাহায্য করে।',nutrient:'অল্প পরিমাণে উপকারী পুষ্টি দেয়।',calcium:'ক্যালসিয়াম দেয় এবং মাটির স্বাস্থ্যে সহায়তা করে।'},
+      pa:{dry:'ਇਸਨੂੰ ਸੁਕਾ ਕੇ ਖਾਦ ਜਾਂ ਮਿੱਟੀ ਵਿੱਚ ਮਿਲਾਓ।',soak:'ਇਸਨੂੰ ਸਾਫ਼ ਪਾਣੀ ਵਿੱਚ ਭਿਉਂ ਜਾਂ ਵਰਤੋਂ ਤੋਂ ਪਹਿਲਾਂ ਕੰਪੋਸਟ ਕਰੋ।',compost:'ਇਸਨੂੰ ਕੱਟ ਕੇ ਸੁੱਕੇ ਜੈਵਿਕ ਪਦਾਰਥ ਨਾਲ ਕੰਪੋਸਟ ਵਿੱਚ ਮਿਲਾਓ।',mulch:'ਇਸਨੂੰ ਪਤਲੀ ਮਲਚ ਪਰਤ ਵਜੋਂ ਵਰਤੋ ਜਾਂ ਪਹਿਲਾਂ ਕੰਪੋਸਟ ਕਰੋ।',ash:'ਮਿੱਟੀ ਦੀ ਲੋੜ ਦੇਖ ਕੇ ਸਾਫ਼ ਰਾਖ ਥੋੜ੍ਹੀ ਮਾਤਰਾ ਵਿੱਚ ਹੀ ਵਰਤੋ।',benefit:'ਜੈਵਿਕ ਪਦਾਰਥ ਵਧਾਉਂਦਾ ਹੈ ਅਤੇ ਮਿੱਟੀ ਦੀ ਸਿਹਤ ਲਈ ਮਦਦਗਾਰ ਹੈ।',nutrient:'ਥੋੜ੍ਹੀ ਮਾਤਰਾ ਵਿੱਚ ਲਾਭਦਾਇਕ ਪੋਸ਼ਕ ਤੱਤ ਦਿੰਦਾ ਹੈ।',calcium:'ਕੈਲਸ਼ੀਅਮ ਦਿੰਦਾ ਹੈ ਅਤੇ ਮਿੱਟੀ ਦੀ ਸਿਹਤ ਵਿੱਚ ਮਦਦ ਕਰਦਾ ਹੈ।'},
+      ml:{dry:'ഇത് ഉണക്കി വളത്തിലോ മണ്ണിലോ കലർത്തുക.',soak:'ശുദ്ധജലത്തിൽ മുക്കിവയ്ക്കുക അല്ലെങ്കിൽ ഉപയോഗിക്കുന്നതിന് മുമ്പ് കമ്പോസ്റ്റ് ചെയ്യുക.',compost:'ഇത് ചെറുതാക്കി ഉണങ്ങിയ ജൈവവസ്തുക്കളോടൊപ്പം കമ്പോസ്റ്റിൽ ചേർക്കുക.',mulch:'ഇത് നേർത്ത പുതയിടലായി ഉപയോഗിക്കുക അല്ലെങ്കിൽ ആദ്യം കമ്പോസ്റ്റ് ചെയ്യുക.',ash:'മണ്ണിന്റെ ആവശ്യം പരിശോധിച്ച് ശുദ്ധമായ ചാരം ചെറിയ അളവിൽ മാത്രം ഉപയോഗിക്കുക.',benefit:'ജൈവവസ്തു വർധിപ്പിച്ച് മണ്ണിന്റെ ആരോഗ്യത്തിന് സഹായിക്കുന്നു.',nutrient:'ചെറിയ അളവിൽ ഉപകാരപ്രദമായ പോഷകങ്ങൾ നൽകുന്നു.',calcium:'കാൽസ്യം നൽകുകയും മണ്ണിന്റെ ആരോഗ്യത്തിന് സഹായിക്കുകയും ചെയ്യുന്നു.'},
+      or:{dry:'ଏହାକୁ ଶୁଖାଇ ଖତ କିମ୍ବା ମାଟିରେ ମିଶାନ୍ତୁ।',soak:'ସଫା ପାଣିରେ ଭିଜାନ୍ତୁ କିମ୍ବା ବ୍ୟବହାର ପୂର୍ବରୁ କମ୍ପୋଷ୍ଟ କରନ୍ତୁ।',compost:'ଏହାକୁ କାଟି ଶୁଖିଲା ଜୈବ ପଦାର୍ଥ ସହ କମ୍ପୋଷ୍ଟରେ ମିଶାନ୍ତୁ।',mulch:'ଏହାକୁ ପତଳା ମଲ୍ଚ ଭାବେ ବ୍ୟବହାର କରନ୍ତୁ କିମ୍ବା ପ୍ରଥମେ କମ୍ପୋଷ୍ଟ କରନ୍ତୁ।',ash:'ମାଟିର ଆବଶ୍ୟକତା ଯାଞ୍ଚ କରି ସଫା ପାଉଁଶ ଅଳ୍ପ ପରିମାଣରେ ବ୍ୟବହାର କରନ୍ତୁ।',benefit:'ଜୈବ ପଦାର୍ଥ ବଢ଼ାଇ ମାଟିର ସ୍ୱାସ୍ଥ୍ୟକୁ ସହାୟତା କରେ।',nutrient:'ଅଳ୍ପ ପରିମାଣରେ ଉପଯୋଗୀ ପୋଷକ ଦିଏ।',calcium:'କ୍ୟାଲସିୟମ ଯୋଗାଇ ମାଟିର ସ୍ୱାସ୍ଥ୍ୟକୁ ସହାୟତା କରେ.'},
+      as:{dry:'ইয়াক শুকুৱাই সাৰ বা মাটিত মিহলাই দিয়ক।',soak:'পৰিষ্কাৰ পানীত তিয়াই ৰাখক বা ব্যৱহাৰৰ আগতে কম্পোষ্ট কৰক।',compost:'ইয়াক কাটি শুকান জৈৱ পদাৰ্থৰ সৈতে কম্পোষ্টত দিয়ক।',mulch:'ইয়াক পাতল মাল্চ হিচাপে ব্যৱহাৰ কৰক বা আগতে কম্পোষ্ট কৰক।',ash:'মাটিৰ প্ৰয়োজন পৰীক্ষা কৰি পৰিষ্কাৰ ছাই অলপ পৰিমাণতহে ব্যৱহাৰ কৰক।',benefit:'জৈৱ পদাৰ্থ বৃদ্ধি কৰি মাটিৰ স্বাস্থ্যত সহায় কৰে।',nutrient:'অলপ পৰিমাণত উপযোগী পুষ্টি যোগায়।',calcium:'কেলচিয়াম যোগাই মাটিৰ স্বাস্থ্যত সহায় কৰে.'},
+      ur:{dry:'اسے خشک کرکے کھاد یا مٹی میں ملائیں۔',soak:'اسے صاف پانی میں بھگوئیں یا استعمال سے پہلے کمپوسٹ کریں۔',compost:'اسے کاٹ کر خشک نامیاتی مواد کے ساتھ کمپوسٹ میں شامل کریں۔',mulch:'اسے پتلی ملچ کی تہہ کے طور پر استعمال کریں یا پہلے کمپوسٹ کریں۔',ash:'مٹی کی ضرورت جانچ کر صاف راکھ تھوڑی مقدار میں استعمال کریں۔',benefit:'نامیاتی مادہ بڑھاتا ہے اور مٹی کی صحت میں مدد کرتا ہے۔',nutrient:'تھوڑی مقدار میں مفید غذائی اجزا فراہم کرتا ہے۔',calcium:'کیلشیم فراہم کرتا ہے اور مٹی کی صحت میں مدد کرتا ہے۔'}
+    };
+    const L=copy[lastLang]||copy.en, N=names[lastLang]||names.en;
+    const mode=(name)=>{
+      if(name==='Used tea leaves'||name==='Crushed eggshells'||name==='Coffee grounds') return 'dry';
+      if(name==='Banana peels'||name==='Rice rinse water'||name==='Vegetable cooking water') return 'soak';
+      if(name==='Vegetable peels & scraps'||name==='Onion & garlic skins'||name==='Fruit peels'||name==='Pulse & bean leftovers') return 'compost';
+      if(name==='Grass clippings'||name==='Dry leaves'||name==='Coconut husk & coir'||name==='Dry leaves (leaf mould)') return 'mulch';
+      if(name==='Wood ash (small amounts)'||name==='Wood ash') return 'ash';
+      return 'compost';
+    };
+    const benefit=(name)=>{
+      if(name==='Crushed eggshells') return L.calcium;
+      if(name==='Banana peels'||name==='Rice rinse water'||name==='Vegetable cooking water') return L.nutrient;
+      if(name==='Wood ash (small amounts)'||name==='Wood ash') return L.nutrient;
+      return L.benefit;
+    };
+    grid.innerHTML=waste.map(x=>{const name=x[1]; return `<div class="waste-card"><div class="waste-head"><span class="waste-emoji">${x[0]}</span><h3>${N[name]||name}</h3></div><p>${L[mode(name)]}</p><div class="benefit">${benefit(name)}</div></div>`}).join('');
+  }
+  function translateExact(root){
+    const maps={
+      hi:{'Good evening, Akrit 👋':'शुभ संध्या, Akrit 👋','Conditions look normal for the next 3 days':'अगले 3 दिनों में सामान्य स्थिति','Today':'आज','Sat':'शनि','Sun':'रवि','Mon':'सोम','Crop & fertiliser advisor':'फ़सल व खाद सलाहकार','Soil:':'मिट्टी:','Weather:':'मौसम:','Irrigation:':'सिंचाई:','Sowing season:':'बुवाई मौसम:','Tomato · 1.6 acres':'टमाटर · 1.6 एकड़','Sep 11 · 6:00 AM':'11 सितंबर · सुबह 6:00 बजे','Oct 10–17':'10–17 अक्टूबर','Tomato season journey':'टमाटर सीज़न यात्रा','Sep 13':'13 सितंबर','Oct 10':'10 अक्टूबर','₹12,480':'₹12,480','KisanSetu — 100% free farmer tools · Prototype build':'KisanSetu — किसानों के लिए 100% मुफ़्त टूल · प्रोटोटाइप','Hybrid variety · Sown July 24 · Growth stage':'हाइब्रिड किस्म · 24 जुलाई को बोई गई · वृद्धि अवस्था'},
+      kn:{'Good evening, Akrit 👋':'ಶುಭ ಸಂಜೆ, Akrit 👋','Conditions look normal for the next 3 days':'ಮುಂದಿನ 3 ದಿನಗಳ ಪರಿಸ್ಥಿತಿ ಸಾಮಾನ್ಯವಾಗಿದೆ','Today':'ಇಂದು','Sat':'ಶನಿ','Sun':'ಭಾನು','Mon':'ಸೋಮ','Crop & fertiliser advisor':'ಬೆಳೆ ಮತ್ತು ಗೊಬ್ಬರ ಸಲಹೆಗಾರ','Soil:':'ಮಣ್ಣು:','Weather:':'ಹವಾಮಾನ:','Irrigation:':'ನೀರಾವರಿ:','Sowing season:':'ಬಿತ್ತನೆ ಋತು:','Tomato · 1.6 acres':'ಟೊಮೇಟೊ · 1.6 ಎಕರೆ','Sep 11 · 6:00 AM':'ಸೆಪ್ಟೆಂಬರ್ 11 · ಬೆಳಿಗ್ಗೆ 6:00','Oct 10–17':'ಅಕ್ಟೋಬರ್ 10–17','Tomato season journey':'ಟೊಮೇಟೊ ಋತು ಪ್ರಯಾಣ','Sep 13':'ಸೆಪ್ಟೆಂಬರ್ 13','Oct 10':'ಅಕ್ಟೋಬರ್ 10','Hybrid variety · Sown July 24 · Growth stage':'ಹೈಬ್ರಿಡ್ ತಳಿ · ಜುಲೈ 24ರಂದು ಬಿತ್ತನೆ · ಬೆಳವಣಿಗೆ ಹಂತ','KisanSetu — 100% free farmer tools · Prototype build':'KisanSetu — ರೈತರಿಗೆ 100% ಉಚಿತ ಸಾಧನಗಳು · ಪ್ರೋಟೋಟೈಪ್'}
+    };
+    const M=maps[lastLang]; if(!M) return;
+    const walker=document.createTreeWalker(root||document.body,NodeFilter.SHOW_TEXT); const nodes=[]; while(walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(n=>{const p=n.parentElement; if(!p || ['SCRIPT','STYLE','OPTION'].includes(p.tagName) || p.closest('#seedGrid,#wasteGrid')) return; const v=n.nodeValue.trim(); if(M[v]) n.nodeValue=n.nodeValue.replace(v,M[v]);});
+  }
+  function removeDiaryAndBalance(){
+    document.querySelectorAll('#sbNav button[data-page="diary"], #page-diary').forEach(el=>el.remove());
+    document.querySelectorAll('[data-i18n="balanceTitle"]').forEach(h=>{const panel=h.closest('.panel'); if(panel) panel.remove();});
+    document.querySelectorAll('[data-i18n="balanceSub"]').forEach(el=>{const panel=el.closest('.panel'); if(panel) panel.remove();});
+  }
+  function applyFull(lang){
+    lastLang=LANG[lang]?lang:'en'; document.documentElement.lang=lastLang; document.body.dir=lastLang==='ur'?'rtl':'ltr';
+    setKeyText(); renderSeedsFull(); renderWasteFull(); translateExact(document.body); removeDiaryAndBalance();
+    // Keep farmer-entered name unchanged; only translate surrounding UI.
+    const input=document.getElementById('farmerNameInput'); if(input) input.placeholder=LANG[lastLang].namePlaceholder;
+  }
+  const ls=document.getElementById('langSelect');
+  if(ls){ ls.addEventListener('change',e=>applyFull(e.target.value)); }
+  // Remove diary/balance immediately and apply a complete default language pass.
+  removeDiaryAndBalance(); applyFull((ls&&ls.value)||'en');
+  // Translate newly-generated advisor output after the original demo handler runs.
+  const submit=document.getElementById('submitBtn'); if(submit) submit.addEventListener('click',()=>setTimeout(()=>{translateExact(document.getElementById('advisorResults')||document.body);},450));
+  // Keep generated weather text localized after refreshes.
+  const wr=document.getElementById('wRefresh'); if(wr) wr.addEventListener('click',()=>setTimeout(()=>{translateExact(document.body);},700));
+})();
+</script>
+<script>
+/* FINAL WASTE-MANURE LANGUAGE PATCH: never fall back to English for regional languages. */
+(function(){
+  const WASTE_LANG={
+    hi:{dry:'इसे सुखाकर कम्पोस्ट या मिट्टी में मिलाएं।',soak:'इसे साफ पानी में भिगोएं या उपयोग से पहले कम्पोस्ट करें।',compost:'इसे काटकर सूखे जैविक पदार्थ के साथ कम्पोस्ट में मिलाएं।',mulch:'इसे पतली मल्च परत के रूप में उपयोग करें या पहले कम्पोस्ट करें।',ash:'मिट्टी की जरूरत जांचकर साफ राख कम मात्रा में ही डालें।',benefit:'जैविक पदार्थ बढ़ाता है और मिट्टी के स्वास्थ्य में मदद करता है।',nutrient:'थोड़ी मात्रा में उपयोगी पोषक तत्व देता है।',calcium:'कैल्शियम देता है और मिट्टी के स्वास्थ्य में मदद करता है।'},
+    kn:{dry:'ಇದನ್ನು ಒಣಗಿಸಿ ಕಾಂಪೋಸ್ಟ್ ಅಥವಾ ಮಣ್ಣಿನಲ್ಲಿ ಮಿಶ್ರಣ ಮಾಡಿ.',soak:'ಇದನ್ನು ಶುದ್ಧ ನೀರಿನಲ್ಲಿ ನೆನೆಸಿರಿ ಅಥವಾ ಬಳಸುವ ಮೊದಲು ಕಾಂಪೋಸ್ಟ್ ಮಾಡಿ.',compost:'ಇದನ್ನು ಚೂರು ಮಾಡಿ ಒಣ ಸಾವಯವ ಪದಾರ್ಥಗಳೊಂದಿಗೆ ಕಾಂಪೋಸ್ಟ್‌ಗೆ ಸೇರಿಸಿ.',mulch:'ಇದನ್ನು ತೆಳುವಾದ ಮಲ್ಚ್ ಪದರವಾಗಿ ಬಳಸಿ ಅಥವಾ ಮೊದಲು ಕಾಂಪೋಸ್ಟ್ ಮಾಡಿ.',ash:'ಮಣ್ಣಿನ ಅಗತ್ಯ ಪರಿಶೀಲಿಸಿ ಸ್ವಚ್ಛ ಬೂದಿಯನ್ನು ಕಡಿಮೆ ಪ್ರಮಾಣದಲ್ಲಿ ಮಾತ್ರ ಬಳಸಿ.',benefit:'ಸಾವಯವ ಪದಾರ್ಥ ಹೆಚ್ಚಿಸಿ ಮಣ್ಣಿನ ಆರೋಗ್ಯಕ್ಕೆ ಸಹಾಯ ಮಾಡುತ್ತದೆ.',nutrient:'ಸ್ವಲ್ಪ ಪ್ರಮಾಣದಲ್ಲಿ ಉಪಯುಕ್ತ ಪೋಷಕಾಂಶಗಳನ್ನು ಒದಗಿಸುತ್ತದೆ.',calcium:'ಕ್ಯಾಲ್ಸಿಯಂ ಒದಗಿಸಿ ಮಣ್ಣಿನ ಆರೋಗ್ಯಕ್ಕೆ ಸಹಾಯ ಮಾಡುತ್ತದೆ.'},
+    ta:{dry:'இதை உலர்த்தி உரம் அல்லது மண்ணில் கலக்கவும்.',soak:'சுத்தமான நீரில் ஊறவைக்கவும் அல்லது பயன்படுத்தும் முன் கம்போஸ்ட் செய்யவும்.',compost:'இதனை நறுக்கி உலர் கரிமப் பொருட்களுடன் கம்போஸ்டில் சேர்க்கவும்.',mulch:'மெல்லிய மூடாக்காக பயன்படுத்தவும் அல்லது முதலில் கம்போஸ்ட் செய்யவும்.',ash:'மண்ணின் தேவையை சரிபார்த்து சுத்தமான சாம்பலை குறைந்த அளவில் மட்டும் பயன்படுத்தவும்.',benefit:'கரிமப் பொருளை அதிகரித்து மண் ஆரோக்கியத்திற்கு உதவுகிறது.',nutrient:'சிறிய அளவில் பயனுள்ள ஊட்டச்சத்துகளை வழங்குகிறது.',calcium:'கால்சியம் வழங்கி மண் ஆரோக்கியத்திற்கு உதவுகிறது.'},
+    te:{dry:'దీన్ని ఎండబెట్టి కంపోస్ట్ లేదా మట్టిలో కలపండి.',soak:'శుభ్రమైన నీటిలో నానబెట్టండి లేదా ఉపయోగించే ముందు కంపోస్ట్ చేయండి.',compost:'దీన్ని ముక్కలుగా చేసి ఎండిన సేంద్రియ పదార్థంతో కంపోస్ట్‌లో కలపండి.',mulch:'దీన్ని పలుచని మల్చ్‌గా వాడండి లేదా ముందుగా కంపోస్ట్ చేయండి.',ash:'నేల అవసరాన్ని పరిశీలించి శుభ్రమైన బూడిదను తక్కువ పరిమాణంలో మాత్రమే వాడండి.',benefit:'సేంద్రియ పదార్థాన్ని పెంచి నేల ఆరోగ్యానికి సహాయపడుతుంది.',nutrient:'కొద్దిగా ఉపయోగకరమైన పోషకాలను అందిస్తుంది.',calcium:'కాల్షియం అందించి నేల ఆరోగ్యానికి సహాయపడుతుంది.'},
+    mr:{dry:'हे वाळवून खत किंवा मातीत मिसळा.',soak:'स्वच्छ पाण्यात भिजवा किंवा वापरण्यापूर्वी कंपोस्ट करा.',compost:'हे चिरून कोरड्या सेंद्रिय पदार्थांसह कंपोस्टमध्ये मिसळा.',mulch:'याचा पातळ आच्छादन म्हणून वापर करा किंवा आधी कंपोस्ट करा.',ash:'मातीची गरज तपासून स्वच्छ राख अल्प प्रमाणातच वापरा.',benefit:'सेंद्रिय पदार्थ वाढवून मातीच्या आरोग्यास मदत करते.',nutrient:'थोड्या प्रमाणात उपयुक्त पोषकद्रव्ये देते.',calcium:'कॅल्शियम पुरवून मातीच्या आरोग्यास मदत करते.'},
+    gu:{dry:'તેને સૂકવીને ખાતર અથવા જમીનમાં ભેળવો.',soak:'સ્વચ્છ પાણીમાં પલાળો અથવા ઉપયોગ પહેલાં કમ્પોસ્ટ કરો.',compost:'તેને કાપીને સૂકા સજીવ પદાર્થ સાથે કમ્પોસ્ટમાં ઉમેરો.',mulch:'પાતળી મલ્ચ તરીકે વાપરો અથવા પહેલાં કમ્પોસ્ટ કરો.',ash:'જમીનની જરૂરિયાત તપાસીને સ્વચ્છ રાખ ઓછી માત્રામાં જ વાપરો.',benefit:'સજીવ પદાર્થ વધારે છે અને જમીનના આરોગ્યમાં મદદ કરે છે.',nutrient:'થોડી માત્રામાં ઉપયોગી પોષક તત્વો આપે છે.',calcium:'કેલ્શિયમ આપે છે અને જમીનના આરોગ્યમાં મદદ કરે છે.'},
+    bn:{dry:'এটি শুকিয়ে সার বা মাটিতে মিশিয়ে দিন।',soak:'পরিষ্কার জলে ভিজিয়ে রাখুন বা ব্যবহারের আগে কম্পোস্ট করুন।',compost:'এটি কেটে শুকনো জৈব উপাদানের সঙ্গে কম্পোস্টে দিন।',mulch:'পাতলা মালচ হিসেবে ব্যবহার করুন বা আগে কম্পোস্ট করুন।',ash:'মাটির প্রয়োজন দেখে পরিষ্কার ছাই অল্প পরিমাণে ব্যবহার করুন।',benefit:'জৈব পদার্থ বাড়ায় এবং মাটির স্বাস্থ্য ভালো রাখতে সাহায্য করে।',nutrient:'অল্প পরিমাণে উপকারী পুষ্টি দেয়।',calcium:'ক্যালসিয়াম দেয় এবং মাটির স্বাস্থ্যে সহায়তা করে।'},
+    pa:{dry:'ਇਸਨੂੰ ਸੁਕਾ ਕੇ ਖਾਦ ਜਾਂ ਮਿੱਟੀ ਵਿੱਚ ਮਿਲਾਓ।',soak:'ਇਸਨੂੰ ਸਾਫ਼ ਪਾਣੀ ਵਿੱਚ ਭਿਉਂ ਜਾਂ ਵਰਤੋਂ ਤੋਂ ਪਹਿਲਾਂ ਕੰਪੋਸਟ ਕਰੋ।',compost:'ਇਸਨੂੰ ਕੱਟ ਕੇ ਸੁੱਕੇ ਜੈਵਿਕ ਪਦਾਰਥ ਨਾਲ ਕੰਪੋਸਟ ਵਿੱਚ ਮਿਲਾਓ।',mulch:'ਇਸਨੂੰ ਪਤਲੀ ਮਲਚ ਪਰਤ ਵਜੋਂ ਵਰਤੋ ਜਾਂ ਪਹਿਲਾਂ ਕੰਪੋਸਟ ਕਰੋ।',ash:'ਮਿੱਟੀ ਦੀ ਲੋੜ ਦੇਖ ਕੇ ਸਾਫ਼ ਰਾਖ ਥੋੜ੍ਹੀ ਮਾਤਰਾ ਵਿੱਚ ਹੀ ਵਰਤੋ।',benefit:'ਜੈਵਿਕ ਪਦਾਰਥ ਵਧਾਉਂਦਾ ਹੈ ਅਤੇ ਮਿੱਟੀ ਦੀ ਸਿਹਤ ਲਈ ਮਦਦਗਾਰ ਹੈ।',nutrient:'ਥੋੜ੍ਹੀ ਮਾਤਰਾ ਵਿੱਚ ਲਾਭਦਾਇਕ ਪੋਸ਼ਕ ਤੱਤ ਦਿੰਦਾ ਹੈ।',calcium:'ਕੈਲਸ਼ੀਅਮ ਦਿੰਦਾ ਹੈ ਅਤੇ ਮਿੱਟੀ ਦੀ ਸਿਹਤ ਵਿੱਚ ਮਦਦ ਕਰਦਾ ਹੈ।'},
+    ml:{dry:'ഇത് ഉണക്കി വളത്തിലോ മണ്ണിലോ കലർത്തുക.',soak:'ശുദ്ധജലത്തിൽ മുക്കിവയ്ക്കുക അല്ലെങ്കിൽ ഉപയോഗിക്കുന്നതിന് മുമ്പ് കമ്പോസ്റ്റ് ചെയ്യുക.',compost:'ഇത് ചെറുതാക്കി ഉണങ്ങിയ ജൈവവസ്തുക്കളോടൊപ്പം കമ്പോസ്റ്റിൽ ചേർക്കുക.',mulch:'ഇത് നേർത്ത പുതയിടലായി ഉപയോഗിക്കുക അല്ലെങ്കിൽ ആദ്യം കമ്പോസ്റ്റ് ചെയ്യുക.',ash:'മണ്ണിന്റെ ആവശ്യം പരിശോധിച്ച് ശുദ്ധമായ ചാരം ചെറിയ അളവിൽ മാത്രം ഉപയോഗിക്കുക.',benefit:'ജൈവവസ്തു വർധിപ്പിച്ച് മണ്ണിന്റെ ആരോഗ്യത്തിന് സഹായിക്കുന്നു.',nutrient:'ചെറിയ അളവിൽ ഉപകാരപ്രദമായ പോഷകങ്ങൾ നൽകുന്നു.',calcium:'കാൽസ്യം നൽകുകയും മണ്ണിന്റെ ആരോഗ്യത്തിന് സഹായിക്കുകയും ചെയ്യുന്നു.'},
+    or:{dry:'ଏହାକୁ ଶୁଖାଇ ଖତ କିମ୍ବା ମାଟିରେ ମିଶାନ୍ତୁ।',soak:'ସଫା ପାଣିରେ ଭିଜାନ୍ତୁ କିମ୍ବା ବ୍ୟବହାର ପୂର୍ବରୁ କମ୍ପୋଷ୍ଟ କରନ୍ତୁ।',compost:'ଏହାକୁ କାଟି ଶୁଖିଲା ଜୈବ ପଦାର୍ଥ ସହ କମ୍ପୋଷ୍ଟରେ ମିଶାନ୍ତୁ।',mulch:'ଏହାକୁ ପତଳା ମଲ୍ଚ ଭାବେ ବ୍ୟବହାର କରନ୍ତୁ କିମ୍ବା ପ୍ରଥମେ କମ୍ପୋଷ୍ଟ କରନ୍ତୁ।',ash:'ମାଟିର ଆବଶ୍ୟକତା ଯାଞ୍ଚ କରି ସଫା ପାଉଁଶ ଅଳ୍ପ ପରିମାଣରେ ବ୍ୟବହାର କରନ୍ତୁ।',benefit:'ଜୈବ ପଦାର୍ଥ ବଢ଼ାଇ ମାଟିର ସ୍ୱାସ୍ଥ୍ୟକୁ ସହାୟତା କରେ।',nutrient:'ଅଳ୍ପ ପରିମାଣରେ ଉପଯୋଗୀ ପୋଷକ ଦିଏ।',calcium:'କ୍ୟାଲସିୟମ ଯୋଗାଇ ମାଟିର ସ୍ୱାସ୍ଥ୍ୟକୁ ସହାୟତା କରେ।'},
+    as:{dry:'ইয়াক শুকুৱাই সাৰ বা মাটিত মিহলাই দিয়ক।',soak:'পৰিষ্কাৰ পানীত তিয়াই ৰাখক বা ব্যৱহাৰৰ আগতে কম্পোষ্ট কৰক।',compost:'ইয়াক কাটি শুকান জৈৱ পদাৰ্থৰ সৈতে কম্পোষ্টত দিয়ক।',mulch:'ইয়াক পাতল মাল্চ হিচাপে ব্যৱহাৰ কৰক বা আগতে কম্পোষ্ট কৰক।',ash:'মাটিৰ প্ৰয়োজন পৰীক্ষা কৰি পৰিষ্কাৰ ছাই অলপ পৰিমাণতহে ব্যৱহাৰ কৰক।',benefit:'জৈৱ পদাৰ্থ বৃদ্ধি কৰি মাটিৰ স্বাস্থ্যত সহায় কৰে।',nutrient:'অলপ পৰিমাণত উপযোগী পুষ্টি যোগায়।',calcium:'কেলচিয়াম যোগাই মাটিৰ স্বাস্থ্যত সহায় কৰে।'},
+    ur:{dry:'اسے خشک کرکے کھاد یا مٹی میں ملائیں۔',soak:'اسے صاف پانی میں بھگوئیں یا استعمال سے پہلے کمپوسٹ کریں۔',compost:'اسے کاٹ کر خشک نامیاتی مواد کے ساتھ کمپوسٹ میں شامل کریں۔',mulch:'اسے پتلی ملچ کی تہہ کے طور پر استعمال کریں یا پہلے کمپوسٹ کریں۔',ash:'مٹی کی ضرورت جانچ کر صاف راکھ تھوڑی مقدار میں استعمال کریں۔',benefit:'نامیاتی مادہ بڑھاتا ہے اور مٹی کی صحت میں مدد کرتا ہے۔',nutrient:'تھوڑی مقدار میں مفید غذائی اجزا فراہم کرتا ہے۔',calcium:'کیلشیم فراہم کرتا ہے اور مٹی کی صحت میں مدد کرتا ہے۔'}
+  };
+  const names={
+    hi:['इस्तेमाल की हुई चायपत्ती','कुचले हुए अंडे के छिलके','केले के छिलके','सब्जियों के छिलके और अवशेष','कॉफी के अवशेष','चावल धोने का पानी','सब्जियां पकाने का पानी','प्याज और लहसुन के छिलके','फलों के छिलके','घास की कतरन','सूखे पत्ते','नारियल की भूसी और रेशा','दाल और फलियों के अवशेष','लकड़ी की राख (कम मात्रा)','लकड़ी की राख','सूखे पत्ते (पत्ती खाद)'],
+    kn:['ಬಳಸಿದ ಚಹಾ ಎಲೆಗಳು','ಪುಡಿಮಾಡಿದ ಮೊಟ್ಟೆಯ ಚಿಪ್ಪುಗಳು','ಬಾಳೆಹಣ್ಣಿನ ಸಿಪ್ಪೆಗಳು','ತರಕಾರಿ ಸಿಪ್ಪೆಗಳು ಮತ್ತು ಅವಶೇಷಗಳು','ಕಾಫಿ ಪುಡಿ ಅವಶೇಷ','ಅಕ್ಕಿ ತೊಳೆದ ನೀರು','ತರಕಾರಿ ಬೇಯಿಸಿದ ನೀರು','ಈರುಳ್ಳಿ ಮತ್ತು ಬೆಳ್ಳುಳ್ಳಿ ಸಿಪ್ಪೆಗಳು','ಹಣ್ಣಿನ ಸಿಪ್ಪೆಗಳು','ಹುಲ್ಲಿನ ಕತ್ತರಿಸಿದ ಭಾಗ','ಒಣ ಎಲೆಗಳು','ತೆಂಗಿನ ಸಿಪ್ಪೆ ಮತ್ತು ನಾರು','ಬೇಳೆ ಮತ್ತು ಕಾಳುಗಳ ಅವಶೇಷಗಳು','ಮರದ ಬೂದಿ (ಕಡಿಮೆ ಪ್ರಮಾಣ)','ಮರದ ಬೂದಿ','ಒಣ ಎಲೆಗಳು (ಎಲೆ ಕಾಂಪೋಸ್ಟ್)'],
+    ta:['பயன்படுத்திய தேயிலை இலைகள்','நொறுக்கிய முட்டை ஓடுகள்','வாழைப்பழத் தோல்கள்','காய்கறித் தோல்கள் மற்றும் மீதிகள்','காபி கழிவுத்தூள்','அரிசி கழுவிய நீர்','காய்கறி வேகவைத்த நீர்','வெங்காயம் மற்றும் பூண்டு தோல்கள்','பழத் தோல்கள்','புல் வெட்டுத் துண்டுகள்','உலர்ந்த இலைகள்','தேங்காய் மட்டை மற்றும் நார்','பருப்பு மற்றும் பயறு மீதிகள்','மரச் சாம்பல் (சிறிய அளவு)','மரச் சாம்பல்','உலர்ந்த இலைகள் (இலை உரம்)'],
+    te:['వాడిన టీ ఆకులు','నూరిన గుడ్డు పెంకులు','అరటి తొక్కలు','కూరగాయ తొక్కలు మరియు మిగతాలు','కాఫీ పొడి అవశేషాలు','బియ్యం కడిగిన నీరు','కూరగాయలు ఉడికించిన నీరు','ఉల్లిపాయ మరియు వెల్లుల్లి తొక్కలు','పండ్ల తొక్కలు','గడ్డి ముక్కలు','ఎండిన ఆకులు','కొబ్బరి పొట్టు మరియు కొబ్బరి నారు','పప్పులు మరియు బీన్స్ మిగతాలు','చెక్క బూడిద (చిన్న పరిమాణం)','చెక్క బూడిద','ఎండిన ఆకులు (ఆకు కంపోస్ట్)'],
+    mr:['वापरलेली चहाची पाने','कुटलेली अंड्याची टरफले','केळीची साले','भाज्यांची साले व अवशेष','कॉफीचे अवशेष','तांदूळ धुतलेले पाणी','भाज्या शिजवलेले पाणी','कांदा व लसूण साले','फळांची साले','गवताची कापलेली पाने','सुकलेली पाने','नारळाची भुसा व तंतू','डाळी व कडधान्यांचे अवशेष','लाकडाची राख (अल्प प्रमाणात)','लाकडाची राख','सुकलेली पाने (पानखत)'],
+    gu:['વપરાયેલી ચાની પત્તી','કચડેલા ઈંડાના છોતરાં','કેળાની છાલ','શાકભાજીની છાલ અને અવશેષો','કોફીના અવશેષો','ચોખા ધોયેલું પાણી','શાકભાજી રાંધેલું પાણી','ડુંગળી અને લસણની છાલ','ફળોની છાલ','ઘાસના કાપેલા ભાગ','સૂકા પાન','નારિયેળની ભૂકી અને રેસો','દાળ અને કઠોળના અવશેષો','લાકડાની રાખ (ઓછી માત્રામાં)','લાકડાની રાખ','સૂકા પાન (પાનખાતર)'],
+    bn:['ব্যবহৃত চা পাতা','গুঁড়ো করা ডিমের খোসা','কলা খোসা','সবজির খোসা ও অবশিষ্টাংশ','কফির অবশিষ্টাংশ','চাল ধোয়া জল','সবজি রান্নার জল','পেঁয়াজ ও রসুনের খোসা','ফলের খোসা','ঘাসের কাটা অংশ','শুকনো পাতা','নারকেলের ছোবড়া ও তন্তু','ডাল ও শিমজাতীয় অবশিষ্টাংশ','কাঠের ছাই (অল্প পরিমাণে)','কাঠের ছাই','শুকনো পাতা (পাতার সার)'],
+    pa:['ਵਰਤੀ ਹੋਈ ਚਾਹ ਪੱਤੀ','ਕੁੱਟੇ ਹੋਏ ਅੰਡੇ ਦੇ ਛਿਲਕੇ','ਕੇਲੇ ਦੇ ਛਿਲਕੇ','ਸਬਜ਼ੀਆਂ ਦੇ ਛਿਲਕੇ ਅਤੇ ਬਚਿਆ ਹਿੱਸਾ','ਕੌਫੀ ਦੇ ਅਵਸ਼ੇਸ਼','ਚੌਲ ਧੋਣ ਦਾ ਪਾਣੀ','ਸਬਜ਼ੀਆਂ ਪਕਾਉਣ ਦਾ ਪਾਣੀ','ਪਿਆਜ਼ ਅਤੇ ਲਸਣ ਦੇ ਛਿਲਕੇ','ਫਲਾਂ ਦੇ ਛਿਲਕੇ','ਘਾਹ ਦੀ ਕਟਾਈ','ਸੁੱਕੇ ਪੱਤੇ','ਨਾਰੀਅਲ ਦੀ ਭੂਸੀ ਅਤੇ ਰੇਸ਼ਾ','ਦਾਲਾਂ ਅਤੇ ਫਲੀਆਂ ਦੇ ਬਚੇ ਹਿੱਸੇ','ਲੱਕੜ ਦੀ ਰਾਖ (ਥੋੜ੍ਹੀ ਮਾਤਰਾ)','ਲੱਕੜ ਦੀ ਰਾਖ','ਸੁੱਕੇ ਪੱਤੇ (ਪੱਤਾ ਖਾਦ)'],
+    ml:['ഉപയോഗിച്ച ചായയില','ചതച്ച മുട്ടത്തൊലി','വാഴപ്പഴത്തൊലി','പച്ചക്കറി തൊലികളും അവശിഷ്ടങ്ങളും','കാപ്പി അവശിഷ്ടം','അരി കഴുകിയ വെള്ളം','പച്ചക്കറി വേവിച്ച വെള്ളം','സവാളയും വെളുത്തുള്ളിയും തൊലി','പഴത്തൊലി','പുല്ലിന്റെ മുറിച്ച ഭാഗങ്ങൾ','ഉണങ്ങിയ ഇലകൾ','തേങ്ങയുടെ തൊണ്ടും നാരും','പരിപ്പ്-പയർ അവശിഷ്ടങ്ങൾ','മരച്ചാരം (ചെറിയ അളവിൽ)','മരച്ചാരം','ഉണങ്ങിയ ഇലകൾ (ഇലവളം)'],
+    or:['ବ୍ୟବହୃତ ଚା ପତ୍ର','ଚୂର୍ଣ୍ଣ ଅଣ୍ଡା ଖୋଳ','କଦଳୀ ଛାଲ','ପନିପରିବା ଛାଲ ଓ ଅବଶେଷ','କଫି ଅବଶେଷ','ଚାଉଳ ଧୋଇଥିବା ପାଣି','ପନିପରିବା ସିଝା ପାଣି','ପିଆଜ ଓ ରସୁଣ ଛାଲ','ଫଳ ଛାଲ','ଘାସ କଟା ଅଂଶ','ଶୁଖିଲା ପତ୍ର','ନଡ଼ିଆ ଖୋଳ ଓ ତନ୍ତୁ','ଡାଲି ଓ ଶିମ୍ବ ଅବଶେଷ','କାଠ ପାଉଁଶ (ଅଳ୍ପ ପରିମାଣରେ)','କାଠ ପାଉଁଶ','ଶୁଖିଲା ପତ୍ର (ପତ୍ର ଖତ)'],
+    as:['ব্যৱহৃত চাহপাত','গুড়ি কৰা কণীৰ খোলা','কলৰ বাকলি','শাক-পাচলিৰ বাকলি আৰু অৱশিষ্ট','কফিৰ অৱশিষ্ট','চাউল ধোৱা পানী','শাক-পাচলি সিজোৱা পানী','পিঁয়াজ আৰু নহৰুৰ বাকলি','ফলৰ বাকলি','ঘাঁহ কটা অংশ','শুকান পাত','নাৰিকলৰ খোলা আৰু আঁহ','দাইল আৰু মাহজাতীয় অৱশিষ্ট','কাঠৰ ছাই (অলপ পৰিমাণত)','কাঠৰ ছাই','শুকান পাত (পাতৰ সাৰ)'],
+    ur:['استعمال شدہ چائے کی پتی','کچلے ہوئے انڈوں کے چھلکے','کیلے کے چھلکے','سبزیوں کے چھلکے اور باقیات','کافی کی باقیات','چاول دھونے کا پانی','سبزیاں پکانے کا پانی','پیاز اور لہسن کے چھلکے','پھلوں کے چھلکے','گھاس کی کترن','خشک پتے','ناریل کا چھلکا اور ریشہ','دال اور پھلیوں کی باقیات','لکڑی کی راکھ (تھوڑی مقدار میں)','لکڑی کی راکھ','خشک پتے (پتوں کی کھاد)']
+  };
+  const order=['Used tea leaves','Crushed eggshells','Banana peels','Vegetable peels & scraps','Coffee grounds','Rice rinse water','Vegetable cooking water','Onion & garlic skins','Fruit peels','Grass clippings','Dry leaves','Coconut husk & coir','Pulse & bean leftovers','Wood ash (small amounts)','Wood ash','Dry leaves (leaf mould)'];
+  function finalWaste(lang){
+    const grid=document.getElementById('wasteGrid'); if(!grid) return;
+    const L=WASTE_LANG[lang]; if(!L) return;
+    const N=names[lang];
+    const mode=n=>['Used tea leaves','Crushed eggshells','Coffee grounds'].includes(n)?'dry':['Banana peels','Rice rinse water','Vegetable cooking water'].includes(n)?'soak':['Vegetable peels & scraps','Onion & garlic skins','Fruit peels','Pulse & bean leftovers'].includes(n)?'compost':['Grass clippings','Dry leaves','Coconut husk & coir','Dry leaves (leaf mould)'].includes(n)?'mulch':'ash';
+    const benefit=n=>n==='Crushed eggshells'?L.calcium:(['Banana peels','Rice rinse water','Vegetable cooking water','Wood ash (small amounts)','Wood ash'].includes(n)?L.nutrient:L.benefit);
+    grid.innerHTML=order.map((n,i)=>`<div class="waste-card"><div class="waste-head"><span class="waste-emoji">${['🍵','🥚','🍌','🥔','☕','🍚','🥬','🧅','🥭','🌿','🍂','🥥','🫘','🪵','🔥','🍂'][i]}</span><h3>${N[i]}</h3></div><p>${L[mode(n)]}</p><div class="benefit">${benefit(n)}</div></div>`).join('');
+  }
+  window.__finalWasteLanguage=finalWaste;
+  const sel=document.getElementById('langSelect');
+  if(sel) sel.addEventListener('change',()=>setTimeout(()=>finalWaste(sel.value),0));
+  const run=()=>{if(sel && WASTE_LANG[sel.value]) finalWaste(sel.value);};
+  run();
+})();
+</script>
+<script>
+/* KISANSETU FINAL STABLE KNOWLEDGE + LANGUAGE PATCH */
+(function(){
+  const A={
+    en:{soil:'Well-drained fertile soil',weather:'Suitable local temperature and good sunlight',water:'Moderate watering; avoid waterlogging',season:'Use the locally suitable sowing/planting season',use:'Use mature compost or well-decomposed organic matter; avoid fresh waste directly on roots.',benefit:'Adds organic matter and supports soil health.'},
+    hi:{soil:'अच्छी जल-निकासी वाली उपजाऊ मिट्टी',weather:'स्थानीय उपयुक्त तापमान और पर्याप्त धूप',water:'मध्यम सिंचाई; जलभराव से बचें',season:'स्थानीय उपयुक्त बुवाई/रोपाई मौसम',use:'पकी हुई कम्पोस्ट या अच्छी तरह सड़ी जैविक खाद उपयोग करें; ताजा कचरा जड़ों पर सीधे न डालें।',benefit:'जैविक पदार्थ बढ़ाता है और मिट्टी के स्वास्थ्य में मदद करता है।'},
+    kn:{soil:'ಚೆನ್ನಾಗಿ ನೀರು ಹರಿಯುವ ಫಲವತ್ತಾದ ಮಣ್ಣು',weather:'ಸ್ಥಳೀಯ ಸೂಕ್ತ ತಾಪಮಾನ ಮತ್ತು ಸಾಕಷ್ಟು ಸೂರ್ಯಪ್ರಕಾಶ',water:'ಮಧ್ಯಮ ನೀರಾವರಿ; ನೀರು ನಿಲ್ಲದಂತೆ ನೋಡಿಕೊಳ್ಳಿ',season:'ಸ್ಥಳೀಯ ಸೂಕ್ತ ಬಿತ್ತನೆ/ನಾಟಿ ಕಾಲ',use:'ಪೂರ್ಣವಾಗಿ ತಯಾರಾದ ಕಾಂಪೋಸ್ಟ್ ಅಥವಾ ಚೆನ್ನಾಗಿ ಕೊಳೆತ ಸಾವಯವ ಗೊಬ್ಬರ ಬಳಸಿ; ತಾಜಾ ತ್ಯಾಜ್ಯವನ್ನು ಬೇರುಗಳಿಗೆ ನೇರವಾಗಿ ಹಾಕಬೇಡಿ.',benefit:'ಸಾವಯವ ಪದಾರ್ಥ ಹೆಚ್ಚಿಸಿ ಮಣ್ಣಿನ ಆರೋಗ್ಯಕ್ಕೆ ಸಹಾಯ ಮಾಡುತ್ತದೆ.'},
+    ta:{soil:'நல்ல வடிகால் கொண்ட வளமான மண்',weather:'உள்ளூர் ஏற்ற வெப்பநிலை மற்றும் போதிய சூரியஒளி',water:'மிதமான நீர்ப்பாசனம்; நீர் தேங்குவதை தவிர்க்கவும்',season:'உள்ளூர் ஏற்ற விதைப்பு/நடவு பருவம்',use:'முழுமையாக தயாரான கம்போஸ்ட் அல்லது நன்கு மக்கிய இயற்கை உரத்தை பயன்படுத்தவும்; புதிய கழிவுகளை வேர்களில் நேரடியாக போட வேண்டாம்.',benefit:'கரிமப் பொருளை அதிகரித்து மண் ஆரோக்கியத்திற்கு உதவுகிறது.'},
+    te:{soil:'నీరు సులభంగా వెళ్లే సారవంతమైన నేల',weather:'స్థానిక అనుకూల ఉష్ణోగ్రత మరియు తగిన సూర్యకాంతి',water:'మధ్యస్థ నీటిపారుదల; నీరు నిల్వ ఉండకూడదు',season:'స్థానిక అనుకూల విత్తే/నాటే కాలం',use:'పూర్తిగా తయారైన కంపోస్ట్ లేదా బాగా కుళ్లిన సేంద్రియ ఎరువు వాడండి; తాజా వ్యర్థాలను వేర్లపై నేరుగా వేయవద్దు.',benefit:'సేంద్రియ పదార్థాన్ని పెంచి నేల ఆరోగ్యానికి సహాయపడుతుంది.'},
+    mr:{soil:'चांगला निचरा असलेली सुपीक माती',weather:'स्थानिक योग्य तापमान व पुरेसा सूर्यप्रकाश',water:'मध्यम सिंचन; पाणी साचू देऊ नका',season:'स्थानिक योग्य पेरणी/लागवड हंगाम',use:'पूर्ण कुजलेले कंपोस्ट किंवा सेंद्रिय खत वापरा; ताजे कचरा थेट मुळांवर टाकू नका.',benefit:'सेंद्रिय पदार्थ वाढवून मातीच्या आरोग्यास मदत करते.'},
+    gu:{soil:'સારી નિકાસવાળી ફળદ્રુપ જમીન',weather:'સ્થાનિક યોગ્ય તાપમાન અને પૂરતો સૂર્યપ્રકાશ',water:'મધ્યમ સિંચાઈ; પાણી ભરાવું ટાળો',season:'સ્થાનિક યોગ્ય વાવણી/રોપણી ઋતુ',use:'પક્વ કમ્પોસ્ટ અથવા સારી રીતે સડેલું સજીવ ખાતર વાપરો; તાજો કચરો મૂળ પર સીધો ન નાખો.',benefit:'સજીવ પદાર્થ વધારે છે અને જમીનના આરોગ્યમાં મદદ કરે છે.'},
+    bn:{soil:'ভালো জলনিকাশযুক্ত উর্বর মাটি',weather:'স্থানীয় উপযুক্ত তাপমাত্রা ও পর্যাপ্ত রোদ',water:'মাঝারি সেচ; জল জমতে দেবেন না',season:'স্থানীয় উপযুক্ত বপন/রোপণের মরসুম',use:'সম্পূর্ণ পচা কম্পোস্ট বা জৈব সার ব্যবহার করুন; তাজা বর্জ্য সরাসরি শিকড়ে দেবেন না।',benefit:'জৈব পদার্থ বাড়ায় এবং মাটির স্বাস্থ্য ভালো রাখতে সাহায্য করে।'},
+    pa:{soil:'ਚੰਗੀ ਨਿਕਾਸ ਵਾਲੀ ਉਪਜਾਊ ਮਿੱਟੀ',weather:'ਸਥਾਨਕ ਢੁਕਵਾਂ ਤਾਪਮਾਨ ਅਤੇ ਕਾਫ਼ੀ ਧੁੱਪ',water:'ਦਰਮਿਆਨੀ ਸਿੰਚਾਈ; ਪਾਣੀ ਖੜ੍ਹਾ ਨਾ ਹੋਣ ਦਿਓ',season:'ਸਥਾਨਕ ਢੁਕਵਾਂ ਬਿਜਾਈ/ਲਗਾਉਣ ਦਾ ਮੌਸਮ',use:'ਪੱਕੀ ਕੰਪੋਸਟ ਜਾਂ ਚੰਗੀ ਤਰ੍ਹਾਂ ਸੜੀ ਜੈਵਿਕ ਖਾਦ ਵਰਤੋ; ਤਾਜ਼ਾ ਕਚਰਾ ਜੜ੍ਹਾਂ ਉੱਤੇ ਸਿੱਧਾ ਨਾ ਪਾਓ।',benefit:'ਜੈਵਿਕ ਪਦਾਰਥ ਵਧਾਉਂਦਾ ਹੈ ਅਤੇ ਮਿੱਟੀ ਦੀ ਸਿਹਤ ਲਈ ਮਦਦਗਾਰ ਹੈ।'},
+    ml:{soil:'നല്ല നീർവാർച്ചയുള്ള ഫലഭൂയിഷ്ഠമായ മണ്ണ്',weather:'പ്രാദേശിക അനുയോജ്യമായ താപനിലയും മതിയായ സൂര്യപ്രകാശവും',water:'മിതമായ ജലസേചനം; വെള്ളക്കെട്ട് ഒഴിവാക്കുക',season:'പ്രാദേശിക അനുയോജ്യമായ വിതയ്ക്കൽ/നടീൽ കാലം',use:'പൂർണ്ണമായി പാകമായ കമ്പോസ്റ്റോ നന്നായി ചീഞ്ഞ ജൈവവളമോ ഉപയോഗിക്കുക; പുതിയ മാലിന്യം വേരുകളിൽ നേരിട്ട് ഇടരുത്.',benefit:'ജൈവവസ്തു വർധിപ്പിച്ച് മണ്ണിന്റെ ആരോഗ്യത്തിന് സഹായിക്കുന്നു.'},
+    or:{soil:'ଭଲ ଜଳ ନିଷ୍କାସନ ଥିବା ଉର୍ବର ମାଟି',weather:'ସ୍ଥାନୀୟ ଉପଯୁକ୍ତ ତାପମାତ୍ରା ଓ ପର୍ଯ୍ୟାପ୍ତ ସୂର୍ଯ୍ୟାଲୋକ',water:'ମଧ୍ୟମ ଜଳସେଚନ; ପାଣି ଜମିବା ଦିଅନ୍ତୁ ନାହିଁ',season:'ସ୍ଥାନୀୟ ଉପଯୁକ୍ତ ବୁଣିବା/ରୋପଣ ଋତୁ',use:'ପୂର୍ଣ୍ଣ କମ୍ପୋଷ୍ଟ କିମ୍ବା ଭଲ ଭାବେ ପଚିଥିବା ଜୈବ ଖତ ବ୍ୟବହାର କରନ୍ତୁ; ତାଜା ଅବଶେଷକୁ ମୂଳରେ ସିଧାସଳଖ ଦିଅନ୍ତୁ ନାହିଁ।',benefit:'ଜୈବ ପଦାର୍ଥ ବଢ଼ାଇ ମାଟିର ସ୍ୱାସ୍ଥ୍ୟକୁ ସହାୟତା କରେ।'},
+    as:{soil:'ভাল পানী ওলাই যোৱা উৰ্বৰ মাটি',weather:'স্থানীয় উপযুক্ত উষ্ণতা আৰু পৰ্যাপ্ত ৰ’দ',water:'মধ্যম জলসিঞ্চন; পানী জমা হ’ব নিদিব',season:'স্থানীয় উপযুক্ত সিঁচা/ৰোপণ ঋতু',use:'সম্পূৰ্ণ পকা কম্পোষ্ট বা ভালদৰে পচা জৈৱ সাৰ ব্যৱহাৰ কৰক; সতেজ আৱৰ্জনা শিপাত পোনপটীয়াকৈ নিদিব।',benefit:'জৈৱ পদাৰ্থ বৃদ্ধি কৰি মাটিৰ স্বাস্থ্যত সহায় কৰে।'},
+    ur:{soil:'اچھی نکاسی والی زرخیز مٹی',weather:'مقامی موزوں درجہ حرارت اور مناسب دھوپ',water:'درمیانی آبپاشی؛ پانی کھڑا نہ ہونے دیں',season:'مقامی موزوں بوائی/کاشت کا موسم',use:'پکی ہوئی کمپوسٹ یا اچھی طرح گلی سڑی نامیاتی کھاد استعمال کریں؛ تازہ فضلہ جڑوں پر براہ راست نہ ڈالیں۔',benefit:'نامیاتی مادہ بڑھاتا ہے اور مٹی کی صحت میں مدد کرتا ہے۔'}
+  };
+  const more={
+    'Gerbera':['🌺',['Gerbera','जरबेरा','ಜರ್ಬೆರಾ','ஜெர்பெரா','జెర్బెరா','जरबेरा','જરબેરા','জারবেরা','ਜਰਬੇਰਾ','ജെർബെറ','ଜର୍ବେରା','জাৰ্বেৰা','جربرا']],
+    'Tuberose':['🌸',['Tuberose','रजनीगंधा','ನಿಶಿಗಂಧಿ','நிசாகந்தி','నిశాగంధి','निशिगंध','રજનીગંધા','রজনীগন্ধা','ਰਜਨੀਗੰਧਾ','നിശാഗന്ധി','ରଜନୀଗନ୍ଧା','ৰজনীগন্ধা','رات کی رانی']],
+    'Calendula':['🌼',['Calendula','कैलेंडुला','ಕ್ಯಾಲೆಂಡುಲಾ','காலெண்டுலா','క్యాలెండులా','कॅलेंडुला','કેલેન્ડુલા','ক্যালেন্ডুলা','ਕੈਲੈਂਡੂਲਾ','കലണ്ടുല','କ୍ୟାଲେଣ୍ଡୁଲା','কেলেণ্ডুলা','کیلنڈولا']],
+    'Basil':['🌿',['Basil','तुलसी / बेसिल','ತುಳಸಿ / ಬೇಸಿಲ್','துளசி / பசில்','తులసి / బేసిల్','तुळस / बेसिल','તુલસી / બેસિલ','তুলসী / বাসিল','ਤੁਲਸੀ / ਬੇਸਿਲ','തുളസി / ബേസിൽ','ତୁଳସୀ / ବେସିଲ','তুলসী / বেছিল','تلسی / بیسل']],
+    'Curry leaf':['🌿',['Curry leaf','करी पत्ता','ಕರಿಬೇವು','கறிவேப்பிலை','కరివేపాకు','कढीपत्ता','મીઠો લીમડો','কড়িপাতা','ਕੜੀ ਪੱਤਾ','കറിവേപ്പില','ଭୁର୍ସୁଙ୍ଗା','নরসিংহ পাত','کڑی پتہ']],
+    'Chamomile':['🌼',['Chamomile','कैमोमाइल','ಕ್ಯಾಮೊಮೈಲ್','கேமோமைல்','కామోమైల్','कॅमोमाईल','કેમોમાઇલ','ক্যামোমাইল','ਕੈਮੋਮਾਈਲ','കാമോമൈൽ','କ୍ୟାମୋମାଇଲ','কেমোমাইল','کیمومائل']],
+    'Marigold':['🌼',['Marigold','गेंदा','ಚೆಂಡುಹೂವು','சாமந்தி','బంతి','झेंडू','ગલગોટો','গাঁদা','ਗੇਂਦਾ','ചെണ്ടുമല്ലി','ଗେଣ୍ଡୁ','গেন্ধা','گیندا']],
+    'Coriander':['🌿',['Coriander','धनिया','ಕೊತ್ತಂಬರಿ','கொத்தமல்லி','కొత్తిమీర','कोथिंबीर','ધાણા','ধনিয়া','ਧਨੀਆ','മല്ലിയില','ଧନିଆ','ধনিয়া','دھنیا']],
+    'Fenugreek':['🌿',['Fenugreek','मेथी','ಮೆಂತ್ಯ','வெந்தயம்','మెంతికూర','मेथी','મેથી','মেথি','ਮੇਥੀ','ഉലുവ','ମେଥି','মেথি','میتھی']],
+    'Aloe vera':['🌿',['Aloe vera','एलोवेरा','ಲೋಳೆಸರ','கற்றாழை','కలబంద','कोरफड','કુંવારપાઠું','অ্যালোভেরা','ਐਲੋਵੇਰਾ','കറ്റാർവാഴ','ଘିକୁଆଁରୀ','ছালকুঁৱৰী','ایلوویرا']]
+  };
+  const keys=Object.keys(more);
+  const oldSeed=window.__seedBaseData||null;
+  function renderMoreSeeds(lang){
+    const g=document.getElementById('seedGrid'); if(!g||!A[lang]) return;
+    // Preserve the existing cards, but append a fully localized expanded knowledge set.
+    const existing=g.innerHTML;
+    const t=A[lang];
+    const cards=keys.map(k=>{const m=more[k][1]; const idx={en:0,hi:1,kn:2,ta:3,te:4,mr:5,gu:6,bn:7,pa:8,ml:9,or:10,as:11,ur:12}[lang]; const n=m[idx]; return `<div class="seed-card"><div class="seed-head"><div class="seed-emoji">${more[k][0]}</div><div class="seed-names"><div class="en">${n}</div></div></div><div class="seed-rows"><div><b>${t.soil}</b></div><div><b>${t.weather}</b></div><div><b>${t.water}</b></div><div><b>${t.season}</b></div></div></div>`}).join('');
+    // Avoid duplicate appends on repeated language changes.
+    const marker=document.getElementById('expandedSeedCards'); if(marker) marker.remove();
+    g.insertAdjacentHTML('beforeend',`<div id="expandedSeedCards" style="display:contents">${cards}</div>`);
+  }
+  function stabilize(lang){
+    if(typeof applyFull==='function') applyFull(lang);
+    renderMoreSeeds(lang);
+    if(window.__finalWasteLanguage) window.__finalWasteLanguage(lang);
+    // Re-run after original prototype handlers finish their rendering.
+    [80,250,700].forEach(ms=>setTimeout(()=>{if(typeof applyFull==='function') applyFull(lang); renderMoreSeeds(lang); if(window.__finalWasteLanguage) window.__finalWasteLanguage(lang);},ms));
+  }
+  const sel=document.getElementById('langSelect');
+  if(sel){
+    sel.addEventListener('change',e=>stabilize(e.target.value));
+    stabilize(sel.value||'en');
+  }
+  window.__stableKisanLanguage=stabilize;
+})();
+</script>
+
+<script>
+/* ==================== FINAL UNIVERSAL LANGUAGE PATCH ==================== */
+(function(){
+  function getLang(){
+    const el=document.getElementById('langSelect');
+    return (el && el.value) || window.__kisanLang || 'en';
+  }
+  function langData(){ return window.__KISAN_LANG || {}; }
+  function replaceEnglishText(root, lang){
+    const data=langData()[lang];
+    const en=langData().en;
+    if(!data || !en || lang==='en') return;
+    const map={};
+    Object.keys(en).forEach(k=>{
+      const a=en[k], b=data[k];
+      if(typeof a==='string' && typeof b==='string' && a && b && a!==b) map[a]=b;
+    });
+    const walker=document.createTreeWalker(root||document.body, NodeFilter.SHOW_TEXT);
+    const nodes=[];
+    while(walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(n=>{
+      const el=n.parentElement;
+      if(!el || ['SCRIPT','STYLE','OPTION','TEXTAREA','INPUT'].includes(el.tagName)) return;
+      if(el.closest('#seedGrid,#wasteGrid')) return;
+      let v=n.nodeValue;
+      const trimmed=v.trim();
+      if(map[trimmed]) n.nodeValue=v.replace(trimmed,map[trimmed]);
+    });
+  }
+  function applyUniversal(){
+    const lang=getLang();
+    window.__kisanLang=lang;
+    document.documentElement.lang=lang;
+    document.body.dir=lang==='ur'?'rtl':'ltr';
+    try { if(typeof applyFull==='function') applyFull(lang); } catch(e) {}
+    try { if(typeof setKeyText==='function') setKeyText(); } catch(e) {}
+    try { if(typeof renderSeedsFull==='function') renderSeedsFull(); } catch(e) {}
+    try { if(typeof renderWasteFull==='function') renderWasteFull(); } catch(e) {}
+    /* Run after every existing handler has finished modifying the DOM. */
+    requestAnimationFrame(()=>{
+      replaceEnglishText(document.body,lang);
+      setTimeout(()=>replaceEnglishText(document.body,lang),80);
+      setTimeout(()=>replaceEnglishText(document.body,lang),300);
+      setTimeout(()=>replaceEnglishText(document.body,lang),900);
+    });
+  }
+  const sel=document.getElementById('langSelect');
+  if(sel){
+    sel.addEventListener('change',()=>{
+      window.__kisanLang=sel.value;
+      applyUniversal();
+    }, true);
+  }
+  /* Translate any newly-rendered static text without touching seed/waste cards. */
+  const obs=new MutationObserver(()=>{
+    clearTimeout(window.__kisanTranslateTimer);
+    window.__kisanTranslateTimer=setTimeout(()=>replaceEnglishText(document.body,getLang()),30);
+  });
+  obs.observe(document.body,{subtree:true,childList:true,characterData:true});
+  window.__kisanUniversalTranslate=applyUniversal;
+  window.addEventListener('load',()=>setTimeout(applyUniversal,100));
+  setTimeout(applyUniversal,50);
+})();
+</script>
+
+<script>
+/* Localizes only the new Government Schemes page without changing the prototype's existing language logic. */
+(() => {
+  const GOV_COPY = {
+    en:{nav:'Government schemes',title:'Government schemes',subtitle:'Official links for farmer schemes and services.',note:'Check eligibility, dates and documents only on the official website. KisanSetu never asks for Aadhaar, bank or login details.',national:'Government of India',action:'Open official portal'},
+    hi:{nav:'सरकारी योजनाएँ',title:'सरकारी योजनाएँ',subtitle:'किसान योजनाओं और सेवाओं के आधिकारिक लिंक।',note:'पात्रता, तिथियाँ और दस्तावेज़ केवल आधिकारिक वेबसाइट पर जाँचें। KisanSetu कभी आधार, बैंक या लॉगिन विवरण नहीं मांगता।',national:'भारत सरकार',action:'आधिकारिक पोर्टल खोलें'},
+    kn:{nav:'ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು',title:'ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು',subtitle:'ರೈತರ ಯೋಜನೆಗಳು ಮತ್ತು ಸೇವೆಗಳ ಅಧಿಕೃತ ಕೊಂಡಿಗಳು.',note:'ಅರ್ಹತೆ, ದಿನಾಂಕಗಳು ಮತ್ತು ದಾಖಲೆಗಳನ್ನು ಅಧಿಕೃತ ಜಾಲತಾಣದಲ್ಲೇ ಪರಿಶೀಲಿಸಿ. KisanSetu ಎಂದಿಗೂ ಆಧಾರ್, ಬ್ಯಾಂಕ್ ಅಥವಾ ಲಾಗಿನ್ ವಿವರಗಳನ್ನು ಕೇಳುವುದಿಲ್ಲ.',national:'ಭಾರತ ಸರ್ಕಾರ',action:'ಅಧಿಕೃತ ಪೋರ್ಟಲ್ ತೆರೆಯಿರಿ'},
+    ta:{nav:'அரசுத் திட்டங்கள்',title:'அரசுத் திட்டங்கள்',subtitle:'விவசாயி திட்டங்கள் மற்றும் சேவைகளுக்கான அதிகாரப்பூர்வ இணைப்புகள்.',note:'தகுதி, தேதிகள் மற்றும் ஆவணங்களை அதிகாரப்பூர்வ இணையதளத்தில் மட்டுமே சரிபார்க்கவும். KisanSetu ஒருபோதும் ஆதார், வங்கி அல்லது உள்நுழைவு விவரங்களைக் கேட்காது.',national:'இந்திய அரசு',action:'அதிகாரப்பூர்வ தளத்தைத் திறக்கவும்'},
+    te:{nav:'ప్రభుత్వ పథకాలు',title:'ప్రభుత్వ పథకాలు',subtitle:'రైతు పథకాలు మరియు సేవల కోసం అధికారిక లింకులు.',note:'అర్హత, తేదీలు మరియు పత్రాలను అధికారిక వెబ్‌సైట్‌లోనే తనిఖీ చేయండి. KisanSetu ఎప్పుడూ ఆధార్, బ్యాంక్ లేదా లాగిన్ వివరాలను అడగదు.',national:'భారత ప్రభుత్వం',action:'అధికారిక పోర్టల్‌ను తెరవండి'},
+    mr:{nav:'सरकारी योजना',title:'सरकारी योजना',subtitle:'शेतकरी योजना आणि सेवांसाठी अधिकृत दुवे.',note:'पात्रता, तारीखा आणि कागदपत्रे फक्त अधिकृत संकेतस्थळावर तपासा. KisanSetu कधीही आधार, बँक किंवा लॉगिन तपशील विचारत नाही.',national:'भारत सरकार',action:'अधिकृत पोर्टल उघडा'},
+    gu:{nav:'સરકારી યોજનાઓ',title:'સરકારી યોજનાઓ',subtitle:'ખેડૂત યોજનાઓ અને સેવાઓ માટેની સત્તાવાર લિંક્સ.',note:'પાત્રતા, તારીખો અને દસ્તાવેજો ફક્ત સત્તાવાર વેબસાઇટ પર તપાસો. KisanSetu ક્યારેય આધાર, બેંક અથવા લૉગિન વિગતો માંગતું નથી.',national:'ભારત સરકાર',action:'સત્તાવાર પોર્ટલ ખોલો'},
+    bn:{nav:'সরকারি প্রকল্প',title:'সরকারি প্রকল্প',subtitle:'কৃষক প্রকল্প ও পরিষেবার সরকারি লিঙ্ক।',note:'যোগ্যতা, তারিখ ও নথি শুধুমাত্র সরকারি ওয়েবসাইটে যাচাই করুন। KisanSetu কখনও আধার, ব্যাঙ্ক বা লগইন তথ্য চায় না।',national:'ভারত সরকার',action:'সরকারি পোর্টাল খুলুন'},
+    pa:{nav:'ਸਰਕਾਰੀ ਯੋਜਨਾਵਾਂ',title:'ਸਰਕਾਰੀ ਯੋਜਨਾਵਾਂ',subtitle:'ਕਿਸਾਨ ਯੋਜਨਾਵਾਂ ਅਤੇ ਸੇਵਾਵਾਂ ਲਈ ਅਧਿਕਾਰਤ ਲਿੰਕ।',note:'ਯੋਗਤਾ, ਤਾਰੀਖਾਂ ਅਤੇ ਦਸਤਾਵੇਜ਼ ਸਿਰਫ਼ ਅਧਿਕਾਰਤ ਵੈੱਬਸਾਈਟ ਉੱਤੇ ਜਾਂਚੋ। KisanSetu ਕਦੇ ਵੀ ਆਧਾਰ, ਬੈਂਕ ਜਾਂ ਲਾਗਇਨ ਵੇਰਵੇ ਨਹੀਂ ਮੰਗਦਾ।',national:'ਭਾਰਤ ਸਰਕਾਰ',action:'ਅਧਿਕਾਰਤ ਪੋਰਟਲ ਖੋਲ੍ਹੋ'},
+    ml:{nav:'സർക്കാർ പദ്ധതികൾ',title:'സർക്കാർ പദ്ധതികൾ',subtitle:'കർഷക പദ്ധതികൾക്കും സേവനങ്ങൾക്കും ഔദ്യോഗിക ലിങ്കുകൾ.',note:'യോഗ്യത, തീയതികൾ, രേഖകൾ എന്നിവ ഔദ്യോഗിക വെബ്സൈറ്റിൽ മാത്രം പരിശോധിക്കുക. KisanSetu ഒരിക്കലും ആധാർ, ബാങ്ക്, ലോഗിൻ വിവരങ്ങൾ ചോദിക്കില്ല.',national:'ഇന്ത്യ സർക്കാർ',action:'ഔദ്യോഗിക പോർട്ടൽ തുറക്കുക'},
+    or:{nav:'ସରକାରୀ ଯୋଜନା',title:'ସରକାରୀ ଯୋଜନା',subtitle:'କୃଷକ ଯୋଜନା ଓ ସେବା ପାଇଁ ଅଧିକାରିକ ଲିଙ୍କ।',note:'ଯୋଗ୍ୟତା, ତାରିଖ ଏବଂ ଦଲିଲ କେବଳ ଅଧିକାରିକ ୱେବସାଇଟରେ ଯାଞ୍ଚ କରନ୍ତୁ। KisanSetu କେବେ ମଧ୍ୟ ଆଧାର, ବ୍ୟାଙ୍କ କିମ୍ବା ଲଗଇନ ସୂଚନା ମାଗେ ନାହିଁ।',national:'ଭାରତ ସରକାର',action:'ଅଧିକାରିକ ପୋର୍ଟାଲ ଖୋଲନ୍ତୁ'},
+    as:{nav:'চৰকাৰী আঁচনি',title:'চৰকাৰী আঁচনি',subtitle:'কৃষক আঁচনি আৰু সেৱাৰ বাবে চৰকাৰী লিংক।',note:'যোগ্যতা, তাৰিখ আৰু নথি কেৱল চৰকাৰী ৱেবছাইটত পৰীক্ষা কৰক। KisanSetu কেতিয়াও আধাৰ, বেংক বা লগইন তথ্য নুসুধে।',national:'ভাৰত চৰকাৰ',action:'চৰকাৰী প’ৰ্টেল খোলক'},
+    ur:{nav:'سرکاری اسکیمیں',title:'سرکاری اسکیمیں',subtitle:'کسان اسکیموں اور خدمات کے سرکاری روابط۔',note:'اہلیت، تاریخیں اور دستاویزات صرف سرکاری ویب سائٹ پر چیک کریں۔ KisanSetu کبھی آدھار، بینک یا لاگ اِن کی تفصیلات نہیں مانگتا۔',national:'حکومتِ ہند',action:'سرکاری پورٹل کھولیں'}
+  };
+  const GOV_CARD_COPY = {
+    en:{pmkisanTag:'Official Government of India portal',pmkisanDesc:'Open the official PM-KISAN portal.',pmfbyTag:'Official Government of India portal',pmfbyDesc:'Open the official PMFBY portal.',farmersPortalTag:'Official Government of India portal',farmersPortalDesc:'Open the official Farmers’ Portal.',soilHealthTag:'Official Government of India portal',soilHealthDesc:'Open the official Soil Health Card portal.'},
+    hi:{pmkisanTag:'भारत सरकार का आधिकारिक पोर्टल',pmkisanDesc:'आधिकारिक PM-KISAN पोर्टल खोलें।',pmfbyTag:'भारत सरकार का आधिकारिक पोर्टल',pmfbyDesc:'आधिकारिक PMFBY पोर्टल खोलें।',farmersPortalTag:'भारत सरकार का आधिकारिक पोर्टल',farmersPortalDesc:'आधिकारिक Farmers’ Portal खोलें।',soilHealthTag:'भारत सरकार का आधिकारिक पोर्टल',soilHealthDesc:'आधिकारिक Soil Health Card पोर्टल खोलें।'},
+    kn:{pmkisanTag:'ಭಾರತ ಸರ್ಕಾರದ ಅಧಿಕೃತ ಪೋರ್ಟಲ್',pmkisanDesc:'ಅಧಿಕೃತ PM-KISAN ಪೋರ್ಟಲ್ ತೆರೆಯಿರಿ.',pmfbyTag:'ಭಾರತ ಸರ್ಕಾರದ ಅಧಿಕೃತ ಪೋರ್ಟಲ್',pmfbyDesc:'ಅಧಿಕೃತ PMFBY ಪೋರ್ಟಲ್ ತೆರೆಯಿರಿ.',farmersPortalTag:'ಭಾರತ ಸರ್ಕಾರದ ಅಧಿಕೃತ ಪೋರ್ಟಲ್',farmersPortalDesc:'ಅಧಿಕೃತ Farmers’ Portal ತೆರೆಯಿರಿ.',soilHealthTag:'ಭಾರತ ಸರ್ಕಾರದ ಅಧಿಕೃತ ಪೋರ್ಟಲ್',soilHealthDesc:'ಅಧಿಕೃತ Soil Health Card ಪೋರ್ಟಲ್ ತೆರೆಯಿರಿ.'},
+    ta:{pmkisanTag:'இந்திய அரசின் அதிகாரப்பூர்வ தளம்',pmkisanDesc:'அதிகாரப்பூர்வ PM-KISAN தளத்தைத் திறக்கவும்.',pmfbyTag:'இந்திய அரசின் அதிகாரப்பூர்வ தளம்',pmfbyDesc:'அதிகாரப்பூர்வ PMFBY தளத்தைத் திறக்கவும்.',farmersPortalTag:'இந்திய அரசின் அதிகாரப்பூர்வ தளம்',farmersPortalDesc:'அதிகாரப்பூர்வ Farmers’ Portal தளத்தைத் திறக்கவும்.',soilHealthTag:'இந்திய அரசின் அதிகாரப்பூர்வ தளம்',soilHealthDesc:'அதிகாரப்பூர்வ Soil Health Card தளத்தைத் திறக்கவும்.'},
+    te:{pmkisanTag:'భారత ప్రభుత్వ అధికారిక పోర్టల్',pmkisanDesc:'అధికారిక PM-KISAN పోర్టల్‌ను తెరవండి.',pmfbyTag:'భారత ప్రభుత్వ అధికారిక పోర్టల్',pmfbyDesc:'అధికారిక PMFBY పోర్టల్‌ను తెరవండి.',farmersPortalTag:'భారత ప్రభుత్వ అధికారిక పోర్టల్',farmersPortalDesc:'అధికారిక Farmers’ Portal‌ను తెరవండి.',soilHealthTag:'భారత ప్రభుత్వ అధికారిక పోర్టల్',soilHealthDesc:'అధికారిక Soil Health Card పోర్టల్‌ను తెరవండి.'},
+    mr:{pmkisanTag:'भारत सरकारचे अधिकृत पोर्टल',pmkisanDesc:'अधिकृत PM-KISAN पोर्टल उघडा.',pmfbyTag:'भारत सरकारचे अधिकृत पोर्टल',pmfbyDesc:'अधिकृत PMFBY पोर्टल उघडा.',farmersPortalTag:'भारत सरकारचे अधिकृत पोर्टल',farmersPortalDesc:'अधिकृत Farmers’ Portal उघडा.',soilHealthTag:'भारत सरकारचे अधिकृत पोर्टल',soilHealthDesc:'अधिकृत Soil Health Card पोर्टल उघडा.'},
+    gu:{pmkisanTag:'ભારત સરકારનું સત્તાવાર પોર્ટલ',pmkisanDesc:'સત્તાવાર PM-KISAN પોર્ટલ ખોલો.',pmfbyTag:'ભારત સરકારનું સત્તાવાર પોર્ટલ',pmfbyDesc:'સત્તાવાર PMFBY પોર્ટલ ખોલો.',farmersPortalTag:'ભારત સરકારનું સત્તાવાર પોર્ટલ',farmersPortalDesc:'સત્તાવાર Farmers’ Portal ખોલો.',soilHealthTag:'ભારત સરકારનું સત્તાવાર પોર્ટલ',soilHealthDesc:'સત્તાવાર Soil Health Card પોર્ટલ ખોલો.'},
+    bn:{pmkisanTag:'ভারত সরকারের অফিসিয়াল পোর্টাল',pmkisanDesc:'অফিসিয়াল PM-KISAN পোর্টাল খুলুন।',pmfbyTag:'ভারত সরকারের অফিসিয়াল পোর্টাল',pmfbyDesc:'অফিসিয়াল PMFBY পোর্টাল খুলুন।',farmersPortalTag:'ভারত সরকারের অফিসিয়াল পোর্টাল',farmersPortalDesc:'অফিসিয়াল Farmers’ Portal খুলুন।',soilHealthTag:'ভারত সরকারের অফিসিয়াল পোর্টাল',soilHealthDesc:'অফিসিয়াল Soil Health Card পোর্টাল খুলুন।'},
+    pa:{pmkisanTag:'ਭਾਰਤ ਸਰਕਾਰ ਦਾ ਅਧਿਕਾਰਤ ਪੋਰਟਲ',pmkisanDesc:'ਅਧਿਕਾਰਤ PM-KISAN ਪੋਰਟਲ ਖੋਲ੍ਹੋ।',pmfbyTag:'ਭਾਰਤ ਸਰਕਾਰ ਦਾ ਅਧਿਕਾਰਤ ਪੋਰਟਲ',pmfbyDesc:'ਅਧਿਕਾਰਤ PMFBY ਪੋਰਟਲ ਖੋਲ੍ਹੋ।',farmersPortalTag:'ਭਾਰਤ ਸਰਕਾਰ ਦਾ ਅਧਿਕਾਰਤ ਪੋਰਟਲ',farmersPortalDesc:'ਅਧਿਕਾਰਤ Farmers’ Portal ਖੋਲ੍ਹੋ।',soilHealthTag:'ਭਾਰਤ ਸਰਕਾਰ ਦਾ ਅਧਿਕਾਰਤ ਪੋਰਟਲ',soilHealthDesc:'ਅਧਿਕਾਰਤ Soil Health Card ਪੋਰਟਲ ਖੋਲ੍ਹੋ।'},
+    ml:{pmkisanTag:'ഇന്ത്യ സർക്കാരിന്റെ ഔദ്യോഗിക പോർട്ടൽ',pmkisanDesc:'ഔദ്യോഗിക PM-KISAN പോർട്ടൽ തുറക്കുക.',pmfbyTag:'ഇന്ത്യ സർക്കാരിന്റെ ഔദ്യോഗിക പോർട്ടൽ',pmfbyDesc:'ഔദ്യോഗിക PMFBY പോർട്ടൽ തുറക്കുക.',farmersPortalTag:'ഇന്ത്യ സർക്കാരിന്റെ ഔദ്യോഗിക പോർട്ടൽ',farmersPortalDesc:'ഔദ്യോഗിക Farmers’ Portal തുറക്കുക.',soilHealthTag:'ഇന്ത്യ സർക്കാരിന്റെ ഔദ്യോഗിക പോർട്ടൽ',soilHealthDesc:'ഔദ്യോഗിക Soil Health Card പോർട്ടൽ തുറക്കുക.'},
+    or:{pmkisanTag:'ଭାରତ ସରକାରଙ୍କ ଅଧିକାରିକ ପୋର୍ଟାଲ',pmkisanDesc:'ଅଧିକାରିକ PM-KISAN ପୋର୍ଟାଲ ଖୋଲନ୍ତୁ।',pmfbyTag:'ଭାରତ ସରକାରଙ୍କ ଅଧିକାରିକ ପୋର୍ଟାଲ',pmfbyDesc:'ଅଧିକାରିକ PMFBY ପୋର୍ଟାଲ ଖୋଲନ୍ତୁ।',farmersPortalTag:'ଭାରତ ସରକାରଙ୍କ ଅଧିକାରିକ ପୋର୍ଟାଲ',farmersPortalDesc:'ଅଧିକାରିକ Farmers’ Portal ଖୋଲନ୍ତୁ।',soilHealthTag:'ଭାରତ ସରକାରଙ୍କ ଅଧିକାରିକ ପୋର୍ଟାଲ',soilHealthDesc:'ଅଧିକାରିକ Soil Health Card ପୋର୍ଟାଲ ଖୋଲନ୍ତୁ।'},
+    as:{pmkisanTag:'ভাৰত চৰকাৰৰ আধিকাৰিক প’ৰ্টেল',pmkisanDesc:'আধিকাৰিক PM-KISAN প’ৰ্টেল খোলক।',pmfbyTag:'ভাৰত চৰকাৰৰ আধিকাৰিক প’ৰ্টেল',pmfbyDesc:'আধিকাৰিক PMFBY প’ৰ্টেল খোলক।',farmersPortalTag:'ভাৰত চৰকাৰৰ আধিকাৰিক প’ৰ্টেল',farmersPortalDesc:'আধিকাৰিক Farmers’ Portal খোলক।',soilHealthTag:'ভাৰত চৰকাৰৰ আধিকাৰিক প’ৰ্টেল',soilHealthDesc:'আধিকাৰিক Soil Health Card প’ৰ্টেল খোলক।'},
+    ur:{pmkisanTag:'حکومتِ ہند کا سرکاری پورٹل',pmkisanDesc:'سرکاری PM-KISAN پورٹل کھولیں۔',pmfbyTag:'حکومتِ ہند کا سرکاری پورٹل',pmfbyDesc:'سرکاری PMFBY پورٹل کھولیں۔',farmersPortalTag:'حکومتِ ہند کا سرکاری پورٹل',farmersPortalDesc:'سرکاری Farmers’ Portal کھولیں۔',soilHealthTag:'حکومتِ ہند کا سرکاری پورٹل',soilHealthDesc:'سرکاری Soil Health Card پورٹل کھولیں۔'}
+  };
+  const applyGovernmentCopy = () => {
+    const select = document.getElementById('langSelect');
+    const lang = (select && select.value) || 'en';
+    const pageCopy = GOV_COPY[lang] || GOV_COPY.en;
+    const cardCopy = GOV_CARD_COPY[lang] || GOV_CARD_COPY.en;
+    document.querySelectorAll('[data-gov-copy]').forEach((element) => {
+      const key = element.dataset.govCopy;
+      const value = pageCopy[key] || cardCopy[key] || GOV_COPY.en[key] || GOV_CARD_COPY.en[key];
+      if (value) element.textContent = value;
+    });
+  };
+  const languageSelect = document.getElementById('langSelect');
+  if (languageSelect) languageSelect.addEventListener('change', () => setTimeout(applyGovernmentCopy, 0));
+  applyGovernmentCopy();
+})();
+</script>
+
+</body></html>
