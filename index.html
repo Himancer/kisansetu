@@ -134,6 +134,9 @@
   .quick{border:1px solid var(--line); border-radius:var(--radius); padding:14px 12px; background:#fff; font-size:12.5px; text-align:left; cursor:pointer;}
   .quick .qi{font-size:18px; display:block; margin-bottom:6px;}
   .quick:hover{border-color:var(--ink);}
+  .quick:focus-visible,.quick.is-selected{outline:2px solid var(--sky); outline-offset:2px; border-color:var(--sky);}
+  .prototype-notice{display:none; margin-top:14px; padding:11px 13px; border:1px solid var(--sky); border-radius:var(--radius); background:#EAF3F4; color:var(--ink); font-size:12.5px;}
+  .prototype-notice.show{display:block;}
 
   /* diary */
   .diary-item{display:flex; justify-content:space-between; gap:12px; border-bottom:1px solid var(--line); padding:12px 0; font-size:13px;}
@@ -287,7 +290,7 @@
 <div class="forecast-row" id="wForecast"><div class="fc-day"><div class="d">Today</div><div class="t">31° / 22°</div><div style="opacity:.7;">1mm</div></div><div class="fc-day"><div class="d">Sat</div><div class="t">31° / 20°</div><div style="opacity:.7;">0mm</div></div><div class="fc-day"><div class="d">Sun</div><div class="t">32° / 20°</div><div style="opacity:.7;">0mm</div></div><div class="fc-day"><div class="d">Mon</div><div class="t">32° / 21°</div><div style="opacity:.7;">2mm</div></div></div>
 </div>
 <!-- Crop & Fertilizer Advisor (merged from Kisan Saathi) -->
-<div class="panel">
+<div class="panel" id="advisorPanel">
 <h2 data-i18n="advisorTitle">Crop &amp; fertiliser advisor</h2>
 <p class="hint" data-i18n="advisorHint">Tell us about your field once — get a soil-and-season-matched crop list and fertiliser guidance.</p>
 <label data-i18n="lblSoil">Soil type</label>
@@ -314,17 +317,19 @@
 </select>
 <button class="btn" data-i18n="submitBtn" id="submitBtn">Get recommendation</button>
 <div class="stack" id="advisorResults" style="margin-top:18px;"></div>
+<div class="prototype-notice" id="advisorNotice" role="status"></div>
 </div>
 <!-- Pest scan -->
-<div class="panel">
+<div class="panel" id="pestPanel">
 <h2 data-i18n="pestTitle">Scan crop issue</h2>
 <p class="hint" data-i18n="pestHint">Upload a leaf photo for a demo pest &amp; disease check.</p>
 <div class="pest-row">
-<label class="file-btn" data-i18n="pestUpload" style="margin:0;">Upload photo
+<label class="file-btn" data-i18n="pestUpload" id="pestUploadLabel" style="margin:0;" tabindex="-1">Upload photo
                 <input accept="image/*" id="pestFile" style="display:none;" type="file"/>
 </label>
 <span id="pestFileName" style="font-size:12.5px; color:var(--ink-soft);"></span>
 </div>
+<div class="prototype-notice" id="pestNotice" role="status"></div>
 <div class="pest-result" id="pestResult"></div>
 </div>
 <!-- Tomato season journey + balance -->
@@ -344,11 +349,12 @@
 <div class="panel">
 <h2 data-i18n="quickTitle">Do more, without leaving the farm</h2>
 <div class="quick-grid" style="margin-top:12px;">
-<button class="quick"><span class="qi">🔎</span><span data-i18n="qScan">Scan crop issue</span></button>
-<button class="quick"><span class="qi">🚚</span><span data-i18n="qPool">Pool transport</span></button>
-<button class="quick"><span class="qi">🚜</span><span data-i18n="qBook">Book a service</span></button>
-<button class="quick"><span class="qi">🛡</span><span data-i18n="qProtect">Protect my crop</span></button>
+<button class="quick" data-quick-action="scan" type="button"><span class="qi">🔎</span><span data-i18n="qScan">Scan crop issue</span></button>
+<button class="quick" data-quick-action="pool" type="button"><span class="qi">🚚</span><span data-i18n="qPool">Pool transport</span></button>
+<button class="quick" data-quick-action="book" type="button"><span class="qi">🚜</span><span data-i18n="qBook">Book a service</span></button>
+<button class="quick" data-quick-action="protect" type="button"><span class="qi">🛡</span><span data-i18n="qProtect">Protect my crop</span></button>
 </div>
+<div class="prototype-notice" id="quickNotice" role="status"></div>
 </div>
 <!-- Feedback -->
 <div class="panel">
@@ -378,7 +384,7 @@
 <div class="stat-box"><div class="k" data-i18n="estHarvest">Estimated harvest</div><div class="v" style="font-size:14px;">Oct 10–17</div></div>
 <div class="stat-box"><div class="k" data-i18n="cropHealth">Crop health</div><div class="v" data-i18n="good" style="font-size:14px; color:var(--sky);">Good</div></div>
 </div>
-<button class="btn secondary" data-i18n="addScan" style="margin-top:16px;">＋ Add crop scan</button>
+<button class="btn secondary" data-i18n="addScan" id="addCropScan" style="margin-top:16px;" type="button">＋ Add crop scan</button>
 </div>
 </section>
 <!-- ================= KISAN GYAN ================= -->
@@ -603,12 +609,13 @@
 <section class="page" id="page-services">
 <h1 class="pg-title" data-i18n="servicesTitle">Verified farm services</h1>
 <p class="pg-sub" data-i18n="servicesSub">Book only what you need, close to your farm.</p>
-<div class="quick-grid">
-<button class="quick"><span class="qi">💦</span><span data-i18n="svcSprayer">Sprayer rental — From ₹250/day</span></button>
-<button class="quick"><span class="qi">🧪</span><span data-i18n="svcSoil">Soil test — Lab pickup available</span></button>
-<button class="quick"><span class="qi">❄</span><span data-i18n="svcCold">Cold storage — Reserve space</span></button>
-<button class="quick"><span class="qi">🤝</span><span data-i18n="svcFpo">Find FPO — Sell collectively</span></button>
+<div class="quick-grid" id="serviceGrid">
+<button class="quick" data-service="sprayer" type="button"><span class="qi">💦</span><span data-i18n="svcSprayer">Sprayer rental — From ₹250/day</span></button>
+<button class="quick" data-service="soil" type="button"><span class="qi">🧪</span><span data-i18n="svcSoil">Soil test — Lab pickup available</span></button>
+<button class="quick" data-service="cold" type="button"><span class="qi">❄</span><span data-i18n="svcCold">Cold storage — Reserve space</span></button>
+<button class="quick" data-service="fpo" type="button"><span class="qi">🤝</span><span data-i18n="svcFpo">Find FPO — Sell collectively</span></button>
 </div>
+<div class="prototype-notice" id="serviceNotice" role="status"></div>
 </section>
 <!-- ================= FARM DIARY ================= -->
 
@@ -696,7 +703,12 @@ const I18N = {
     gyanTitle:"کسان علم", tabSeeds:"بیج کا علم", tabWaste:"گھریلو فضلہ کھاد", cropsTitle:"میری فصلیں", servicesTitle:"تصدیق شدہ فارم خدمات", diaryTitle:"فارم ڈائری" }
 };
 let currentLang = 'en';
-function t(key){ return (I18N[currentLang] && I18N[currentLang][key]) || I18N.en[key] || key; }
+function t(key){
+  const catalog = window.__KISAN_LANG || I18N;
+  const active = catalog[currentLang] || catalog.en || {};
+  const english = catalog.en || I18N.en || {};
+  return active[key] ?? english[key] ?? I18N.en[key] ?? key;
+}
 
 function applyLang(lang){
   currentLang = lang;
@@ -1361,7 +1373,7 @@ renderWaste();
     wb:{emoji:'🌾',cards:[
       {name:'West Bengal Agriculture Department',url:'https://agriculture.wb.gov.in/'},
       {name:'Krishak Bandhu',url:'https://krishakbandhu.wb.gov.in/'},
-      {name:'Bangla Sahayata Kendra',url:'https://bsk.wb.gov.in/scheme_bsk/'}
+      {name:'Bangla Sahayata Kendra',url:'https://bsk.wb.gov.in/all-schemes.html'}
     ]},
     tn:{emoji:'🌴',cards:[
       {name:'Uzhavan',url:'https://www.tnagrisnet.tn.gov.in/people_app/dashboard/main/en'},
@@ -1425,6 +1437,132 @@ renderWaste();
   if (farmLocationSelect) farmLocationSelect.addEventListener('change', renderStateBenefits);
   applyGovernmentCopy();
   renderStateBenefits();
+})();
+</script>
+
+<script>
+/* Final language recovery and prototype-action feedback.  This runs after the
+   older prototype handlers so returning to English is deterministic too. */
+(() => {
+  const regional = {
+    gu:{
+      loginTitle:'ખેડૂત સાઇન ઇન',loginSub:'તમારા ખેતરનો ડેશબોર્ડ શરૂ કરવા તમારું નામ દાખલ કરો.',nameLabel:'ખેડૂતનું નામ',namePlaceholder:'તમારું નામ દાખલ કરો',loginBtn:'ચાલુ રાખો',loginRequired:'કૃપા કરીને તમારું નામ દાખલ કરો.',navToday:'આજે',navCrops:'મારા પાકો',navGyan:'કિસાન જ્ઞાન',navServices:'ખેતર સેવાઓ',signOut:'સાઇન આઉટ',todaySub:'આજે તમારા ખેતરને આની જરૂર છે.',refresh:'તાજું કરો',weatherNote:'તમારા ખેતરના સ્થાન મુજબ મફત જીવંત હવામાન માહિતી',advisorTitle:'પાક અને ખાતર સલાહકાર',advisorHint:'તમારા ખેતરની માહિતી એકવાર આપો — માટી અને ઋતુ મુજબ પાકોની યાદી અને ખાતરની સલાહ મેળવો.',lblSoil:'માટીનો પ્રકાર',soilAlluvial:'કાંપવાળી માટી',soilBlack:'કાળી (રેગુર) માટી',soilRed:'લાલ માટી',soilLaterite:'લેટરાઇટ માટી',soilSandy:'રેતાળ / સૂકી',soilClayey:'ચીકણી માટી',lblSeason:'ઋતુ',seasonKharif:'ખરીફ (ચોમાસું)',seasonRabi:'રબી (શિયાળો)',seasonZaid:'ઝાયદ (ઉનાળો)',lblLand:'જમીનનું કદ (એકર)',lblIrrigation:'સિંચાઈ ઉપલબ્ધ છે?',yes:'હા',no:'ના (વરસાદ આધારિત)',submitBtn:'ભલામણ મેળવો',submitBtnLoading:'હવામાન તપાસી રહ્યા છીએ…',recommended:'ભલામણ કરેલ પાકો',fertilizer:'ખાતર માર્ગદર્શન',fit:'યોગ્ય',pestTitle:'પાકની સમસ્યા સ્કેન કરો',pestHint:'કીટ અને રોગની ડેમો તપાસ માટે પાનનો ફોટો અપલોડ કરો.',pestUpload:'ફોટો અપલોડ કરો',journeyTitle:'ટમેટાની ઋતુની સફર',journeySub:'110 માંથી 47મો દિવસ',jSow:'વાવણી',jDone:'પૂર્ણ',jGrow:'વૃદ્ધિ',jNow:'હવે',jProtect:'સંરક્ષણ',jHarvest:'કાપણી',quickTitle:'ખેતર છોડ્યા વિના વધુ કરો',qScan:'પાકની સમસ્યા સ્કેન કરો',qPool:'સાંઝો પરિવહન',qBook:'સેવા બુક કરો',qProtect:'મારા પાકનું રક્ષણ કરો',fbTitle:'શું આ ઉપયોગી હતું?',cropsTitle:'મારા પાકો',cropsSub:'તમારા ખેતર પર આધારિત સરળ નિર્ણયો.',cropVariety:'હાઇબ્રિડ જાત · 24 જુલાઈએ વાવેલ · વૃદ્ધિ અવસ્થા',nextIrr:'આગામી સિંચાઈ તપાસ',healthScan:'પાક આરોગ્ય સ્કેન',dueIn2:'2 દિવસમાં બાકી',estHarvest:'અંદાજિત કાપણી',cropHealth:'પાક આરોગ્ય',good:'સારો',addScan:'＋ પાક સ્કેન ઉમેરો',gyanTitle:'કિસાન જ્ઞાન',gyanSub:'બીજની માહિતી અને ઓછી કિંમતની ખેતીની સમજ, એક જ જગ્યાએ.',tabSeeds:'બીજની માહિતી',tabWaste:'ઘરેલુ કચરાનું ખાતર',servicesTitle:'ચકાસેલ ખેતર સેવાઓ',servicesSub:'તમારા ખેતર પાસે જરૂરી હોય તેવી જ સેવા પસંદ કરો.',svcSprayer:'સ્પ્રેયર ભાડે — ₹250/દિવસથી',svcSoil:'માટી પરીક્ષણ — લેબ પિકઅપ ઉપલબ્ધ',svcCold:'કોલ્ડ સ્ટોરેજ — જગ્યા અનામત કરો',svcFpo:'FPO શોધો — સાથે વેચો',thanksFb:v=>`${v}/5 રેટિંગ આપવા બદલ આભાર!`,rainAlert:'આગામી 3 દિવસમાં ભારે વરસાદની શક્યતા — છંટકાવ રોકો',heatAlert:'વધુ ગરમીની ચેતવણી — સિંચાઈની આવર્તન વધારશો',normalAlert:'આગામી 3 દિવસ માટે પરિસ્થિતિ સામાન્ય છે',weatherUnavail:'હવામાન સેવા અત્યારે ઉપલબ્ધ નથી — ફક્ત પાકની સલાહ બતાવવામાં આવી રહી છે.',greetingMorning:'સુપ્રભાત',greetingAfternoon:'શુભ બપોર',greetingEvening:'શુભ સાંજ',footerText:'KisanSetu — 100% મફત ખેડૂત સાધનો · પ્રોટોટાઇપ આવૃત્તિ',scanReady:'પાક સ્કેન તૈયાર છે — ઉપર ફોટો અપલોડ કરો.',protectReady:'પાક સુરક્ષા માટેની સલાહ ખુલ્લી છે.'
+    },
+    bn:{
+      loginTitle:'কৃষক সাইন ইন',loginSub:'আপনার খামারের ড্যাশবোর্ড শুরু করতে নাম লিখুন।',nameLabel:'কৃষকের নাম',namePlaceholder:'আপনার নাম লিখুন',loginBtn:'চালিয়ে যান',loginRequired:'অনুগ্রহ করে আপনার নাম লিখুন।',navToday:'আজ',navCrops:'আমার ফসল',navGyan:'কিষাণ জ্ঞান',navServices:'খামার সেবা',signOut:'সাইন আউট',todaySub:'আজ আপনার খামারের যা প্রয়োজন।',refresh:'রিফ্রেশ করুন',weatherNote:'আপনার খামারের অবস্থানের ভিত্তিতে বিনামূল্যের লাইভ আবহাওয়া তথ্য',advisorTitle:'ফসল ও সার পরামর্শদাতা',advisorHint:'আপনার জমির তথ্য একবার দিন — মাটি ও মরসুম অনুযায়ী ফসলের তালিকা এবং সার পরামর্শ পান।',lblSoil:'মাটির ধরন',soilAlluvial:'পলিমাটি',soilBlack:'কালো (রেগুর) মাটি',soilRed:'লাল মাটি',soilLaterite:'ল্যাটেরাইট মাটি',soilSandy:'বালুময় / শুষ্ক',soilClayey:'এঁটেল মাটি',lblSeason:'মরসুম',seasonKharif:'খরিফ (বর্ষা)',seasonRabi:'রবি (শীত)',seasonZaid:'জায়েদ (গ্রীষ্ম)',lblLand:'জমির আয়তন (একর)',lblIrrigation:'সেচের ব্যবস্থা আছে?',yes:'হ্যাঁ',no:'না (বৃষ্টিনির্ভর)',submitBtn:'সুপারিশ পান',submitBtnLoading:'আবহাওয়া দেখা হচ্ছে…',recommended:'প্রস্তাবিত ফসল',fertilizer:'সার নির্দেশনা',fit:'উপযুক্ত',pestTitle:'ফসলের সমস্যা স্ক্যান করুন',pestHint:'পোকা ও রোগের ডেমো পরীক্ষা করতে পাতার ছবি আপলোড করুন।',pestUpload:'ছবি আপলোড করুন',journeyTitle:'টমেটো মরসুমের যাত্রা',journeySub:'110 দিনের মধ্যে 47তম দিন',jSow:'বপন',jDone:'সম্পন্ন',jGrow:'বৃদ্ধি',jNow:'এখন',jProtect:'সুরক্ষা',jHarvest:'ফসল কাটা',quickTitle:'খামার ছাড়াই আরও কাজ করুন',qScan:'ফসলের সমস্যা স্ক্যান করুন',qPool:'যৌথ পরিবহন',qBook:'সেবা বুক করুন',qProtect:'আমার ফসল রক্ষা করুন',fbTitle:'এটি কি উপকারী ছিল?',cropsTitle:'আমার ফসল',cropsSub:'আপনার জমির ভিত্তিতে সহজ সিদ্ধান্ত।',cropVariety:'হাইব্রিড জাত · 24 জুলাই বপন · বৃদ্ধির ধাপ',nextIrr:'পরবর্তী সেচ পরীক্ষা',healthScan:'ফসলের স্বাস্থ্য স্ক্যান',dueIn2:'2 দিনের মধ্যে',estHarvest:'আনুমানিক ফসল কাটা',cropHealth:'ফসলের স্বাস্থ্য',good:'ভালো',addScan:'＋ ফসল স্ক্যান যোগ করুন',gyanTitle:'কিষাণ জ্ঞান',gyanSub:'বীজের জ্ঞান এবং কম খরচের কৃষি বুদ্ধি, এক জায়গায়।',tabSeeds:'বীজের জ্ঞান',tabWaste:'ঘরোয়া বর্জ্য সার',servicesTitle:'যাচাইকৃত খামার সেবা',servicesSub:'আপনার খামারের কাছে শুধু প্রয়োজনীয় সেবাই বেছে নিন।',svcSprayer:'স্প্রেয়ার ভাড়া — ₹250/দিন থেকে',svcSoil:'মাটি পরীক্ষা — ল্যাব পিকআপ উপলব্ধ',svcCold:'হিমঘর — স্থান সংরক্ষণ করুন',svcFpo:'FPO খুঁজুন — একসঙ্গে বিক্রি করুন',thanksFb:v=>`${v}/5 রেটিং দেওয়ার জন্য ধন্যবাদ!`,rainAlert:'পরের 3 দিনে ভারী বৃষ্টির সম্ভাবনা — স্প্রে করা স্থগিত রাখুন',heatAlert:'অতিরিক্ত গরমের সতর্কতা — সেচের ঘনত্ব বাড়ান',normalAlert:'পরের 3 দিনের পরিস্থিতি স্বাভাবিক থাকবে',weatherUnavail:'এখন আবহাওয়া পরিষেবা পাওয়া যাচ্ছে না — শুধু ফসলের পরামর্শ দেখানো হচ্ছে।',greetingMorning:'সুপ্রভাত',greetingAfternoon:'শুভ অপরাহ্ন',greetingEvening:'শুভ সন্ধ্যা',footerText:'KisanSetu — কৃষকদের জন্য 100% বিনামূল্যের সরঞ্জাম · প্রোটোটাইপ সংস্করণ',scanReady:'ফসল স্ক্যান প্রস্তুত — উপরে একটি ছবি আপলোড করুন।',protectReady:'ফসল সুরক্ষার পরামর্শ খোলা হয়েছে।'
+    },
+    pa:{
+      loginTitle:'ਕਿਸਾਨ ਸਾਈਨ ਇਨ',loginSub:'ਆਪਣਾ ਖੇਤੀ ਡੈਸ਼ਬੋਰਡ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਆਪਣਾ ਨਾਮ ਦਰਜ ਕਰੋ।',nameLabel:'ਕਿਸਾਨ ਦਾ ਨਾਮ',namePlaceholder:'ਆਪਣਾ ਨਾਮ ਦਰਜ ਕਰੋ',loginBtn:'ਜਾਰੀ ਰੱਖੋ',loginRequired:'ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਨਾਮ ਦਰਜ ਕਰੋ।',navToday:'ਅੱਜ',navCrops:'ਮੇਰੀਆਂ ਫ਼ਸਲਾਂ',navGyan:'ਕਿਸਾਨ ਗਿਆਨ',navServices:'ਖੇਤ ਸੇਵਾਵਾਂ',signOut:'ਸਾਈਨ ਆਉਟ',todaySub:'ਅੱਜ ਤੁਹਾਡੇ ਖੇਤ ਨੂੰ ਇਸ ਦੀ ਲੋੜ ਹੈ।',refresh:'ਤਾਜ਼ਾ ਕਰੋ',weatherNote:'ਤੁਹਾਡੇ ਖੇਤ ਦੀ ਥਾਂ ਅਨੁਸਾਰ ਮੁਫ਼ਤ ਲਾਈਵ ਮੌਸਮ ਜਾਣਕਾਰੀ',advisorTitle:'ਫ਼ਸਲ ਅਤੇ ਖਾਦ ਸਲਾਹਕਾਰ',advisorHint:'ਆਪਣੇ ਖੇਤ ਦੀ ਜਾਣਕਾਰੀ ਇੱਕ ਵਾਰ ਦਿਓ — ਮਿੱਟੀ ਅਤੇ ਮੌਸਮ ਨਾਲ ਮੇਲ ਖਾਂਦੀ ਫ਼ਸਲ ਸੂਚੀ ਅਤੇ ਖਾਦ ਸਲਾਹ ਲਵੋ।',lblSoil:'ਮਿੱਟੀ ਦੀ ਕਿਸਮ',soilAlluvial:'ਜਲੋੜ ਮਿੱਟੀ',soilBlack:'ਕਾਲੀ (ਰੈਗਰ) ਮਿੱਟੀ',soilRed:'ਲਾਲ ਮਿੱਟੀ',soilLaterite:'ਲੇਟਰਾਈਟ ਮਿੱਟੀ',soilSandy:'ਰੇਤਲੀ / ਸੁੱਕੀ',soilClayey:'ਚਿਕਣੀ ਮਿੱਟੀ',lblSeason:'ਮੌਸਮ',seasonKharif:'ਖਰੀਫ਼ (ਮਾਨਸੂਨ)',seasonRabi:'ਰਬੀ (ਸਰਦੀ)',seasonZaid:'ਜ਼ਾਇਦ (ਗਰਮੀ)',lblLand:'ਜ਼ਮੀਨ ਦਾ ਆਕਾਰ (ਏਕੜ)',lblIrrigation:'ਕੀ ਸਿੰਚਾਈ ਉਪਲਬਧ ਹੈ?',yes:'ਹਾਂ',no:'ਨਹੀਂ (ਬਰਸਾਤ-ਆਧਾਰਿਤ)',submitBtn:'ਸਿਫ਼ਾਰਸ਼ ਲਵੋ',submitBtnLoading:'ਮੌਸਮ ਦੀ ਜਾਂਚ ਹੋ ਰਹੀ ਹੈ…',recommended:'ਸਿਫ਼ਾਰਸ਼ੀ ਫ਼ਸਲਾਂ',fertilizer:'ਖਾਦ ਮਾਰਗਦਰਸ਼ਨ',fit:'ਢੁੱਕਵਾਂ',pestTitle:'ਫ਼ਸਲ ਦੀ ਸਮੱਸਿਆ ਸਕੈਨ ਕਰੋ',pestHint:'ਕੀੜੇ ਅਤੇ ਬਿਮਾਰੀ ਦੀ ਡੈਮੋ ਜਾਂਚ ਲਈ ਪੱਤੇ ਦੀ ਫ਼ੋਟੋ ਅਪਲੋਡ ਕਰੋ।',pestUpload:'ਫ਼ੋਟੋ ਅਪਲੋਡ ਕਰੋ',journeyTitle:'ਟਮਾਟਰ ਮੌਸਮ ਦੀ ਯਾਤਰਾ',journeySub:'110 ਵਿੱਚੋਂ ਦਿਨ 47',jSow:'ਬਿਜਾਈ',jDone:'ਪੂਰਾ',jGrow:'ਵਾਧਾ',jNow:'ਹੁਣ',jProtect:'ਸੁਰੱਖਿਆ',jHarvest:'ਕਟਾਈ',quickTitle:'ਖੇਤ ਛੱਡੇ ਬਿਨਾਂ ਹੋਰ ਕਰੋ',qScan:'ਫ਼ਸਲ ਦੀ ਸਮੱਸਿਆ ਸਕੈਨ ਕਰੋ',qPool:'ਸਾਂਝੀ ਆਵਾਜਾਈ',qBook:'ਸੇਵਾ ਬੁੱਕ ਕਰੋ',qProtect:'ਮੇਰੀ ਫ਼ਸਲ ਦੀ ਰੱਖਿਆ ਕਰੋ',fbTitle:'ਕੀ ਇਹ ਮਦਦਗਾਰ ਸੀ?',cropsTitle:'ਮੇਰੀਆਂ ਫ਼ਸਲਾਂ',cropsSub:'ਤੁਹਾਡੇ ਖੇਤ ਦੇ ਆਧਾਰ ’ਤੇ ਸੌਖੇ ਫ਼ੈਸਲੇ।',cropVariety:'ਹਾਈਬ੍ਰਿਡ ਕਿਸਮ · 24 ਜੁਲਾਈ ਨੂੰ ਬੀਜੀ · ਵਾਧੇ ਦਾ ਪੜਾਅ',nextIrr:'ਅਗਲੀ ਸਿੰਚਾਈ ਜਾਂਚ',healthScan:'ਫ਼ਸਲ ਸਿਹਤ ਸਕੈਨ',dueIn2:'2 ਦਿਨਾਂ ਵਿੱਚ',estHarvest:'ਅਨੁਮਾਨਿਤ ਕਟਾਈ',cropHealth:'ਫ਼ਸਲ ਸਿਹਤ',good:'ਵਧੀਆ',addScan:'＋ ਫ਼ਸਲ ਸਕੈਨ ਜੋੜੋ',gyanTitle:'ਕਿਸਾਨ ਗਿਆਨ',gyanSub:'ਬੀਜਾਂ ਦੀ ਜਾਣਕਾਰੀ ਅਤੇ ਘੱਟ-ਖ਼ਰਚ ਖੇਤੀ ਦੀ ਸਿਆਣਪ, ਇੱਕ ਹੀ ਥਾਂ।',tabSeeds:'ਬੀਜਾਂ ਦੀ ਜਾਣਕਾਰੀ',tabWaste:'ਘਰੇਲੂ ਕਚਰੇ ਦੀ ਖਾਦ',servicesTitle:'ਤਸਦੀਕਸ਼ੁਦਾ ਖੇਤ ਸੇਵਾਵਾਂ',servicesSub:'ਆਪਣੇ ਖੇਤ ਦੇ ਨੇੜੇ ਸਿਰਫ਼ ਲੋੜੀਂਦੀ ਸੇਵਾ ਚੁਣੋ।',svcSprayer:'ਸਪ੍ਰੇਅਰ ਕਿਰਾਇਆ — ₹250/ਦਿਨ ਤੋਂ',svcSoil:'ਮਿੱਟੀ ਜਾਂਚ — ਲੈਬ ਪਿਕਅਪ ਉਪਲਬਧ',svcCold:'ਕੋਲਡ ਸਟੋਰੇਜ — ਥਾਂ ਰਾਖਵੀਂ ਕਰੋ',svcFpo:'FPO ਲੱਭੋ — ਮਿਲ ਕੇ ਵੇਚੋ',thanksFb:v=>`${v}/5 ਰੇਟਿੰਗ ਦੇਣ ਲਈ ਧੰਨਵਾਦ!`,rainAlert:'ਅਗਲੇ 3 ਦਿਨਾਂ ਵਿੱਚ ਭਾਰੀ ਮੀਂਹ ਦੀ ਸੰਭਾਵਨਾ — ਛਿੜਕਾਅ ਰੋਕੋ',heatAlert:'ਵੱਧ ਗਰਮੀ ਦੀ ਚੇਤਾਵਨੀ — ਸਿੰਚਾਈ ਦੀ ਆਵਰਤੀ ਵਧਾਓ',normalAlert:'ਅਗਲੇ 3 ਦਿਨਾਂ ਲਈ ਹਾਲਾਤ ਸਧਾਰਨ ਹਨ',weatherUnavail:'ਮੌਸਮ ਸੇਵਾ ਇਸ ਵੇਲੇ ਉਪਲਬਧ ਨਹੀਂ ਹੈ — ਸਿਰਫ਼ ਫ਼ਸਲ ਸਲਾਹ ਦਿਖਾਈ ਜਾ ਰਹੀ ਹੈ।',greetingMorning:'ਸ਼ੁਭ ਸਵੇਰ',greetingAfternoon:'ਸ਼ੁਭ ਦੁਪਹਿਰ',greetingEvening:'ਸ਼ੁਭ ਸ਼ਾਮ',footerText:'KisanSetu — ਕਿਸਾਨਾਂ ਲਈ 100% ਮੁਫ਼ਤ ਸਾਧਨ · ਪ੍ਰੋਟੋਟਾਈਪ ਸੰਸਕਰਣ',scanReady:'ਫ਼ਸਲ ਸਕੈਨ ਤਿਆਰ ਹੈ — ਉੱਪਰ ਫ਼ੋਟੋ ਅਪਲੋਡ ਕਰੋ।',protectReady:'ਫ਼ਸਲ ਸੁਰੱਖਿਆ ਲਈ ਸਲਾਹ ਖੁੱਲ੍ਹ ਗਈ ਹੈ।'
+    },
+    ml:{
+      loginTitle:'കർഷക ലോഗിൻ',loginSub:'നിങ്ങളുടെ കൃഷി ഡാഷ്ബോർഡ് ആരംഭിക്കാൻ പേര് നൽകുക.',nameLabel:'കർഷകന്റെ പേര്',namePlaceholder:'നിങ്ങളുടെ പേര് നൽകുക',loginBtn:'തുടരുക',loginRequired:'ദയവായി നിങ്ങളുടെ പേര് നൽകുക.',navToday:'ഇന്ന്',navCrops:'എന്റെ വിളകൾ',navGyan:'കിസാൻ ജ്ഞാൻ',navServices:'കൃഷി സേവനങ്ങൾ',signOut:'സൈൻ ഔട്ട്',todaySub:'ഇന്ന് നിങ്ങളുടെ കൃഷിയിടത്തിന് വേണ്ടത് ഇതാണ്.',refresh:'പുതുക്കുക',weatherNote:'നിങ്ങളുടെ കൃഷിയിടത്തിന്റെ സ്ഥാനത്തെ അടിസ്ഥാനമാക്കിയുള്ള സൗജന്യ തത്സമയ കാലാവസ്ഥ',advisorTitle:'വിളയും വളവും ഉപദേശകൻ',advisorHint:'നിങ്ങളുടെ വയൽ വിവരങ്ങൾ നൽകുക — മണ്ണിനും കാലത്തിനും അനുയോജ്യമായ വിള, വള നിർദ്ദേശങ്ങൾ നേടുക.',lblSoil:'മണ്ണിന്റെ തരം',soilAlluvial:'എക്കൽ മണ്ണ്',soilBlack:'കറുത്ത മണ്ണ് (റെഗൂർ)',soilRed:'ചുവന്ന മണ്ണ്',soilLaterite:'ലാറ്ററൈറ്റ് മണ്ണ്',soilSandy:'മണൽ / വരണ്ട മണ്ണ്',soilClayey:'കളിമണ്ണ്',lblSeason:'കാലം',seasonKharif:'ഖരീഫ് (മൺസൂൺ)',seasonRabi:'റബി (ശീതകാലം)',seasonZaid:'സായിദ് (വേനൽക്കാലം)',lblLand:'ഭൂവിസ്തീർണം (ഏക്കർ)',lblIrrigation:'ജലസേചനം ലഭ്യമാണോ?',yes:'അതെ',no:'ഇല്ല (മഴയെ ആശ്രയിച്ച്)',submitBtn:'ശുപാർശ നേടുക',submitBtnLoading:'കാലാവസ്ഥ പരിശോധിക്കുന്നു…',recommended:'ശുപാർശ ചെയ്യുന്ന വിളകൾ',fertilizer:'വള മാർഗ്ഗനിർദ്ദേശം',fit:'അനുയോജ്യം',pestTitle:'വിള പ്രശ്നം സ്‌കാൻ ചെയ്യുക',pestHint:'കീട-രോഗ പരിശോധനാ ഡെമോയ്ക്കായി ഇലയുടെ ചിത്രം അപ്‌ലോഡ് ചെയ്യുക.',pestUpload:'ചിത്രം അപ്‌ലോഡ് ചെയ്യുക',journeyTitle:'തക്കാളി സീസൺ യാത്ര',journeySub:'110ൽ 47-ാം ദിവസം',jSow:'വിതയ്ക്കുക',jDone:'പൂർത്തിയായി',jGrow:'വളർച്ച',jNow:'ഇപ്പോൾ',jProtect:'സംരക്ഷിക്കുക',jHarvest:'കൊയ്ത്ത്',quickTitle:'കൃഷിയിടം വിടാതെ കൂടുതൽ ചെയ്യൂ',qScan:'വിള പ്രശ്നം സ്‌കാൻ ചെയ്യുക',qPool:'കൂട്ട ഗതാഗതം',qBook:'സേവനം ബുക്ക് ചെയ്യുക',qProtect:'എന്റെ വിള സംരക്ഷിക്കുക',fbTitle:'ഇത് ഉപകാരപ്പെട്ടോ?',cropsTitle:'എന്റെ വിളകൾ',cropsSub:'നിങ്ങളുടെ വയലിനെ അടിസ്ഥാനമാക്കിയ ലളിതമായ തീരുമാനങ്ങൾ.',cropVariety:'ഹൈബ്രിഡ് ഇനം · ജൂലൈ 24-ന് വിതച്ചു · വളർച്ചാ ഘട്ടം',nextIrr:'അടുത്ത ജലസേചന പരിശോധന',healthScan:'വിള ആരോഗ്യ സ്‌കാൻ',dueIn2:'2 ദിവസത്തിനകം',estHarvest:'കണക്കാക്കിയ കൊയ്ത്ത്',cropHealth:'വിളയുടെ ആരോഗ്യം',good:'നല്ലത്',addScan:'＋ വിള സ്‌കാൻ ചേർക്കുക',gyanTitle:'കിസാൻ ജ്ഞാൻ',gyanSub:'വിത്തറിവും കുറഞ്ഞ ചെലവിലുള്ള കൃഷി പരിജ്ഞാനവും ഒരിടത്ത്.',tabSeeds:'വിത്തറിവ്',tabWaste:'വീട്ടുമാലിന്യ വളം',servicesTitle:'പരിശോധിച്ച കൃഷി സേവനങ്ങൾ',servicesSub:'നിങ്ങളുടെ കൃഷിയിടത്തിന് അടുത്തുള്ള ആവശ്യമായ സേവനം മാത്രം തിരഞ്ഞെടുക്കുക.',svcSprayer:'സ്പ്രേയർ വാടക — ₹250/ദിവസം മുതൽ',svcSoil:'മണ്ണ് പരിശോധന — ലാബ് പിക്കപ്പ് ലഭ്യം',svcCold:'കോൾഡ് സ്റ്റോറേജ് — സ്ഥലം റിസർവ് ചെയ്യുക',svcFpo:'FPO കണ്ടെത്തുക — കൂട്ടമായി വിൽക്കുക',thanksFb:v=>`${v}/5 റേറ്റിംഗ് നൽകിയതിന് നന്ദി!`,rainAlert:'അടുത്ത 3 ദിവസത്തിൽ കനത്ത മഴയ്ക്ക് സാധ്യത — തളിക്കൽ മാറ്റിവയ്ക്കുക',heatAlert:'കടുത്ത ചൂട് മുന്നറിയിപ്പ് — ജലസേചനം കൂട്ടുക',normalAlert:'അടുത്ത 3 ദിവസത്തെ സാഹചര്യം സാധാരണമാണ്',weatherUnavail:'കാലാവസ്ഥ സേവനം ഇപ്പോൾ ലഭ്യമല്ല — വിള ഉപദേശം മാത്രം കാണിക്കുന്നു.',greetingMorning:'സുപ്രഭാതം',greetingAfternoon:'ശുഭ അപരാഹ്നം',greetingEvening:'ശുഭ സായാഹ്നം',footerText:'KisanSetu — കർഷകർക്കായി 100% സൗജന്യ ഉപകരണങ്ങൾ · പ്രോട്ടോടൈപ്പ് പതിപ്പ്',scanReady:'വിള സ്‌കാനർ തയ്യാറാണ്. തുടരാൻ ഇലയുടെ ചിത്രം തിരഞ്ഞെടുക്കുക.',protectReady:'വിള സംരക്ഷണ ചെക്ക്‌ലിസ്റ്റ് തയ്യാറാണ്.'
+    },
+    or:{
+      loginTitle:'କୃଷକ ସାଇନ୍ ଇନ୍',loginSub:'ଆପଣଙ୍କ ଖେତ ଡ୍ୟାସବୋର୍ଡ ଆରମ୍ଭ କରିବାକୁ ନାମ ଲେଖନ୍ତୁ।',nameLabel:'କୃଷକଙ୍କ ନାମ',namePlaceholder:'ଆପଣଙ୍କ ନାମ ଲେଖନ୍ତୁ',loginBtn:'ଜାରି ରଖନ୍ତୁ',loginRequired:'ଦୟାକରି ଆପଣଙ୍କ ନାମ ଲେଖନ୍ତୁ।',navToday:'ଆଜି',navCrops:'ମୋର ଫସଲ',navGyan:'କିଷାନ ଜ୍ଞାନ',navServices:'ଚାଷ ସେବା',signOut:'ସାଇନ୍ ଆଉଟ୍',todaySub:'ଆଜି ଆପଣଙ୍କ ଖେତରେ ଯାହା ଦରକାର।',refresh:'ତାଜା କରନ୍ତୁ',weatherNote:'ଆପଣଙ୍କ ଖେତର ଅବସ୍ଥାନ ଆଧାରରେ ମାଗଣା ସଜିବ ପାଣିପାଗ ସୂଚନା',advisorTitle:'ଫସଲ ଓ ସାର ପରାମର୍ଶଦାତା',advisorHint:'ଆପଣଙ୍କ ଖେତର ସୂଚନା ଦିଅନ୍ତୁ — ମାଟି ଓ ଋତୁ ଅନୁଯାୟୀ ଫସଲ ଏବଂ ସାର ପରାମର୍ଶ ପାଆନ୍ତୁ।',lblSoil:'ମାଟିର ପ୍ରକାର',soilAlluvial:'ପଲି ମାଟି',soilBlack:'କଳା ମାଟି (ରେଗୁର)',soilRed:'ଲାଲ ମାଟି',soilLaterite:'ଲାଟେରାଇଟ ମାଟି',soilSandy:'ବାଲୁକା / ଶୁଷ୍କ',soilClayey:'ଚିକ୍କଣ ମାଟି',lblSeason:'ଋତୁ',seasonKharif:'ଖରିଫ (ବର୍ଷା)',seasonRabi:'ରବି (ଶୀତ)',seasonZaid:'ଜାଇଦ୍ (ଗ୍ରୀଷ୍ମ)',lblLand:'ଜମିର ଆକାର (ଏକର)',lblIrrigation:'ଜଳସେଚନ ଅଛି କି?',yes:'ହଁ',no:'ନାହିଁ (ବର୍ଷା-ନିର୍ଭର)',submitBtn:'ପରାମର୍ଶ ପାଆନ୍ତୁ',submitBtnLoading:'ପାଣିପାଗ ଯାଞ୍ଚ ହେଉଛି…',recommended:'ପରାମର୍ଶିତ ଫସଲ',fertilizer:'ସାର ମାର୍ଗଦର୍ଶନ',fit:'ଉପଯୁକ୍ତ',pestTitle:'ଫସଲ ସମସ୍ୟା ସ୍କାନ୍ କରନ୍ତୁ',pestHint:'କୀଟ ଓ ରୋଗ ଯାଞ୍ଚ ଡେମୋ ପାଇଁ ପତ୍ରର ଫଟୋ ଅପଲୋଡ୍ କରନ୍ତୁ।',pestUpload:'ଫଟୋ ଅପଲୋଡ୍ କରନ୍ତୁ',journeyTitle:'ଟମାଟୋ ଋତୁ ଯାତ୍ରା',journeySub:'110ରୁ 47ତମ ଦିନ',jSow:'ବୁଣନ୍ତୁ',jDone:'ସମ୍ପୂର୍ଣ୍ଣ',jGrow:'ବୃଦ୍ଧି',jNow:'ଏବେ',jProtect:'ସୁରକ୍ଷା',jHarvest:'ଅମଳ',quickTitle:'ଖେତ ଛାଡ଼ିବା ବିନା ଆଉ କରନ୍ତୁ',qScan:'ଫସଲ ସମସ୍ୟା ସ୍କାନ୍ କରନ୍ତୁ',qPool:'ସାମୂହିକ ପରିବହନ',qBook:'ସେବା ବୁକ୍ କରନ୍ତୁ',qProtect:'ମୋ ଫସଲକୁ ସୁରକ୍ଷା କରନ୍ତୁ',fbTitle:'ଏହା ଉପଯୋଗୀ ଥିଲା କି?',cropsTitle:'ମୋର ଫସଲ',cropsSub:'ଆପଣଙ୍କ ଖେତ ଉପରେ ଆଧାରିତ ସରଳ ନିଷ୍ପତ୍ତି।',cropVariety:'ହାଇବ୍ରିଡ୍ କିସମ · ଜୁଲାଇ 24ରେ ବୁଣାଗଲା · ବୃଦ୍ଧି ପର୍ଯ୍ୟାୟ',nextIrr:'ପରବର୍ତ୍ତୀ ଜଳସେଚନ ଯାଞ୍ଚ',healthScan:'ଫସଲ ସ୍ୱାସ୍ଥ୍ୟ ସ୍କାନ୍',dueIn2:'2 ଦିନରେ',estHarvest:'ଆନୁମାନିକ ଅମଳ',cropHealth:'ଫସଲ ସ୍ୱାସ୍ଥ୍ୟ',good:'ଭଲ',addScan:'＋ ଫସଲ ସ୍କାନ୍ ଯୋଡନ୍ତୁ',gyanTitle:'କିଷାନ ଜ୍ଞାନ',gyanSub:'ବିହନ ଜ୍ଞାନ ଓ କମ୍ ଖର୍ଚ୍ଚର କୃଷି ବୁଦ୍ଧି, ଗୋଟିଏ ସ୍ଥାନରେ।',tabSeeds:'ବିହନ ଜ୍ଞାନ',tabWaste:'ଘରୋଇ ଅପଚୟ ସାର',servicesTitle:'ଯାଞ୍ଚିତ ଚାଷ ସେବା',servicesSub:'ଆପଣଙ୍କ ଖେତ ନିକଟରେ ଦରକାର ଥିବା ସେବାଟିକୁ ମାତ୍ର ବାଛନ୍ତୁ।',svcSprayer:'ସ୍ପ୍ରେୟର ଭଡ଼ା — ₹250/ଦିନରୁ',svcSoil:'ମାଟି ପରୀକ୍ଷା — ଲ୍ୟାବ ପିକଅପ୍ ଉପଲବ୍ଧ',svcCold:'କୋଲ୍ଡ ଷ୍ଟୋରେଜ୍ — ସ୍ଥାନ ସଂରକ୍ଷଣ କରନ୍ତୁ',svcFpo:'FPO ଖୋଜନ୍ତୁ — ମିଶିକରି ବିକ୍ରି କରନ୍ତୁ',thanksFb:v=>`${v}/5 ରେଟିଂ ପାଇଁ ଧନ୍ୟବାଦ!`,rainAlert:'ଆଗାମୀ 3 ଦିନରେ ଭାରି ବର୍ଷାର ସମ୍ଭାବନା — ସ୍ପ୍ରେ କରିବା ପଛକୁ ରଖନ୍ତୁ',heatAlert:'ଅଧିକ ଗରମ ସତର୍କତା — ଜଳସେଚନ ବଢ଼ାନ୍ତୁ',normalAlert:'ଆଗାମୀ 3 ଦିନ ପାଇଁ ପରିସ୍ଥିତି ସାଧାରଣ ଅଛି',weatherUnavail:'ପାଣିପାଗ ସେବା ବର୍ତ୍ତମାନ ଉପଲବ୍ଧ ନାହିଁ — କେବଳ ଫସଲ ପରାମର୍ଶ ଦେଖାଯାଉଛି।',greetingMorning:'ଶୁଭ ସକାଳ',greetingAfternoon:'ଶୁଭ ଅପରାହ୍ନ',greetingEvening:'ଶୁଭ ସନ୍ଧ୍ୟା',footerText:'KisanSetu — କୃଷକଙ୍କ ପାଇଁ 100% ମାଗଣା ଉପକରଣ · ପ୍ରୋଟୋଟାଇପ ସଂସ୍କରଣ',scanReady:'ଫସଲ ସ୍କାନର ପ୍ରସ୍ତୁତ। ଆଗକୁ ବଢ଼ିବାକୁ ପତ୍ରର ଫଟୋ ବାଛନ୍ତୁ।',protectReady:'ଫସଲ ସୁରକ୍ଷା ଯାଞ୍ଚତାଲିକା ପ୍ରସ୍ତୁତ।'
+    },
+    as:{
+      loginTitle:'কৃষক সাইন ইন',loginSub:'আপোনাৰ কৃষি ডেশব’ৰ্ড আৰম্ভ কৰিবলৈ নাম লিখক।',nameLabel:'কৃষকৰ নাম',namePlaceholder:'আপোনাৰ নাম লিখক',loginBtn:'আগবাঢ়ক',loginRequired:'অনুগ্ৰহ কৰি আপোনাৰ নাম লিখক।',navToday:'আজি',navCrops:'মোৰ শস্য',navGyan:'কিষাণ জ্ঞান',navServices:'খেতি সেৱা',signOut:'সাইন আউট',todaySub:'আজি আপোনাৰ খেতিত যি প্ৰয়োজন।',refresh:'তাজা কৰক',weatherNote:'আপোনাৰ খেতিৰ স্থানৰ ভিত্তিত বিনামূলীয়া সজীৱ বতৰৰ তথ্য',advisorTitle:'শস্য আৰু সাৰ পৰামৰ্শদাতা',advisorHint:'আপোনাৰ খেতিৰ তথ্য দিয়ক — মাটি আৰু ঋতুৰ সৈতে মিল থকা শস্য আৰু সাৰৰ পৰামৰ্শ লওক।',lblSoil:'মাটিৰ ধৰণ',soilAlluvial:'পলসুৱা মাটি',soilBlack:'ক’লা মাটি (ৰেগুৰ)',soilRed:'ৰঙা মাটি',soilLaterite:'লেটাৰাইট মাটি',soilSandy:'বালিময় / শুষ্ক',soilClayey:'এঁটেল মাটি',lblSeason:'ঋতু',seasonKharif:'খৰিফ (বৰষুণ)',seasonRabi:'ৰবি (শীত)',seasonZaid:'জাইদ (গ্ৰীষ্ম)',lblLand:'মাটিৰ পৰিমাণ (একৰ)',lblIrrigation:'জলসিঞ্চন উপলব্ধ নে?',yes:'হয়',no:'নহয় (বৰষুণ-নিৰ্ভৰ)',submitBtn:'পৰামৰ্শ লওক',submitBtnLoading:'বতৰ পৰীক্ষা কৰা হৈছে…',recommended:'পৰামৰ্শিত শস্য',fertilizer:'সাৰ নিৰ্দেশনা',fit:'উপযুক্ত',pestTitle:'শস্যৰ সমস্যা স্কেন কৰক',pestHint:'কীট-পতংগ আৰু ৰোগৰ ডেমো পৰীক্ষাৰ বাবে পাতৰ ফটো আপল’ড কৰক।',pestUpload:'ফটো আপল’ড কৰক',journeyTitle:'টমেটোৰ ঋতু যাত্ৰা',journeySub:'110ৰ 47তম দিন',jSow:'বপন',jDone:'সম্পূৰ্ণ',jGrow:'বৃদ্ধি',jNow:'এতিয়া',jProtect:'সুৰক্ষা',jHarvest:'চপোৱা',quickTitle:'খেতি এৰি নোযোৱাকৈ অধিক কৰক',qScan:'শস্যৰ সমস্যা স্কেন কৰক',qPool:'সমূহীয়া পৰিবহণ',qBook:'সেৱা বুক কৰক',qProtect:'মোৰ শস্য সুৰক্ষিত কৰক',fbTitle:'ই উপযোগী আছিল নে?',cropsTitle:'মোৰ শস্য',cropsSub:'আপোনাৰ খেতিৰ ভিত্তিত সৰল সিদ্ধান্ত।',cropVariety:'হাইব্ৰিড জাত · 24 জুলাইত বপন · বৃদ্ধিৰ স্তৰ',nextIrr:'পৰৱৰ্তী জলসিঞ্চন পৰীক্ষা',healthScan:'শস্য স্বাস্থ্য স্কেন',dueIn2:'2 দিনৰ ভিতৰত',estHarvest:'আনুমানিক চপোৱা',cropHealth:'শস্যৰ স্বাস্থ্য',good:'ভাল',addScan:'＋ শস্য স্কেন যোগ কৰক',gyanTitle:'কিষাণ জ্ঞান',gyanSub:'বীজৰ জ্ঞান আৰু কম খৰচৰ কৃষি বুদ্ধি, একে ঠাইতে।',tabSeeds:'বীজ জ্ঞান',tabWaste:'ঘৰুৱা আৱৰ্জনাৰ সাৰ',servicesTitle:'সত্যাপিত খেতি সেৱা',servicesSub:'আপোনাৰ খেতিৰ ওচৰত যি সেৱা লাগে, কেৱল সেইটোৱেই বাছনি কৰক।',svcSprayer:'স্প্ৰেয়াৰ ভাড়া — ₹250/দিনৰ পৰা',svcSoil:'মাটি পৰীক্ষা — লেব পিকআপ উপলব্ধ',svcCold:'শীতল সংৰক্ষণ — স্থান সংৰক্ষণ কৰক',svcFpo:'FPO বিচাৰক — একেলগে বিক্ৰী কৰক',thanksFb:v=>`${v}/5 ৰেটিং দিয়াৰ বাবে ধন্যবাদ!`,rainAlert:'আগন্তুক 3 দিনত ধাৰাসাৰ বৰষুণৰ সম্ভাৱনা — স্প্ৰে কৰা পিছুৱাই দিয়ক',heatAlert:'অধিক গৰমৰ সতৰ্কতা — জলসিঞ্চন বৃদ্ধি কৰক',normalAlert:'আগন্তুক 3 দিনৰ পৰিস্থিতি স্বাভাৱিক',weatherUnavail:'বতৰ সেৱা এতিয়া উপলব্ধ নহয় — কেৱল শস্যৰ পৰামৰ্শ দেখুওৱা হৈছে।',greetingMorning:'সুপ্ৰভাত',greetingAfternoon:'শুভ অপৰাহ্ন',greetingEvening:'শুভ সন্ধ্যা',footerText:'KisanSetu — কৃষকৰ বাবে 100% বিনামূলীয়া সঁজুলি · প্ৰটোটাইপ সংস্কৰণ',scanReady:'শস্য স্কেনাৰ প্ৰস্তুত। আগবাঢ়িবলৈ পাতৰ ফটো বাছনি কৰক।',protectReady:'শস্য সুৰক্ষা চেকলিষ্ট প্ৰস্তুত।'
+    },
+    ur:{
+      loginTitle:'کسان سائن اِن',loginSub:'اپنا فارم ڈیش بورڈ شروع کرنے کے لیے اپنا نام درج کریں۔',nameLabel:'کسان کا نام',namePlaceholder:'اپنا نام درج کریں',loginBtn:'جاری رکھیں',loginRequired:'براہ کرم اپنا نام درج کریں۔',navToday:'آج',navCrops:'میری فصلیں',navGyan:'کسان علم',navServices:'فارم خدمات',signOut:'سائن آؤٹ',todaySub:'آج آپ کے فارم کو یہی درکار ہے۔',refresh:'تازہ کریں',weatherNote:'آپ کے فارم کے مقام کے مطابق مفت تازہ موسمی معلومات',advisorTitle:'فصل اور کھاد کا مشیر',advisorHint:'اپنے کھیت کی معلومات دیں — مٹی اور موسم کے مطابق فصل اور کھاد کی رہنمائی حاصل کریں۔',lblSoil:'مٹی کی قسم',soilAlluvial:'دریائی مٹی',soilBlack:'کالی مٹی (ریگور)',soilRed:'سرخ مٹی',soilLaterite:'لیٹرائٹ مٹی',soilSandy:'ریتلی / خشک',soilClayey:'چکنی مٹی',lblSeason:'موسم',seasonKharif:'خریف (مون سون)',seasonRabi:'ربیع (سردی)',seasonZaid:'زائد (گرمی)',lblLand:'زمین کا رقبہ (ایکڑ)',lblIrrigation:'آبپاشی دستیاب ہے؟',yes:'ہاں',no:'نہیں (بارش پر منحصر)',submitBtn:'سفارش حاصل کریں',submitBtnLoading:'موسم جانچا جا رہا ہے…',recommended:'تجویز کردہ فصلیں',fertilizer:'کھاد کی رہنمائی',fit:'موزوں',pestTitle:'فصل کا مسئلہ اسکین کریں',pestHint:'کیڑوں اور بیماری کے ڈیمو معائنے کے لیے پتے کی تصویر اپ لوڈ کریں۔',pestUpload:'تصویر اپ لوڈ کریں',journeyTitle:'ٹماٹر کے موسم کا سفر',journeySub:'110 میں سے دن 47',jSow:'بوائی',jDone:'مکمل',jGrow:'نشوونما',jNow:'ابھی',jProtect:'حفاظت',jHarvest:'کٹائی',quickTitle:'فارم چھوڑے بغیر مزید کام کریں',qScan:'فصل کا مسئلہ اسکین کریں',qPool:'مشترکہ نقل و حمل',qBook:'سروس بک کریں',qProtect:'میری فصل کی حفاظت کریں',fbTitle:'کیا یہ مفید تھا؟',cropsTitle:'میری فصلیں',cropsSub:'آپ کے کھیت پر مبنی آسان فیصلے۔',cropVariety:'ہائبرڈ قسم · 24 جولائی کو بویا گیا · بڑھوتری کا مرحلہ',nextIrr:'اگلی آبپاشی جانچ',healthScan:'فصل کی صحت کا اسکین',dueIn2:'2 دن میں',estHarvest:'متوقع کٹائی',cropHealth:'فصل کی صحت',good:'اچھی',addScan:'＋ فصل اسکین شامل کریں',gyanTitle:'کسان علم',gyanSub:'بیج کی معلومات اور کم خرچ کھیتی کی سمجھ، ایک جگہ پر۔',tabSeeds:'بیج کی معلومات',tabWaste:'گھریلو فضلے کی کھاد',servicesTitle:'تصدیق شدہ فارم خدمات',servicesSub:'اپنے فارم کے قریب صرف ضرورت کی سروس منتخب کریں۔',svcSprayer:'اسپریئر کرایہ — ₹250/دن سے',svcSoil:'مٹی کا ٹیسٹ — لیب پک اپ دستیاب',svcCold:'کولڈ اسٹوریج — جگہ محفوظ کریں',svcFpo:'FPO تلاش کریں — مل کر فروخت کریں',thanksFb:v=>`${v}/5 درجہ بندی کے لیے شکریہ!`,rainAlert:'اگلے 3 دنوں میں تیز بارش کا امکان — اسپرے مؤخر کریں',heatAlert:'شدید گرمی کا انتباہ — آبپاشی بڑھائیں',normalAlert:'اگلے 3 دن حالات معمول کے مطابق ہیں',weatherUnavail:'موسمی خدمت اس وقت دستیاب نہیں — صرف فصل کی رہنمائی دکھائی جا رہی ہے۔',greetingMorning:'صبح بخیر',greetingAfternoon:'دوپہر بخیر',greetingEvening:'شام بخیر',footerText:'KisanSetu — کسانوں کے لیے 100% مفت اوزار · پروٹوٹائپ ورژن',scanReady:'فصل اسکینر تیار ہے۔ آگے بڑھنے کے لیے پتے کی تصویر منتخب کریں۔',protectReady:'فصل کی حفاظت کی فہرست تیار ہے۔'
+    }
+  };
+
+  const recovery = {
+    en:{greetingMorning:'Good morning',greetingAfternoon:'Good afternoon',greetingEvening:'Good evening',footerText:'KisanSetu — 100% free farmer tools · Prototype build',scanReady:'Crop scan is ready. Choose a leaf photo to see the demonstration result.',protectReady:'Crop planning is ready. Review your field details, then get a recommendation.'},
+    hi:{greetingMorning:'सुप्रभात',greetingAfternoon:'नमस्कार',greetingEvening:'शुभ संध्या',footerText:'KisanSetu — किसानों के लिए 100% मुफ़्त टूल · प्रोटोटाइप',scanReady:'फ़सल स्कैन तैयार है — डेमो परिणाम के लिए पत्ती की फ़ोटो चुनें।',protectReady:'फ़सल योजना तैयार है — खेत की जानकारी देखकर सुझाव लें।'},
+    kn:{greetingMorning:'ಶುಭೋದಯ',greetingAfternoon:'ನಮಸ್ಕಾರ',greetingEvening:'ಶುಭ ಸಂಜೆ',footerText:'KisanSetu — ರೈತರಿಗೆ 100% ಉಚಿತ ಸಾಧನಗಳು · ಪ್ರೋಟೋಟೈಪ್',scanReady:'ಬೆಳೆ ಸ್ಕ್ಯಾನ್ ಸಿದ್ಧವಾಗಿದೆ — ಡೆಮೊ ಫಲಿತಾಂಶಕ್ಕಾಗಿ ಎಲೆಯ ಫೋಟೋ ಆಯ್ಕೆಮಾಡಿ.',protectReady:'ಬೆಳೆ ಯೋಜನೆ ಸಿದ್ಧವಾಗಿದೆ — ಹೊಲದ ವಿವರಗಳನ್ನು ನೋಡಿ ಶಿಫಾರಸು ಪಡೆಯಿರಿ.'},
+    ta:{greetingMorning:'காலை வணக்கம்',greetingAfternoon:'மதிய வணக்கம்',greetingEvening:'மாலை வணக்கம்',footerText:'KisanSetu — விவசாயிகளுக்கான 100% இலவச கருவிகள் · முன்மாதிரி',scanReady:'பயிர் ஸ்கேன் தயாராக உள்ளது — டெமோ முடிவுக்காக இலைப் புகைப்படத்தைத் தேர்வு செய்யவும்.',protectReady:'பயிர் திட்டமிடல் தயாராக உள்ளது — வயல் விவரங்களைப் பார்த்து பரிந்துரையைப் பெறுங்கள்.'},
+    te:{greetingMorning:'శుభోదయం',greetingAfternoon:'శుభ మధ్యాహ్నం',greetingEvening:'శుభ సాయంత్రం',footerText:'KisanSetu — రైతుల కోసం 100% ఉచిత సాధనాలు · నమూనా',scanReady:'పంట స్కాన్ సిద్ధంగా ఉంది — డెమో ఫలితం కోసం ఆకు ఫోటో ఎంచుకోండి.',protectReady:'పంట ప్రణాళిక సిద్ధంగా ఉంది — పొలం వివరాలు చూసి సిఫారసు పొందండి.'},
+    mr:{greetingMorning:'शुभ सकाळ',greetingAfternoon:'शुभ दुपार',greetingEvening:'शुभ संध्याकाळ',footerText:'KisanSetu — शेतकऱ्यांसाठी 100% मोफत साधने · प्रोटोटाइप',scanReady:'पीक स्कॅन तयार आहे — डेमोसाठी पानाचा फोटो निवडा.',protectReady:'पीक नियोजन तयार आहे — शेताची माहिती पाहून शिफारस मिळवा.'}
+  };
+  const boundary = {
+    en:'Prototype only — no booking, payment, or personal data is sent.',hi:'केवल प्रोटोटाइप — कोई बुकिंग, भुगतान या व्यक्तिगत जानकारी नहीं भेजी जाती।',kn:'ಇದು ಕೇವಲ ಪ್ರೋಟೋಟೈಪ್ — ಯಾವುದೇ ಬುಕಿಂಗ್, ಪಾವತಿ ಅಥವಾ ವೈಯಕ್ತಿಕ ಮಾಹಿತಿ ಕಳುಹಿಸಲಾಗುವುದಿಲ್ಲ.',ta:'இது ஒரு முன்மாதிரி மட்டுமே — முன்பதிவு, கட்டணம் அல்லது தனிப்பட்ட தகவல் எதுவும் அனுப்பப்படாது.',te:'ఇది నమూనా మాత్రమే — బుకింగ్, చెల్లింపు లేదా వ్యక్తిగత సమాచారం పంపబడదు.',mr:'हे फक्त प्रोटोटाइप आहे — कोणतेही बुकिंग, पेमेंट किंवा वैयक्तिक माहिती पाठवली जात नाही.',gu:'માત્ર પ્રોટોટાઇપ — કોઈ બુકિંગ, ચુકવણી અથવા વ્યક્તિગત માહિતી મોકલાતી નથી.',bn:'শুধু প্রোটোটাইপ — কোনো বুকিং, পেমেন্ট বা ব্যক্তিগত তথ্য পাঠানো হয় না।',pa:'ਸਿਰਫ਼ ਪ੍ਰੋਟੋਟਾਈਪ — ਕੋਈ ਬੁਕਿੰਗ, ਭੁਗਤਾਨ ਜਾਂ ਨਿੱਜੀ ਜਾਣਕਾਰੀ ਨਹੀਂ ਭੇਜੀ ਜਾਂਦੀ।',ml:'പ്രോട്ടോടൈപ്പ് മാത്രം — ബുക്കിംഗ്, പണമടയ്ക്കൽ, വ്യക്തിഗത വിവരങ്ങൾ എന്നിവയൊന്നും അയക്കില്ല.',or:'କେବଳ ପ୍ରୋଟୋଟାଇପ — କୌଣସି ବୁକିଂ, ଦେୟ କିମ୍ବା ବ୍ୟକ୍ତିଗତ ସୂଚନା ପଠାଯାଏ ନାହିଁ।',as:'কেৱল প্ৰটোটাইপ — কোনো বুকিং, পেমেণ্ট বা ব্যক্তিগত তথ্য পঠোৱা নহয়।',ur:'صرف پروٹوٹائپ — کوئی بکنگ، ادائیگی یا ذاتی معلومات نہیں بھیجی جاتی۔'
+  };
+  const allLanguages=['en','hi','kn','ta','te','mr','gu','bn','pa','ml','or','as','ur'];
+  const catalog=window.__KISAN_LANG || {};
+  allLanguages.forEach((lang)=>{
+    catalog[lang]=Object.assign({},catalog.en||{},I18N.en||{},I18N[lang]||{},catalog[lang]||{},regional[lang]||{},recovery[lang]||{});
+    I18N[lang]=Object.assign({},I18N.en||{},I18N[lang]||{},catalog[lang]);
+  });
+  window.__KISAN_LANG=catalog;
+
+  const selectedLanguage=()=>{
+    const select=document.getElementById('langSelect');
+    return allLanguages.includes(select && select.value) ? select.value : 'en';
+  };
+  const copyFor=(lang=selectedLanguage())=>catalog[lang] || catalog.en;
+  const applyStaticCopy=()=>{
+    const lang=selectedLanguage();
+    const copy=copyFor(lang);
+    const english=catalog.en || {};
+    currentLang=lang;
+    document.documentElement.lang=lang;
+    document.documentElement.dir=lang==='ur'?'rtl':'ltr';
+    document.body.dir=lang==='ur'?'rtl':'ltr';
+    document.querySelectorAll('[data-i18n]').forEach((element)=>{
+      const value=copy[element.dataset.i18n] ?? english[element.dataset.i18n];
+      if(typeof value==='string') element.textContent=value;
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach((element)=>{
+      const value=copy[element.dataset.i18nPlaceholder] ?? english[element.dataset.i18nPlaceholder];
+      if(typeof value==='string') element.placeholder=value;
+    });
+    const footer=document.querySelector('.app-footer');
+    if(footer) footer.textContent=copy.footerText || english.footerText;
+    const name=localStorage.getItem('kisanSetuFarmerName') || '';
+    const greeting=document.getElementById('greeting');
+    if(name && greeting){
+      const hour=new Date().getHours();
+      const key=hour<12?'greetingMorning':hour<17?'greetingAfternoon':'greetingEvening';
+      greeting.textContent=`${copy[key] || english[key]}, ${name} 👋`;
+    }
+  };
+  const scheduleRecovery=()=>[0,350,1100].forEach((delay)=>setTimeout(applyStaticCopy,delay));
+  const languageSelect=document.getElementById('langSelect');
+  if(languageSelect) languageSelect.addEventListener('change',scheduleRecovery);
+  scheduleRecovery();
+
+  const showNotice=(id,message)=>{
+    const notice=document.getElementById(id);
+    if(!notice) return;
+    notice.textContent=message;
+    notice.classList.add('show');
+  };
+  const goTo=(page)=>document.querySelector(`#sbNav button[data-page="${page}"]`)?.click();
+  const scrollToElement=(id)=>requestAnimationFrame(()=>document.getElementById(id)?.scrollIntoView({behavior:'smooth',block:'center'}));
+  const safeBoundary=()=>boundary[selectedLanguage()] || boundary.en;
+  const selectService=(button)=>{
+    document.querySelectorAll('[data-service]').forEach((item)=>{
+      const selected=item===button;
+      item.classList.toggle('is-selected',selected);
+      item.setAttribute('aria-pressed',selected?'true':'false');
+    });
+    const label=button?.querySelector('[data-i18n]')?.textContent?.trim() || '';
+    showNotice('serviceNotice',[label,safeBoundary()].filter(Boolean).join(' '));
+  };
+  document.addEventListener('click',(event)=>{
+    const quick=event.target.closest('[data-quick-action]');
+    if(quick){
+      const copy=copyFor();
+      if(quick.dataset.quickAction==='scan'){
+        goTo('today'); showNotice('pestNotice',copy.scanReady || catalog.en.scanReady); scrollToElement('pestUploadLabel');
+      }else if(quick.dataset.quickAction==='protect'){
+        goTo('today'); showNotice('advisorNotice',copy.protectReady || catalog.en.protectReady); scrollToElement('submitBtn');
+      }else if(quick.dataset.quickAction==='pool'){
+        goTo('services'); showNotice('serviceNotice',[copy.qPool || 'Pool transport',safeBoundary()].join(' ')); scrollToElement('serviceNotice');
+      }else if(quick.dataset.quickAction==='book'){
+        goTo('services'); showNotice('serviceNotice',safeBoundary()); scrollToElement('serviceGrid');
+      }
+      return;
+    }
+    const service=event.target.closest('[data-service]');
+    if(service){ selectService(service); return; }
+    if(event.target.closest('#addCropScan')){
+      const copy=copyFor();
+      goTo('today'); showNotice('pestNotice',copy.scanReady || catalog.en.scanReady); scrollToElement('pestUploadLabel');
+    }
+  });
 })();
 </script>
 
