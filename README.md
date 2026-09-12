@@ -9,7 +9,7 @@ KisanSetu is a static, hackathon-ready farmer prototype. It has no build step, p
 - The original farmer sign-in dashboard and visual theme.
 - A 13-language selector: English, Hindi, Kannada, Tamil, Telugu, Marathi, Gujarati, Bengali, Punjabi, Malayalam, Odia, Assamese, and Urdu.
 - Kisan Gyan with the expanded seed, flower/herb, and home-waste manure content.
-- Government Schemes with official links to PM-KISAN, PM Fasal Bima Yojana, Farmers’ Portal, and Soil Health Card.
+- Government Schemes with location-aware state service portals plus official links to PM-KISAN, PM Fasal Bima Yojana, Farmers’ Portal, and Soil Health Card.
 - A crop and fertiliser planning demo, weather panel, farm services, and crop-photo demo interaction.
 
 ## Important prototype boundaries

@@ -166,6 +166,12 @@
 
   /* Official government information hub */
   .gov-note{background:#EAF3F4; border-left:3px solid var(--sky); color:var(--ink-soft); padding:12px 14px; font-size:12.5px; margin-bottom:16px;}
+  .gov-safety{margin:18px 0 0;}
+  .gov-state-banner{display:flex; align-items:center; gap:12px; margin:0 0 14px; padding:14px 16px; border:1px solid var(--line); border-radius:var(--radius); background:linear-gradient(120deg,#EAF3F4,#FBFAF5);}
+  .gov-state-emblem{width:42px; height:42px; display:grid; place-items:center; flex:none; border-radius:50%; background:var(--ink); font-size:20px;}
+  .gov-state-kicker{display:block; font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--sky); font-weight:700;}
+  .gov-state-banner h2{font-size:16px; margin:1px 0 0;}
+  .gov-state-meta{font-size:12px; color:var(--ink-soft); margin:2px 0 0;}
   .gov-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:12px;}
   .gov-card{display:flex; flex-direction:column; gap:7px; min-height:150px; border:1px solid var(--line); border-radius:var(--radius); padding:16px; background:#fff; text-decoration:none; transition:border-color .15s,transform .15s;}
   .gov-card:hover{border-color:var(--sky); transform:translateY(-2px);}
@@ -578,14 +584,20 @@
 <section class="page" id="page-govupdates">
 <h1 class="pg-title" data-gov-copy="title">Government schemes</h1>
 <p class="pg-sub" data-gov-copy="subtitle">Official links for farmer schemes and services.</p>
-<div class="gov-note" data-gov-copy="note">Check eligibility, dates and documents only on the official website. KisanSetu never asks for Aadhaar, bank or login details.</div>
-<h2 class="section-label" data-gov-copy="national">Government of India</h2>
+<div class="gov-state-banner" id="govStateBanner" aria-live="polite">
+<div class="gov-state-emblem" id="govStateEmblem" aria-hidden="true">🌿</div>
+<div><span class="gov-state-kicker" data-gov-copy="locationPrefix">For your selected location</span><h2 id="govStateTitle">Hesaraghatta, Bengaluru</h2><p class="gov-state-meta" id="govStateMeta"></p></div>
+</div>
+<h2 class="section-label" data-gov-copy="stateSection">State benefits &amp; services</h2>
+<div class="gov-grid" id="govStateCards"></div>
+<h2 class="section-label" style="margin-top:22px;" data-gov-copy="national">Government of India</h2>
 <div class="gov-grid">
 <a class="gov-card" href="https://pmkisan.gov.in/" rel="noopener noreferrer" target="_blank"><span class="gov-tag" data-gov-copy="pmkisanTag">Income support</span><h3>PM-KISAN</h3><p data-gov-copy="pmkisanDesc">Use the official portal for registration, e-KYC, beneficiary and payment-status information.</p><span class="go"><span data-gov-copy="action">Open official portal</span> ↗</span></a>
 <a class="gov-card" href="https://pmfby.gov.in/" rel="noopener noreferrer" target="_blank"><span class="gov-tag" data-gov-copy="pmfbyTag">Crop insurance</span><h3>PM Fasal Bima Yojana</h3><p data-gov-copy="pmfbyDesc">Use the official portal for crop-insurance information, claims and support.</p><span class="go"><span data-gov-copy="action">Open official portal</span> ↗</span></a>
 <a class="gov-card" href="https://www.india.gov.in/category/agriculture-rural-environment/subcategory/research-marketing/details/farmers-portal" rel="noopener noreferrer" target="_blank"><span class="gov-tag" data-gov-copy="farmersPortalTag">Agriculture services</span><h3>Farmers’ Portal</h3><p data-gov-copy="farmersPortalDesc">Find Government of India agriculture resources, services and farmer information.</p><span class="go"><span data-gov-copy="action">Open official portal</span> ↗</span></a>
 <a class="gov-card" href="https://soilhealth.dac.gov.in/" rel="noopener noreferrer" target="_blank"><span class="gov-tag" data-gov-copy="soilHealthTag">Soil health</span><h3>Soil Health Card</h3><p data-gov-copy="soilHealthDesc">Find official soil-health information and related farmer services.</p><span class="go"><span data-gov-copy="action">Open official portal</span> ↗</span></a>
 </div>
+<div class="gov-note gov-safety" data-gov-copy="note">Check eligibility, dates and documents only on the official website. KisanSetu never asks for Aadhaar, bank or login details.</div>
 </section>
 <!-- ================= FARM SERVICES ================= -->
 <section class="page" id="page-services">
@@ -1293,19 +1305,19 @@ renderWaste();
 /* Localizes only the new Government Schemes page without changing the prototype's existing language logic. */
 (() => {
   const GOV_COPY = {
-    en:{nav:'Government schemes',title:'Government schemes',subtitle:'Official links for farmer schemes and services.',note:'Check eligibility, dates and documents only on the official website. KisanSetu never asks for Aadhaar, bank or login details.',national:'Government of India',action:'Open official portal'},
-    hi:{nav:'सरकारी योजनाएँ',title:'सरकारी योजनाएँ',subtitle:'किसान योजनाओं और सेवाओं के आधिकारिक लिंक।',note:'पात्रता, तिथियाँ और दस्तावेज़ केवल आधिकारिक वेबसाइट पर जाँचें। KisanSetu कभी आधार, बैंक या लॉगिन विवरण नहीं मांगता।',national:'भारत सरकार',action:'आधिकारिक पोर्टल खोलें'},
-    kn:{nav:'ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು',title:'ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು',subtitle:'ರೈತರ ಯೋಜನೆಗಳು ಮತ್ತು ಸೇವೆಗಳ ಅಧಿಕೃತ ಕೊಂಡಿಗಳು.',note:'ಅರ್ಹತೆ, ದಿನಾಂಕಗಳು ಮತ್ತು ದಾಖಲೆಗಳನ್ನು ಅಧಿಕೃತ ಜಾಲತಾಣದಲ್ಲೇ ಪರಿಶೀಲಿಸಿ. KisanSetu ಎಂದಿಗೂ ಆಧಾರ್, ಬ್ಯಾಂಕ್ ಅಥವಾ ಲಾಗಿನ್ ವಿವರಗಳನ್ನು ಕೇಳುವುದಿಲ್ಲ.',national:'ಭಾರತ ಸರ್ಕಾರ',action:'ಅಧಿಕೃತ ಪೋರ್ಟಲ್ ತೆರೆಯಿರಿ'},
-    ta:{nav:'அரசுத் திட்டங்கள்',title:'அரசுத் திட்டங்கள்',subtitle:'விவசாயி திட்டங்கள் மற்றும் சேவைகளுக்கான அதிகாரப்பூர்வ இணைப்புகள்.',note:'தகுதி, தேதிகள் மற்றும் ஆவணங்களை அதிகாரப்பூர்வ இணையதளத்தில் மட்டுமே சரிபார்க்கவும். KisanSetu ஒருபோதும் ஆதார், வங்கி அல்லது உள்நுழைவு விவரங்களைக் கேட்காது.',national:'இந்திய அரசு',action:'அதிகாரப்பூர்வ தளத்தைத் திறக்கவும்'},
-    te:{nav:'ప్రభుత్వ పథకాలు',title:'ప్రభుత్వ పథకాలు',subtitle:'రైతు పథకాలు మరియు సేవల కోసం అధికారిక లింకులు.',note:'అర్హత, తేదీలు మరియు పత్రాలను అధికారిక వెబ్‌సైట్‌లోనే తనిఖీ చేయండి. KisanSetu ఎప్పుడూ ఆధార్, బ్యాంక్ లేదా లాగిన్ వివరాలను అడగదు.',national:'భారత ప్రభుత్వం',action:'అధికారిక పోర్టల్‌ను తెరవండి'},
-    mr:{nav:'सरकारी योजना',title:'सरकारी योजना',subtitle:'शेतकरी योजना आणि सेवांसाठी अधिकृत दुवे.',note:'पात्रता, तारीखा आणि कागदपत्रे फक्त अधिकृत संकेतस्थळावर तपासा. KisanSetu कधीही आधार, बँक किंवा लॉगिन तपशील विचारत नाही.',national:'भारत सरकार',action:'अधिकृत पोर्टल उघडा'},
-    gu:{nav:'સરકારી યોજનાઓ',title:'સરકારી યોજનાઓ',subtitle:'ખેડૂત યોજનાઓ અને સેવાઓ માટેની સત્તાવાર લિંક્સ.',note:'પાત્રતા, તારીખો અને દસ્તાવેજો ફક્ત સત્તાવાર વેબસાઇટ પર તપાસો. KisanSetu ક્યારેય આધાર, બેંક અથવા લૉગિન વિગતો માંગતું નથી.',national:'ભારત સરકાર',action:'સત્તાવાર પોર્ટલ ખોલો'},
-    bn:{nav:'সরকারি প্রকল্প',title:'সরকারি প্রকল্প',subtitle:'কৃষক প্রকল্প ও পরিষেবার সরকারি লিঙ্ক।',note:'যোগ্যতা, তারিখ ও নথি শুধুমাত্র সরকারি ওয়েবসাইটে যাচাই করুন। KisanSetu কখনও আধার, ব্যাঙ্ক বা লগইন তথ্য চায় না।',national:'ভারত সরকার',action:'সরকারি পোর্টাল খুলুন'},
-    pa:{nav:'ਸਰਕਾਰੀ ਯੋਜਨਾਵਾਂ',title:'ਸਰਕਾਰੀ ਯੋਜਨਾਵਾਂ',subtitle:'ਕਿਸਾਨ ਯੋਜਨਾਵਾਂ ਅਤੇ ਸੇਵਾਵਾਂ ਲਈ ਅਧਿਕਾਰਤ ਲਿੰਕ।',note:'ਯੋਗਤਾ, ਤਾਰੀਖਾਂ ਅਤੇ ਦਸਤਾਵੇਜ਼ ਸਿਰਫ਼ ਅਧਿਕਾਰਤ ਵੈੱਬਸਾਈਟ ਉੱਤੇ ਜਾਂਚੋ। KisanSetu ਕਦੇ ਵੀ ਆਧਾਰ, ਬੈਂਕ ਜਾਂ ਲਾਗਇਨ ਵੇਰਵੇ ਨਹੀਂ ਮੰਗਦਾ।',national:'ਭਾਰਤ ਸਰਕਾਰ',action:'ਅਧਿਕਾਰਤ ਪੋਰਟਲ ਖੋਲ੍ਹੋ'},
-    ml:{nav:'സർക്കാർ പദ്ധതികൾ',title:'സർക്കാർ പദ്ധതികൾ',subtitle:'കർഷക പദ്ധതികൾക്കും സേവനങ്ങൾക്കും ഔദ്യോഗിക ലിങ്കുകൾ.',note:'യോഗ്യത, തീയതികൾ, രേഖകൾ എന്നിവ ഔദ്യോഗിക വെബ്സൈറ്റിൽ മാത്രം പരിശോധിക്കുക. KisanSetu ഒരിക്കലും ആധാർ, ബാങ്ക്, ലോഗിൻ വിവരങ്ങൾ ചോദിക്കില്ല.',national:'ഇന്ത്യ സർക്കാർ',action:'ഔദ്യോഗിക പോർട്ടൽ തുറക്കുക'},
-    or:{nav:'ସରକାରୀ ଯୋଜନା',title:'ସରକାରୀ ଯୋଜନା',subtitle:'କୃଷକ ଯୋଜନା ଓ ସେବା ପାଇଁ ଅଧିକାରିକ ଲିଙ୍କ।',note:'ଯୋଗ୍ୟତା, ତାରିଖ ଏବଂ ଦଲିଲ କେବଳ ଅଧିକାରିକ ୱେବସାଇଟରେ ଯାଞ୍ଚ କରନ୍ତୁ। KisanSetu କେବେ ମଧ୍ୟ ଆଧାର, ବ୍ୟାଙ୍କ କିମ୍ବା ଲଗଇନ ସୂଚନା ମାଗେ ନାହିଁ।',national:'ଭାରତ ସରକାର',action:'ଅଧିକାରିକ ପୋର୍ଟାଲ ଖୋଲନ୍ତୁ'},
-    as:{nav:'চৰকাৰী আঁচনি',title:'চৰকাৰী আঁচনি',subtitle:'কৃষক আঁচনি আৰু সেৱাৰ বাবে চৰকাৰী লিংক।',note:'যোগ্যতা, তাৰিখ আৰু নথি কেৱল চৰকাৰী ৱেবছাইটত পৰীক্ষা কৰক। KisanSetu কেতিয়াও আধাৰ, বেংক বা লগইন তথ্য নুসুধে।',national:'ভাৰত চৰকাৰ',action:'চৰকাৰী প’ৰ্টেল খোলক'},
-    ur:{nav:'سرکاری اسکیمیں',title:'سرکاری اسکیمیں',subtitle:'کسان اسکیموں اور خدمات کے سرکاری روابط۔',note:'اہلیت، تاریخیں اور دستاویزات صرف سرکاری ویب سائٹ پر چیک کریں۔ KisanSetu کبھی آدھار، بینک یا لاگ اِن کی تفصیلات نہیں مانگتا۔',national:'حکومتِ ہند',action:'سرکاری پورٹل کھولیں'}
+    en:{nav:'Government schemes',title:'Government schemes',subtitle:'Official links for farmer schemes and services.',note:'Check eligibility, dates and documents only on the official website. KisanSetu never asks for Aadhaar, bank or login details.',stateSection:'State benefits & services',stateTag:'Official state service',stateDescription:'Open the official state portal for current farmer services, notices and scheme details.',locationPrefix:'For your selected location',national:'Government of India',action:'Open official portal'},
+    hi:{nav:'सरकारी योजनाएँ',title:'सरकारी योजनाएँ',subtitle:'किसान योजनाओं और सेवाओं के आधिकारिक लिंक।',note:'पात्रता, तिथियाँ और दस्तावेज़ केवल आधिकारिक वेबसाइट पर जाँचें। KisanSetu कभी आधार, बैंक या लॉगिन विवरण नहीं मांगता।',stateSection:'राज्य लाभ और सेवाएँ',stateTag:'आधिकारिक राज्य सेवा',stateDescription:'वर्तमान किसान सेवाओं, सूचनाओं और योजना विवरणों के लिए आधिकारिक राज्य पोर्टल खोलें।',locationPrefix:'आपके चुने हुए स्थान के लिए',national:'भारत सरकार',action:'आधिकारिक पोर्टल खोलें'},
+    kn:{nav:'ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು',title:'ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು',subtitle:'ರೈತರ ಯೋಜನೆಗಳು ಮತ್ತು ಸೇವೆಗಳ ಅಧಿಕೃತ ಕೊಂಡಿಗಳು.',note:'ಅರ್ಹತೆ, ದಿನಾಂಕಗಳು ಮತ್ತು ದಾಖಲೆಗಳನ್ನು ಅಧಿಕೃತ ಜಾಲತಾಣದಲ್ಲೇ ಪರಿಶೀಲಿಸಿ. KisanSetu ಎಂದಿಗೂ ಆಧಾರ್, ಬ್ಯಾಂಕ್ ಅಥವಾ ಲಾಗಿನ್ ವಿವರಗಳನ್ನು ಕೇಳುವುದಿಲ್ಲ.',stateSection:'ರಾಜ್ಯ ಸೌಲಭ್ಯಗಳು ಮತ್ತು ಸೇವೆಗಳು',stateTag:'ಅಧಿಕೃತ ರಾಜ್ಯ ಸೇವೆ',stateDescription:'ಪ್ರಸ್ತುತ ರೈತ ಸೇವೆಗಳು, ಸೂಚನೆಗಳು ಮತ್ತು ಯೋಜನೆ ವಿವರಗಳಿಗಾಗಿ ಅಧಿಕೃತ ರಾಜ್ಯ ಪೋರ್ಟಲ್ ತೆರೆಯಿರಿ.',locationPrefix:'ನೀವು ಆಯ್ಕೆ ಮಾಡಿದ ಸ್ಥಳಕ್ಕಾಗಿ',national:'ಭಾರತ ಸರ್ಕಾರ',action:'ಅಧಿಕೃತ ಪೋರ್ಟಲ್ ತೆರೆಯಿರಿ'},
+    ta:{nav:'அரசுத் திட்டங்கள்',title:'அரசுத் திட்டங்கள்',subtitle:'விவசாயி திட்டங்கள் மற்றும் சேவைகளுக்கான அதிகாரப்பூர்வ இணைப்புகள்.',note:'தகுதி, தேதிகள் மற்றும் ஆவணங்களை அதிகாரப்பூர்வ இணையதளத்தில் மட்டுமே சரிபார்க்கவும். KisanSetu ஒருபோதும் ஆதார், வங்கி அல்லது உள்நுழைவு விவரங்களைக் கேட்காது.',stateSection:'மாநில நலன்கள் மற்றும் சேவைகள்',stateTag:'அதிகாரப்பூர்வ மாநில சேவை',stateDescription:'தற்போதைய விவசாயி சேவைகள், அறிவிப்புகள் மற்றும் திட்ட விவரங்களுக்கு அதிகாரப்பூர்வ மாநில இணையதளத்தைத் திறக்கவும்.',locationPrefix:'நீங்கள் தேர்ந்தெடுத்த இடத்திற்காக',national:'இந்திய அரசு',action:'அதிகாரப்பூர்வ தளத்தைத் திறக்கவும்'},
+    te:{nav:'ప్రభుత్వ పథకాలు',title:'ప్రభుత్వ పథకాలు',subtitle:'రైతు పథకాలు మరియు సేవల కోసం అధికారిక లింకులు.',note:'అర్హత, తేదీలు మరియు పత్రాలను అధికారిక వెబ్‌సైట్‌లోనే తనిఖీ చేయండి. KisanSetu ఎప్పుడూ ఆధార్, బ్యాంక్ లేదా లాగిన్ వివరాలను అడగదు.',stateSection:'రాష్ట్ర ప్రయోజనాలు మరియు సేవలు',stateTag:'అధికారిక రాష్ట్ర సేవ',stateDescription:'ప్రస్తుత రైతు సేవలు, నోటీసులు మరియు పథకం వివరాల కోసం అధికారిక రాష్ట్ర పోర్టల్‌ను తెరవండి.',locationPrefix:'మీరు ఎంచుకున్న ప్రదేశం కోసం',national:'భారత ప్రభుత్వం',action:'అధికారిక పోర్టల్‌ను తెరవండి'},
+    mr:{nav:'सरकारी योजना',title:'सरकारी योजना',subtitle:'शेतकरी योजना आणि सेवांसाठी अधिकृत दुवे.',note:'पात्रता, तारीखा आणि कागदपत्रे फक्त अधिकृत संकेतस्थळावर तपासा. KisanSetu कधीही आधार, बँक किंवा लॉगिन तपशील विचारत नाही.',stateSection:'राज्य लाभ आणि सेवा',stateTag:'अधिकृत राज्य सेवा',stateDescription:'सध्याच्या शेतकरी सेवा, सूचना आणि योजना तपशीलांसाठी अधिकृत राज्य पोर्टल उघडा.',locationPrefix:'तुम्ही निवडलेल्या ठिकाणासाठी',national:'भारत सरकार',action:'अधिकृत पोर्टल उघडा'},
+    gu:{nav:'સરકારી યોજનાઓ',title:'સરકારી યોજનાઓ',subtitle:'ખેડૂત યોજનાઓ અને સેવાઓ માટેની સત્તાવાર લિંક્સ.',note:'પાત્રતા, તારીખો અને દસ્તાવેજો ફક્ત સત્તાવાર વેબસાઇટ પર તપાસો. KisanSetu ક્યારેય આધાર, બેંક અથવા લૉગિન વિગતો માંગતું નથી.',stateSection:'રાજ્ય લાભો અને સેવાઓ',stateTag:'સત્તાવાર રાજ્ય સેવા',stateDescription:'વર્તમાન ખેડૂત સેવાઓ, સૂચનાઓ અને યોજના વિગતો માટે સત્તાવાર રાજ્ય પોર્ટલ ખોલો.',locationPrefix:'તમારા પસંદ કરેલા સ્થાન માટે',national:'ભારત સરકાર',action:'સત્તાવાર પોર્ટલ ખોલો'},
+    bn:{nav:'সরকারি প্রকল্প',title:'সরকারি প্রকল্প',subtitle:'কৃষক প্রকল্প ও পরিষেবার সরকারি লিঙ্ক।',note:'যোগ্যতা, তারিখ ও নথি শুধুমাত্র সরকারি ওয়েবসাইটে যাচাই করুন। KisanSetu কখনও আধার, ব্যাঙ্ক বা লগইন তথ্য চায় না।',stateSection:'রাজ্য সুবিধা ও পরিষেবা',stateTag:'আধিকারিক রাজ্য পরিষেবা',stateDescription:'বর্তমান কৃষক পরিষেবা, বিজ্ঞপ্তি ও প্রকল্পের বিস্তারিত জানতে আধিকারিক রাজ্য পোর্টাল খুলুন।',locationPrefix:'আপনার নির্বাচিত স্থানের জন্য',national:'ভারত সরকার',action:'সরকারি পোর্টাল খুলুন'},
+    pa:{nav:'ਸਰਕਾਰੀ ਯੋਜਨਾਵਾਂ',title:'ਸਰਕਾਰੀ ਯੋਜਨਾਵਾਂ',subtitle:'ਕਿਸਾਨ ਯੋਜਨਾਵਾਂ ਅਤੇ ਸੇਵਾਵਾਂ ਲਈ ਅਧਿਕਾਰਤ ਲਿੰਕ।',note:'ਯੋਗਤਾ, ਤਾਰੀਖਾਂ ਅਤੇ ਦਸਤਾਵੇਜ਼ ਸਿਰਫ਼ ਅਧਿਕਾਰਤ ਵੈੱਬਸਾਈਟ ਉੱਤੇ ਜਾਂਚੋ। KisanSetu ਕਦੇ ਵੀ ਆਧਾਰ, ਬੈਂਕ ਜਾਂ ਲਾਗਇਨ ਵੇਰਵੇ ਨਹੀਂ ਮੰਗਦਾ।',stateSection:'ਰਾਜ ਦੇ ਲਾਭ ਅਤੇ ਸੇਵਾਵਾਂ',stateTag:'ਅਧਿਕਾਰਤ ਰਾਜ ਸੇਵਾ',stateDescription:'ਮੌਜੂਦਾ ਕਿਸਾਨ ਸੇਵਾਵਾਂ, ਸੂਚਨਾਵਾਂ ਅਤੇ ਯੋਜਨਾ ਵੇਰਵਿਆਂ ਲਈ ਅਧਿਕਾਰਤ ਰਾਜ ਪੋਰਟਲ ਖੋਲ੍ਹੋ।',locationPrefix:'ਤੁਹਾਡੇ ਚੁਣੇ ਹੋਏ ਸਥਾਨ ਲਈ',national:'ਭਾਰਤ ਸਰਕਾਰ',action:'ਅਧਿਕਾਰਤ ਪੋਰਟਲ ਖੋਲ੍ਹੋ'},
+    ml:{nav:'സർക്കാർ പദ്ധതികൾ',title:'സർക്കാർ പദ്ധതികൾ',subtitle:'കർഷക പദ്ധതികൾക്കും സേവനങ്ങൾക്കും ഔദ്യോഗിക ലിങ്കുകൾ.',note:'യോഗ്യത, തീയതികൾ, രേഖകൾ എന്നിവ ഔദ്യോഗിക വെബ്സൈറ്റിൽ മാത്രം പരിശോധിക്കുക. KisanSetu ഒരിക്കലും ആധാർ, ബാങ്ക്, ലോഗിൻ വിവരങ്ങൾ ചോദിക്കില്ല.',stateSection:'സംസ്ഥാന ആനുകൂല്യങ്ങളും സേവനങ്ങളും',stateTag:'ഔദ്യോഗിക സംസ്ഥാന സേവനം',stateDescription:'നിലവിലെ കർഷക സേവനങ്ങൾ, അറിയിപ്പുകൾ, പദ്ധതി വിവരങ്ങൾ എന്നിവയ്ക്കായി ഔദ്യോഗിക സംസ്ഥാന പോർട്ടൽ തുറക്കുക.',locationPrefix:'നിങ്ങൾ തിരഞ്ഞെടുത്ത സ്ഥലത്തിനായി',national:'ഇന്ത്യ സർക്കാർ',action:'ഔദ്യോഗിക പോർട്ടൽ തുറക്കുക'},
+    or:{nav:'ସରକାରୀ ଯୋଜନା',title:'ସରକାରୀ ଯୋଜନା',subtitle:'କୃଷକ ଯୋଜନା ଓ ସେବା ପାଇଁ ଅଧିକାରିକ ଲିଙ୍କ।',note:'ଯୋଗ୍ୟତା, ତାରିଖ ଏବଂ ଦଲିଲ କେବଳ ଅଧିକାରିକ ୱେବସାଇଟରେ ଯାଞ୍ଚ କରନ୍ତୁ। KisanSetu କେବେ ମଧ୍ୟ ଆଧାର, ବ୍ୟାଙ୍କ କିମ୍ବା ଲଗଇନ ସୂଚନା ମାଗେ ନାହିଁ।',stateSection:'ରାଜ୍ୟ ଲାଭ ଓ ସେବା',stateTag:'ଅଧିକାରିକ ରାଜ୍ୟ ସେବା',stateDescription:'ବର୍ତ୍ତମାନ କୃଷକ ସେବା, ସୂଚନା ଓ ଯୋଜନା ବିବରଣୀ ପାଇଁ ଅଧିକାରିକ ରାଜ୍ୟ ପୋର୍ଟାଲ ଖୋଲନ୍ତୁ।',locationPrefix:'ଆପଣଙ୍କ ଚୟନିତ ସ୍ଥାନ ପାଇଁ',national:'ଭାରତ ସରକାର',action:'ଅଧିକାରିକ ପୋର୍ଟାଲ ଖୋଲନ୍ତୁ'},
+    as:{nav:'চৰকাৰী আঁচনি',title:'চৰকাৰী আঁচনি',subtitle:'কৃষক আঁচনি আৰু সেৱাৰ বাবে চৰকাৰী লিংক।',note:'যোগ্যতা, তাৰিখ আৰু নথি কেৱল চৰকাৰী ৱেবছাইটত পৰীক্ষা কৰক। KisanSetu কেতিয়াও আধাৰ, বেংক বা লগইন তথ্য নুসুধে।',stateSection:'ৰাজ্যৰ লাভ আৰু সেৱাসমূহ',stateTag:'আধিকাৰিক ৰাজ্যিক সেৱা',stateDescription:'বৰ্তমান কৃষক সেৱা, জাননী আৰু আঁচনিৰ বিৱৰণৰ বাবে আধিকাৰিক ৰাজ্যিক প’ৰ্টেল খোলক।',locationPrefix:'আপোনাৰ বাছনি কৰা স্থানৰ বাবে',national:'ভাৰত চৰকাৰ',action:'চৰকাৰী প’ৰ্টেল খোলক'},
+    ur:{nav:'سرکاری اسکیمیں',title:'سرکاری اسکیمیں',subtitle:'کسان اسکیموں اور خدمات کے سرکاری روابط۔',note:'اہلیت، تاریخیں اور دستاویزات صرف سرکاری ویب سائٹ پر چیک کریں۔ KisanSetu کبھی آدھار، بینک یا لاگ اِن کی تفصیلات نہیں مانگتا۔',stateSection:'ریاستی فوائد اور خدمات',stateTag:'سرکاری ریاستی خدمت',stateDescription:'موجودہ کسان خدمات، اعلانات اور اسکیم کی تفصیلات کے لیے سرکاری ریاستی پورٹل کھولیں۔',locationPrefix:'آپ کے منتخب مقام کے لیے',national:'حکومتِ ہند',action:'سرکاری پورٹل کھولیں'}
   };
   const GOV_CARD_COPY = {
     en:{pmkisanTag:'Official Government of India portal',pmkisanDesc:'Open the official PM-KISAN portal.',pmfbyTag:'Official Government of India portal',pmfbyDesc:'Open the official PMFBY portal.',farmersPortalTag:'Official Government of India portal',farmersPortalDesc:'Open the official Farmers’ Portal.',soilHealthTag:'Official Government of India portal',soilHealthDesc:'Open the official Soil Health Card portal.'},
@@ -1322,6 +1334,80 @@ renderWaste();
     as:{pmkisanTag:'ভাৰত চৰকাৰৰ আধিকাৰিক প’ৰ্টেল',pmkisanDesc:'আধিকাৰিক PM-KISAN প’ৰ্টেল খোলক।',pmfbyTag:'ভাৰত চৰকাৰৰ আধিকাৰিক প’ৰ্টেল',pmfbyDesc:'আধিকাৰিক PMFBY প’ৰ্টেল খোলক।',farmersPortalTag:'ভাৰত চৰকাৰৰ আধিকাৰিক প’ৰ্টেল',farmersPortalDesc:'আধিকাৰিক Farmers’ Portal খোলক।',soilHealthTag:'ভাৰত চৰকাৰৰ আধিকাৰিক প’ৰ্টেল',soilHealthDesc:'আধিকাৰিক Soil Health Card প’ৰ্টেল খোলক।'},
     ur:{pmkisanTag:'حکومتِ ہند کا سرکاری پورٹل',pmkisanDesc:'سرکاری PM-KISAN پورٹل کھولیں۔',pmfbyTag:'حکومتِ ہند کا سرکاری پورٹل',pmfbyDesc:'سرکاری PMFBY پورٹل کھولیں۔',farmersPortalTag:'حکومتِ ہند کا سرکاری پورٹل',farmersPortalDesc:'سرکاری Farmers’ Portal کھولیں۔',soilHealthTag:'حکومتِ ہند کا سرکاری پورٹل',soilHealthDesc:'سرکاری Soil Health Card پورٹل کھولیں۔'}
   };
+  const KARNATAKA_STATE_PORTALS = {
+    emoji:'🌿',
+    cards:[
+      {name:'Raita Mitra',url:'https://raitamitra.karnataka.gov.in/english'},
+      {name:'FRUITS',url:'https://fruits.karnataka.gov.in/'},
+      {name:'Samrakshane',url:'https://samrakshane.karnataka.gov.in/'},
+      {name:'Krishi Marata Vahini',url:'https://krishimaratavahini.karnataka.gov.in/'}
+    ]
+  };
+  const STATE_PORTALS = {
+    blr:KARNATAKA_STATE_PORTALS,
+    kar:KARNATAKA_STATE_PORTALS,
+    punjab:{emoji:'🌾',cards:[
+      {name:'Punjab Agriculture Department',url:'https://punjab.gov.in/government/departments/department-of-agriculture/'},
+      {name:'e-Mandikaran Punjab',url:'https://www.emandikaran-pb.in/'}
+    ]},
+    up:{emoji:'🌱',cards:[
+      {name:'AgriDarshan Uttar Pradesh',url:'https://agridarshan.up.gov.in/'},
+      {name:'Nand Baba Dugdh Mission',url:'https://nandbabadugdhmission.up.gov.in/index.php'}
+    ]},
+    mh:{emoji:'🍊',cards:[
+      {name:'MahaDBT Farmer',url:'https://mahadbt.maharashtra.gov.in/Farmer/AgriLogin/AgriLogin'},
+      {name:'Maharashtra Agriculture Department',url:'https://krishi.maharashtra.gov.in/'}
+    ]},
+    wb:{emoji:'🌾',cards:[
+      {name:'West Bengal Agriculture Department',url:'https://agriculture.wb.gov.in/'},
+      {name:'Krishak Bandhu',url:'https://krishakbandhu.wb.gov.in/'},
+      {name:'Bangla Sahayata Kendra',url:'https://bsk.wb.gov.in/scheme_bsk/'}
+    ]},
+    tn:{emoji:'🌴',cards:[
+      {name:'Uzhavan',url:'https://www.tnagrisnet.tn.gov.in/people_app/dashboard/main/en'},
+      {name:'Tamil Nadu AGRISNET',url:'https://www.tnagrisnet.tn.gov.in/home/schemes/'},
+      {name:'Tamil Mannvalam',url:'https://tnagrisnet.tn.gov.in/mannvalam/welcome/downloads'}
+    ]},
+    raj:{emoji:'☀️',cards:[
+      {name:'Raj Kisan',url:'https://rajkisan.rajasthan.gov.in/Rajkisanweb/Kisan'},
+      {name:'Jan Soochna Agriculture',url:'https://jansoochna.rajasthan.gov.in/Scheme/Index?departmentId=105'}
+    ]}
+  };
+  const currentGovernmentCopy = () => {
+    const select = document.getElementById('langSelect');
+    return GOV_COPY[(select && select.value) || 'en'] || GOV_COPY.en;
+  };
+  const stateCard = (portal, copy) => {
+    const card = document.createElement('a');
+    card.className = 'gov-card';
+    card.href = portal.url;
+    card.target = '_blank';
+    card.rel = 'noopener noreferrer';
+    const tag = document.createElement('span');
+    tag.className = 'gov-tag';
+    tag.textContent = copy.stateTag;
+    const title = document.createElement('h3');
+    title.textContent = portal.name;
+    const description = document.createElement('p');
+    description.textContent = copy.stateDescription;
+    const action = document.createElement('span');
+    action.className = 'go';
+    action.textContent = `${copy.action} ↗`;
+    card.append(tag, title, description, action);
+    return card;
+  };
+  const renderStateBenefits = () => {
+    const regionSelect = document.getElementById('regionSelect');
+    const grid = document.getElementById('govStateCards');
+    if (!regionSelect || !grid) return;
+    const state = STATE_PORTALS[regionSelect.value] || KARNATAKA_STATE_PORTALS;
+    const copy = currentGovernmentCopy();
+    grid.replaceChildren(...state.cards.map((portal) => stateCard(portal, copy)));
+    const selected = regionSelect.options[regionSelect.selectedIndex];
+    document.getElementById('govStateEmblem').textContent = state.emoji;
+    document.getElementById('govStateTitle').textContent = selected ? selected.textContent : '';
+    document.getElementById('govStateMeta').textContent = `${copy.stateSection} · ${copy.stateTag}`;
+  };
   const applyGovernmentCopy = () => {
     const select = document.getElementById('langSelect');
     const lang = (select && select.value) || 'en';
@@ -1334,8 +1420,11 @@ renderWaste();
     });
   };
   const languageSelect = document.getElementById('langSelect');
-  if (languageSelect) languageSelect.addEventListener('change', () => setTimeout(applyGovernmentCopy, 0));
+  if (languageSelect) languageSelect.addEventListener('change', () => setTimeout(() => { applyGovernmentCopy(); renderStateBenefits(); }, 0));
+  const farmLocationSelect = document.getElementById('regionSelect');
+  if (farmLocationSelect) farmLocationSelect.addEventListener('change', renderStateBenefits);
   applyGovernmentCopy();
+  renderStateBenefits();
 })();
 </script>
 
