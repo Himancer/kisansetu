@@ -331,6 +331,10 @@ function applyLanguage() {
   refreshRegionOptions();
   updateProfile();
   updateMarket();
+  $("#actionTitle").textContent = t("normalAction");
+  $("#actionText").textContent = t("loadingWeather");
+  $("#heroAlert").textContent = t("normalAction");
+  $("#heroAlertDetail").textContent = t("loadingWeather");
   renderBenefits();
   renderKnowledge();
   renderDiary();
