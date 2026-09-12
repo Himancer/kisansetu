@@ -12,6 +12,7 @@
 - [x] Replaced random pest output with a clear photo hand-off that does not diagnose or prescribe treatment.
 - [x] Added local private farm-diary entries using a mobile-friendly in-app form and safe rendering.
 - [x] Added an accessible, pausable carousel, visible keyboard focus and reduced-motion support.
+- [x] Added explicit accessible names for location/language selectors and a clear forecast-data disclosure.
 - [x] Replaced misleading fixed mandi figures with a clearly labelled illustrative comparison.
 - [x] Kept the prototype free: no paid API, subscription, server or database is required.
 - [x] Published on GitHub Pages: https://himancer.github.io/kisansetu/

@@ -16,7 +16,7 @@ Create a hackathon-ready, India-first farm companion that brings daily crop deci
 | Demo crop | Tomato | Familiar, visual and perishable—useful for explaining the crop-cycle story. |
 | Market view | Clearly labelled illustrative comparison | Never presents fabricated market prices as live data. |
 | Crop safety | Guidance with uncertainty and expert escalation | A photo selection is not a pest diagnosis or pesticide prescription. |
-| Data privacy | Browser-local name and diary | No server, payment, Aadhaar, bank detail or account credential is collected. Sign-out clears local KisanSetu data. |
+| Data privacy | Browser-local name and diary; selected-area forecast | No server, payment, Aadhaar, bank detail or account credential is collected. The selected area is sent to Open-Meteo for forecast only and is disclosed in the UI. Sign-out clears local KisanSetu data. |
 
 ## State-benefit coverage
 
