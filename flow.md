@@ -6,7 +6,7 @@
 - [x] Built a responsive, browser-only product with full English, Hindi and Kannada coverage.
 - [x] Added a location selector for Karnataka, Punjab, Uttar Pradesh, Maharashtra, West Bengal, Tamil Nadu and Rajasthan.
 - [x] Connected each selected location to its own curated official state-benefit portals.
-- [x] Added direct Government of India links for PM-KISAN, PMFBY, Farmers’ Portal and Kisan e-Mitra.
+- [x] Added direct Government of India links for PM-KISAN, PMFBY, Farmers’ Portal and Soil Health Card.
 - [x] Added a free live Open-Meteo forecast with a safe offline fallback and weather-aware daily action.
 - [x] Added a crop-planning flow with local-language crop names and input validation.
 - [x] Replaced random pest output with a clear photo hand-off that does not diagnose or prescribe treatment.

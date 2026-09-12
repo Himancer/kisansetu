@@ -181,7 +181,7 @@ const NATIONAL = [
   ["PM-KISAN", "https://pmkisan.gov.in/"],
   ["PM Fasal Bima Yojana", "https://pmfby.gov.in/"],
   ["Farmers’ Portal", "https://www.india.gov.in/category/agriculture-rural-environment/subcategory/research-marketing/details/farmers-portal"],
-  ["Kisan e-Mitra", "https://kisanemitra.gov.in/"]
+  ["Soil Health Card", "https://soilhealth.dac.gov.in/"]
 ];
 
 const CROP_RULES = {

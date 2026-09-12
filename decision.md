@@ -32,7 +32,7 @@ The region selector dynamically swaps the official state cards and local forecas
 | Coimbatore | Uzhavan, Tamil Nadu Agrisnet, Tamil Mannvalam |
 | Jodhpur | Raj Kisan, Jan Soochna Agriculture, Jan Aadhaar |
 
-National cards always link to PM-KISAN, PM Fasal Bima Yojana, Farmers’ Portal and Kisan e-Mitra. Links are direct official destinations and are labelled as such.
+National cards always link to PM-KISAN, PM Fasal Bima Yojana, Farmers’ Portal and Soil Health Card. Links are direct official destinations and are labelled as such.
 
 ## Free-first technical decisions
 
