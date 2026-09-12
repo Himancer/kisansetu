@@ -64,7 +64,7 @@ const T = {
     serviceMessage: "This demo helps you plan. Connect a verified local provider before booking or paying.",
     planHeading: "Suggested crop plan", planNote: "These are suitability ideas, not guaranteed recommendations. Confirm locally before planting.",
     rainAction: "Rain is likely soon—avoid spraying until conditions are safe.", normalAction: "Conditions look stable. Check your crop and irrigation plan today.",
-    heatAction: "High heat expected—check irrigation and mulch before midday.", weatherOffline: "Offline forecast shown. Refresh when you are online.",
+    heatAction: "High heat expected—check irrigation and mulch before midday.", weatherOffline: "Offline forecast shown. Refresh when you are online.", weatherPrivacy: "Uses only the selected area with Open-Meteo; no profile details are sent.",
     pauseCarousel: "Pause carousel", resumeCarousel: "Resume carousel", diaryDialogTitle: "Add a farm record", diaryRecordLabel: "What happened on your farm?",
     diaryRecordHint: "e.g. Irrigated the tomato plot", cancel: "Cancel", saveRecord: "Save record", landRequired: "Enter a land size of at least 0.1 acre."
   },
@@ -108,7 +108,7 @@ const T = {
     serviceMessage: "यह डेमो योजना में मदद करता है। बुकिंग या भुगतान से पहले सत्यापित स्थानीय प्रदाता से संपर्क करें।",
     planHeading: "सुझाई गई फसल योजना", planNote: "ये उपयुक्तता के विचार हैं, गारंटी नहीं। बुआई से पहले स्थानीय पुष्टि करें।",
     rainAction: "जल्द बारिश की संभावना है—स्थिति सुरक्षित होने तक छिड़काव से बचें।", normalAction: "स्थिति स्थिर है। आज फसल और सिंचाई योजना जांचें।",
-    heatAction: "तेज गर्मी अपेक्षित है—दोपहर से पहले सिंचाई और मल्च जांचें।", weatherOffline: "ऑफलाइन पूर्वानुमान दिख रहा है। ऑनलाइन होने पर रिफ्रेश करें।",
+    heatAction: "तेज गर्मी अपेक्षित है—दोपहर से पहले सिंचाई और मल्च जांचें।", weatherOffline: "ऑफलाइन पूर्वानुमान दिख रहा है। ऑनलाइन होने पर रिफ्रेश करें।", weatherPrivacy: "Open-Meteo को केवल चुने हुए क्षेत्र की जानकारी भेजी जाती है; प्रोफ़ाइल विवरण नहीं।",
     pauseCarousel: "कार्ड बदलना रोकें", resumeCarousel: "कार्ड बदलना शुरू करें", diaryDialogTitle: "खेत का रिकॉर्ड जोड़ें", diaryRecordLabel: "आपके खेत में क्या हुआ?",
     diaryRecordHint: "जैसे टमाटर की क्यारी में सिंचाई की", cancel: "रद्द करें", saveRecord: "रिकॉर्ड सहेजें", landRequired: "कम से कम 0.1 एकड़ जमीन दर्ज करें।"
   },
@@ -152,7 +152,7 @@ const T = {
     serviceMessage: "ಈ ಡೆಮೋ ಯೋಜನೆಗೆ ಸಹಾಯ ಮಾಡುತ್ತದೆ. ಬುಕಿಂಗ್ ಅಥವಾ ಪಾವತಿಗೆ ಮುನ್ನ ಪರಿಶೀಲಿತ ಸ್ಥಳೀಯ ಪೂರೈಕೆದಾರರನ್ನು ಸಂಪರ್ಕಿಸಿ.",
     planHeading: "ಸೂಚಿಸಲಾದ ಬೆಳೆ ಯೋಜನೆ", planNote: "ಇವು ಹೊಂದಾಣಿಕೆಯ ಕಲ್ಪನೆಗಳು, ಖಾತರಿ ಅಲ್ಲ. ಬಿತ್ತನೆಗೂ ಮುನ್ನ ಸ್ಥಳೀಯ ದೃಢೀಕರಣ ಪಡೆಯಿರಿ.",
     rainAction: "ಶೀಘ್ರದಲ್ಲೇ ಮಳೆ ಸಾಧ್ಯತೆ ಇದೆ—ಪರಿಸ್ಥಿತಿ ಸುರಕ್ಷಿತವಾಗುವವರೆಗೆ ಸಿಂಪಡಿಸುವುದನ್ನು ತಪ್ಪಿಸಿ.", normalAction: "ಪರಿಸ್ಥಿತಿ ಸ್ಥಿರವಾಗಿದೆ. ಇಂದು ಬೆಳೆ ಮತ್ತು ನೀರಾವರಿ ಯೋಜನೆ ಪರಿಶೀಲಿಸಿ.",
-    heatAction: "ತೀವ್ರ ಬಿಸಿಲು ನಿರೀಕ್ಷೆ—ಮಧ್ಯಾಹ್ನದ ಮೊದಲು ನೀರಾವರಿ ಮತ್ತು ಮಲ್ಚ್ ಪರಿಶೀಲಿಸಿ.", weatherOffline: "ಆಫ್‌ಲೈನ್ ಮುನ್ಸೂಚನೆ ತೋರಿಸಲಾಗಿದೆ. ಆನ್‌ಲೈನ್ ಆದಾಗ ರಿಫ್ರೆಶ್ ಮಾಡಿ.",
+    heatAction: "ತೀವ್ರ ಬಿಸಿಲು ನಿರೀಕ್ಷೆ—ಮಧ್ಯಾಹ್ನದ ಮೊದಲು ನೀರಾವರಿ ಮತ್ತು ಮಲ್ಚ್ ಪರಿಶೀಲಿಸಿ.", weatherOffline: "ಆಫ್‌ಲೈನ್ ಮುನ್ಸೂಚನೆ ತೋರಿಸಲಾಗಿದೆ. ಆನ್‌ಲೈನ್ ಆದಾಗ ರಿಫ್ರೆಶ್ ಮಾಡಿ.", weatherPrivacy: "Open-Meteo ಗೆ ಆಯ್ಕೆಮಾಡಿದ ಪ್ರದೇಶದ ಮಾಹಿತಿ ಮಾತ್ರ ಹೋಗುತ್ತದೆ; ಪ್ರೊಫೈಲ್ ವಿವರಗಳಲ್ಲ.",
     pauseCarousel: "ಕಾರ್ಡ್ ಬದಲಾವಣೆ ನಿಲ್ಲಿಸಿ", resumeCarousel: "ಕಾರ್ಡ್ ಬದಲಾವಣೆ ಪ್ರಾರಂಭಿಸಿ", diaryDialogTitle: "ಹೊಲದ ದಾಖಲೆ ಸೇರಿಸಿ", diaryRecordLabel: "ನಿಮ್ಮ ಹೊಲದಲ್ಲಿ ಏನಾಯಿತು?",
     diaryRecordHint: "ಉದಾ. ಟೊಮೆಟೊ ಪ್ಲಾಟ್‌ಗೆ ನೀರು ಹಾಕಿದೆ", cancel: "ರದ್ದುಮಾಡಿ", saveRecord: "ದಾಖಲೆ ಉಳಿಸಿ", landRequired: "ಕನಿಷ್ಠ 0.1 ಎಕರೆ ಜಮೀನು ನಮೂದಿಸಿ."
   }
@@ -324,6 +324,8 @@ function applyLanguage() {
   $$('[data-t]').forEach((element) => { element.textContent = t(element.dataset.t); });
   $$('[data-t-placeholder]').forEach((element) => { element.placeholder = t(element.dataset.tPlaceholder); });
   $("#language").value = lang;
+  $("#region").setAttribute("aria-label", t("location"));
+  $("#language").setAttribute("aria-label", t("language"));
   $("#previousSlide").setAttribute("aria-label", t("previousSlide"));
   $("#nextSlide").setAttribute("aria-label", t("nextSlide"));
   updateCarouselControl();

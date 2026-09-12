@@ -56,7 +56,7 @@
         <div class="location">
           <span aria-hidden="true">⌖</span>
           <label class="hidden" for="region" data-t="location">Farm location</label>
-          <select id="region" class="top-select">
+          <select id="region" class="top-select" aria-label="Farm location">
             <option value="karnataka">Hesaraghatta, Karnataka</option>
             <option value="punjab">Ludhiana, Punjab</option>
             <option value="uttar_pradesh">Lucknow, Uttar Pradesh</option>
@@ -68,7 +68,7 @@
         </div>
         <div>
           <label class="hidden" for="language" data-t="language">Language</label>
-          <select id="language" class="top-select">
+          <select id="language" class="top-select" aria-label="Language">
             <option value="en">English</option>
             <option value="hi">हिन्दी</option>
             <option value="kn">ಕನ್ನಡ</option>
@@ -104,7 +104,7 @@
 
           <div class="today-grid">
             <article class="metric-card action"><span class="badge" data-t="actToday">ACT TODAY</span><b id="actionTitle">Weather-based advice is loading.</b><span id="actionText" class="small">Weather-based advice is loading.</span></article>
-            <article class="metric-card"><div class="k" data-t="weather">Weather</div><div id="weatherValue" class="v">—</div><div id="weatherDetail" class="small" data-t="loadingWeather">Loading free live forecast…</div></article>
+            <article class="metric-card"><div class="k" data-t="weather">Weather</div><div id="weatherValue" class="v">—</div><div id="weatherDetail" class="small" data-t="loadingWeather">Loading free live forecast…</div><div id="weatherPrivacy" class="small" data-t="weatherPrivacy">Uses only the selected area with Open-Meteo.</div></article>
             <article class="metric-card"><div class="k" data-t="cropHealth">Tomato health</div><div class="v"><span data-t="healthGood">Good</span> <span style="color:#2e8b57">●</span></div><div class="small" data-t="healthDetail">Next scan due in 2 days</div></article>
             <article class="metric-card"><div class="k" data-t="farmPlan">Farm plan</div><div class="v">1.6 <span style="font-size:13px" data-t="acres">acres</span></div><div class="small" data-t="farmPlanDetail">Tomato · growth stage</div></article>
           </div>
