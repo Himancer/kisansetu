@@ -324,7 +324,7 @@
 <h2 data-i18n="pestTitle">Scan crop issue</h2>
 <p class="hint" data-i18n="pestHint">Upload a leaf photo for a demo pest &amp; disease check.</p>
 <div class="pest-row">
-<label class="file-btn" data-i18n="pestUpload" id="pestUploadLabel" style="margin:0;" tabindex="-1">Upload photo
+<label class="file-btn" id="pestUploadLabel" role="button" style="margin:0;" tabindex="0"><span data-i18n="pestUpload">Upload photo</span>
                 <input accept="image/*" id="pestFile" style="display:none;" type="file"/>
 </label>
 <span id="pestFileName" style="font-size:12.5px; color:var(--ink-soft);"></span>
@@ -1256,15 +1256,32 @@ renderWaste();
     return (el && el.value) || window.__kisanLang || 'en';
   }
   function langData(){ return window.__KISAN_LANG || {}; }
+  const LEGACY_EXACT={
+    hi:{'Good evening, Akrit 👋':'शुभ संध्या, Akrit 👋','Conditions look normal for the next 3 days':'अगले 3 दिनों में सामान्य स्थिति','Today':'आज','Sat':'शनि','Sun':'रवि','Mon':'सोम','Crop & fertiliser advisor':'फ़सल व खाद सलाहकार','Soil:':'मिट्टी:','Weather:':'मौसम:','Irrigation:':'सिंचाई:','Sowing season:':'बुवाई मौसम:','Tomato · 1.6 acres':'टमाटर · 1.6 एकड़','Sep 11 · 6:00 AM':'11 सितंबर · सुबह 6:00 बजे','Oct 10–17':'10–17 अक्टूबर','Tomato season journey':'टमाटर सीज़न यात्रा','Sep 13':'13 सितंबर','Oct 10':'10 अक्टूबर','KisanSetu — 100% free farmer tools · Prototype build':'KisanSetu — किसानों के लिए 100% मुफ़्त टूल · प्रोटोटाइप','Hybrid variety · Sown July 24 · Growth stage':'हाइब्रिड किस्म · 24 जुलाई को बोई गई · वृद्धि अवस्था'},
+    kn:{'Good evening, Akrit 👋':'ಶುಭ ಸಂಜೆ, Akrit 👋','Conditions look normal for the next 3 days':'ಮುಂದಿನ 3 ದಿನಗಳ ಪರಿಸ್ಥಿತಿ ಸಾಮಾನ್ಯವಾಗಿದೆ','Today':'ಇಂದು','Sat':'ಶನಿ','Sun':'ಭಾನು','Mon':'ಸೋಮ','Crop & fertiliser advisor':'ಬೆಳೆ ಮತ್ತು ಗೊಬ್ಬರ ಸಲಹೆಗಾರ','Soil:':'ಮಣ್ಣು:','Weather:':'ಹವಾಮಾನ:','Irrigation:':'ನೀರಾವರಿ:','Sowing season:':'ಬಿತ್ತನೆ ಋತು:','Tomato · 1.6 acres':'ಟೊಮೇಟೊ · 1.6 ಎಕರೆ','Sep 11 · 6:00 AM':'ಸೆಪ್ಟೆಂಬರ್ 11 · ಬೆಳಿಗ್ಗೆ 6:00','Oct 10–17':'ಅಕ್ಟೋಬರ್ 10–17','Tomato season journey':'ಟೊಮೇಟೊ ಋತು ಪ್ರಯಾಣ','Sep 13':'ಸೆಪ್ಟೆಂಬರ್ 13','Oct 10':'ಅಕ್ಟೋಬರ್ 10','Hybrid variety · Sown July 24 · Growth stage':'ಹೈಬ್ರಿಡ್ ತಳಿ · ಜುಲೈ 24ರಂದು ಬಿತ್ತನೆ · ಬೆಳವಣಿಗೆ ಹಂತ','KisanSetu — 100% free farmer tools · Prototype build':'KisanSetu — ರೈತರಿಗೆ 100% ಉಚಿತ ಸಾಧನಗಳು · ಪ್ರೋಟೋಟೈಪ್'}
+  };
   function replaceEnglishText(root, lang){
     const data=langData()[lang];
     const en=langData().en;
-    if(!data || !en || lang==='en') return;
-    const map={};
-    Object.keys(en).forEach(k=>{
-      const a=en[k], b=data[k];
-      if(typeof a==='string' && typeof b==='string' && a && b && a!==b) map[a]=b;
+    if(!data || !en) return;
+    const toEnglish={};
+    Object.keys(langData()).forEach(code=>{
+      if(code==='en') return;
+      const source=langData()[code] || {};
+      Object.keys(en).forEach(k=>{
+        const a=source[k], b=en[k];
+        if(typeof a==='string' && typeof b==='string' && a && b && a!==b) toEnglish[a]=b;
+      });
     });
+    Object.values(LEGACY_EXACT).forEach((entries)=>Object.entries(entries).forEach(([english,translated])=>{toEnglish[translated]=english;}));
+    const toTarget={};
+    if(lang!=='en'){
+      Object.keys(en).forEach(k=>{
+        const a=en[k], b=data[k];
+        if(typeof a==='string' && typeof b==='string' && a && b && a!==b) toTarget[a]=b;
+      });
+      Object.assign(toTarget,LEGACY_EXACT[lang] || {});
+    }
     const walker=document.createTreeWalker(root||document.body, NodeFilter.SHOW_TEXT);
     const nodes=[];
     while(walker.nextNode()) nodes.push(walker.currentNode);
@@ -1274,7 +1291,9 @@ renderWaste();
       if(el.closest('#seedGrid,#wasteGrid')) return;
       let v=n.nodeValue;
       const trimmed=v.trim();
-      if(map[trimmed]) n.nodeValue=v.replace(trimmed,map[trimmed]);
+      const english=toEnglish[trimmed] || trimmed;
+      const translated=toTarget[english] || english;
+      if(translated!==trimmed) n.nodeValue=v.replace(trimmed,translated);
     });
   }
   function applyUniversal(){
@@ -1530,7 +1549,12 @@ renderWaste();
     notice.classList.add('show');
   };
   const goTo=(page)=>document.querySelector(`#sbNav button[data-page="${page}"]`)?.click();
-  const scrollToElement=(id)=>requestAnimationFrame(()=>document.getElementById(id)?.scrollIntoView({behavior:'smooth',block:'center'}));
+  const scrollToElement=(id)=>requestAnimationFrame(()=>{
+    const element=document.getElementById(id);
+    if(!element) return;
+    element.scrollIntoView({behavior:'smooth',block:'center'});
+    if(element.matches('button,[tabindex]')) element.focus({preventScroll:true});
+  });
   const safeBoundary=()=>boundary[selectedLanguage()] || boundary.en;
   const selectService=(button)=>{
     document.querySelectorAll('[data-service]').forEach((item)=>{
@@ -1562,6 +1586,12 @@ renderWaste();
       const copy=copyFor();
       goTo('today'); showNotice('pestNotice',copy.scanReady || catalog.en.scanReady); scrollToElement('pestUploadLabel');
     }
+  });
+  const pestUploadLabel=document.getElementById('pestUploadLabel');
+  if(pestUploadLabel) pestUploadLabel.addEventListener('keydown',(event)=>{
+    if(event.key!=='Enter' && event.key!==' ') return;
+    event.preventDefault();
+    document.getElementById('pestFile')?.click();
   });
 })();
 </script>
