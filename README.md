@@ -1,31 +1,26 @@
 # KisanSetu
 
-Free, static, hackathon-ready farmer companion. It runs with no build step and no paid services.
+[Open the live demo](https://himancer.github.io/kisansetu/)
+
+KisanSetu is a free, static, hackathon-ready farm companion. It has no build step, no paid API, no server database and no third-party account requirement.
 
 ## What works now
 
-- Local sign-up, sign-in, and sign-out; accounts and session persist in the browser.
-- Kannada, Hindi, and English UI switching.
-- Browser voice input where supported.
-- Live free weather using [Open-Meteo](https://open-meteo.com/) (with an offline fallback).
-- Crop guidance, market net-profit comparison, transport pool, service, insurance-evidence, and farm-diary interactions.
+- A browser-local farmer profile and private farm diary; signing out clears KisanSetu’s local data.
+- Complete English, Hindi and Kannada switching across the dashboard, crop planner, benefits, knowledge, services and diary.
+- Local forecast from Open-Meteo with an offline fallback and weather-aware daily guidance.
+- State-specific official farmer-service links for Karnataka, Punjab, Uttar Pradesh, Maharashtra, West Bengal, Tamil Nadu and Rajasthan.
+- Direct Government of India links for PM-KISAN, PMFBY, Farmers’ Portal and Soil Health Card.
+- Crop planning that validates land size and returns localized crop names by soil, season and irrigation choice.
+- Safe photo hand-off: a selected image is not diagnosed and no pesticide recommendation is made.
+- A responsive, keyboard-friendly design with visible focus, reduced-motion support and a pausable carousel.
 
-## Publish free on GitHub Pages
+## Important prototype boundaries
 
-1. Create an empty public GitHub repository named `kisansetu`.
-2. Upload **all files inside this folder** to the repository root.
-3. In the repository, open **Settings → Pages**.
-4. Select **Deploy from a branch**, choose `main` and `/ (root)`, then save.
-5. Your free URL will be `https://YOUR-USERNAME.github.io/kisansetu/`.
+The name entry is not a production login or cloud account. The app does not collect Aadhaar, bank details, passwords or scheme-login credentials. It does not make eligibility decisions, show real mandi prices, book providers or diagnose crop disease.
 
-## Publish free on Vercel
+Before a production launch, add consented secure authentication, encrypted records, verified local data providers, agronomist review and farmer usability testing.
 
-1. Create a free Vercel account with GitHub.
-2. Import the GitHub repository.
-3. Leave the framework setting as **Other** and click **Deploy**.
+## Free deployment
 
-## Important production note
-
-The current browser-only login is suitable for a hackathon demo, not real farmer data: passwords are stored only in that browser. For a production launch, connect a free Supabase project for secure authentication and cloud records; use its free tier within its usage limits.
-
-Never present the crop scan as a diagnosis or pesticide recommendation. Require a verified agronomist workflow before offering treatment instructions.
+The repository is already live on GitHub Pages. To deploy a fork for free, enable **Settings → Pages → Deploy from a branch**, select `main` and the repository root. `vercel.json` is included if you prefer Vercel’s free static hosting.
