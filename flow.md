@@ -14,6 +14,9 @@
 - [x] Prepared no-build deployment configuration and GitHub Pages/Vercel instructions.
 - [x] Created and pushed the public GitHub repository: https://github.com/Himancer/kisansetu
 - [x] Enabled free GitHub Pages hosting: https://himancer.github.io/kisansetu/
+- [x] Integrated the September 12 updated-prototype layout and functionality.
+- [x] Added an official Government updates hub for national and Karnataka farmer services.
+- [x] Closed two safety gaps: random pest claims were removed and fertiliser advice now includes a clear verification warning.
 
 ## Next implementation milestones
 

@@ -32,6 +32,14 @@ The product demonstrates the experience with realistic local sample data. Crop d
 
 No paid API or subscription is required for the demonstration. Mandi pricing and crop diagnosis remain explicitly labelled as sample/safety-guided flows until verified sources and expert review are connected.
 
+## September 12 product review
+
+- Adopted the updated prototype’s regional weather picker, crop and fertiliser planner, expanded language menu, Kisan Gyan, farm services and feedback flow.
+- Added a dedicated Government updates page with direct, clearly labelled official Government of India and Karnataka links.
+- Removed an embedded local-file path from the supplied prototype before publishing.
+- Replaced its random pest-result behaviour with an explicit safe prototype message: an uploaded photo is **not** a diagnosis or treatment recommendation.
+- Added a planning disclaimer to the fertiliser advisor. Soil-test results and local agriculture-officer advice must guide real inputs.
+
 ## Winning story
 
 1. A farmer speaks in Kannada and uploads a tomato-leaf photo.
