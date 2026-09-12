@@ -2,36 +2,42 @@
 
 ## Completed
 
-- [x] Defined the one-stop farmer journey and India-first positioning.
-- [x] Designed a responsive browser product with Kannada, Hindi, and English switching.
-- [x] Added voice-entry interaction and a low-literacy visual interface.
-- [x] Added daily decision cards: weather, crop health, cash outlook, and timely action.
-- [x] Added crop scan, market net-profit comparison, pooled transport, service booking, insurance evidence, and farm diary flows.
-- [x] Added example tomato-crop data for a coherent end-to-end demo.
-- [x] Added browser-local sign-up, sign-in, session persistence, and sign-out.
-- [x] Added live weather fetch from the free Open-Meteo endpoint, including an offline fallback.
-- [x] Added browser voice-recognition support with typed fallback.
-- [x] Prepared no-build deployment configuration and GitHub Pages/Vercel instructions.
-- [x] Created and pushed the public GitHub repository: https://github.com/Himancer/kisansetu
-- [x] Enabled free GitHub Pages hosting: https://himancer.github.io/kisansetu/
-- [x] Integrated the September 12 updated-prototype layout and functionality.
-- [x] Added an official Government updates hub for national and Karnataka farmer services.
-- [x] Closed two safety gaps: random pest claims were removed and fertiliser advice now includes a clear verification warning.
+- [x] Defined an India-first, one-stop farmer journey rather than a set of disconnected utilities.
+- [x] Built a responsive, browser-only product with full English, Hindi and Kannada coverage.
+- [x] Added a location selector for Karnataka, Punjab, Uttar Pradesh, Maharashtra, West Bengal, Tamil Nadu and Rajasthan.
+- [x] Connected each selected location to its own curated official state-benefit portals.
+- [x] Added direct Government of India links for PM-KISAN, PMFBY, Farmers’ Portal and Kisan e-Mitra.
+- [x] Added a free live Open-Meteo forecast with a safe offline fallback and weather-aware daily action.
+- [x] Added a crop-planning flow with local-language crop names and input validation.
+- [x] Replaced random pest output with a clear photo hand-off that does not diagnose or prescribe treatment.
+- [x] Added local private farm-diary entries using a mobile-friendly in-app form and safe rendering.
+- [x] Added an accessible, pausable carousel, visible keyboard focus and reduced-motion support.
+- [x] Replaced misleading fixed mandi figures with a clearly labelled illustrative comparison.
+- [x] Kept the prototype free: no paid API, subscription, server or database is required.
+- [x] Published on GitHub Pages: https://himancer.github.io/kisansetu/
 
-## Next implementation milestones
+## Quality checks run
 
-- [ ] Connect weather forecasts for the farmer's exact village.
-- [ ] Connect verified mandi prices and calculate configurable transport/commission costs.
-- [ ] Add a trained crop-health model with confidence thresholds and agronomist review.
-- [ ] Integrate speech recognition, text-to-speech, and Indian-language transliteration.
-- [ ] Add farmer login, encrypted data storage, consent, and offline sync.
-- [ ] Onboard FPOs, service providers, logistics partners, and agricultural experts.
+- [x] JavaScript syntax check.
+- [x] Static review of every navigation control, quick action, tab, form, carousel control and external benefit link.
+- [x] State-switch review to ensure state cards change with the selected region.
+- [x] Language-switch review across dashboard, crop planner, benefits, knowledge, services and diary.
+- [x] Privacy review: diary text is escaped before rendering and sign-out clears local KisanSetu data.
+- [x] Safety review: no fake diagnosis, live market-price claim or eligibility decision is presented.
 
 ## Live demo sequence (3 minutes)
 
-1. Select Kannada and show the daily farm dashboard.
-2. Tap **Ask KisanSetu**; ask about tomato spots and rain.
-3. Open **Scan crop issue** and show safe, forecast-aware advice.
-4. Show the action in the farm diary.
-5. Compare markets and join a pooled transport trip.
-6. Close with: “KisanSetu is not an app directory; it is one shared decision system for the farmer’s whole season.”
+1. Enter a name and select Hindi or Kannada.
+2. Change the farm location from Karnataka to another state and open **Benefits & updates**.
+3. Point out that every card is an official state or Government of India destination.
+4. Open **My crops**, select soil, season and irrigation, then generate a local-language crop plan.
+5. Add a quick farm note through the diary form.
+6. End with: “KisanSetu turns a farmer’s location, language and daily decision into one trusted path—not another app directory.”
+
+## Next production milestones
+
+- [ ] Use consented exact-village location, with an explicit privacy policy.
+- [ ] Connect verified mandi data and configurable transport/commission costs.
+- [ ] Add a trained crop-health model with confidence thresholds and agronomist review.
+- [ ] Add real, consented authentication, encrypted storage and offline sync.
+- [ ] Validate every state link, translation and crop flow with farmers and state agriculture teams.

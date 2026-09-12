@@ -2,49 +2,57 @@
 
 ## Goal
 
-Create a hackathon-ready, India-first farmer companion that connects the daily decisions across a crop cycle instead of offering disconnected tools.
+Create a hackathon-ready, India-first farm companion that brings daily crop decisions, trusted government services and private field notes into one calm, low-cost experience.
 
 ## Product choices
 
 | Decision | Choice | Reason |
 |---|---|---|
-| Primary user | Smallholder farmer | They most need accessible, joined-up guidance. |
-| Primary interaction | Voice-first, low-literacy visual UI | Fits diverse language ability and on-field usage. |
-| MVP languages | Kannada, Hindi, English | Relevant local start; credible, bounded hackathon scope. |
-| Demo crop | Tomato | Familiar, visual, perishable, and ideal for crop-health plus mandi decisions. |
-| Core value | “What should I do today?” | Makes the app useful rather than a directory of features. |
-| Market view | Net profit after costs | A practical distinction from price-only mandi apps. |
-| AI safety | Guidance with uncertainty and expert escalation | Avoids presenting pesticide advice as certain medical-style truth. |
+| Primary user | Smallholder farmer | They benefit most from one joined-up, low-friction tool. |
+| Core promise | “What does my farm need today?” | Makes the product useful beyond being a scheme directory. |
+| Fully supported languages | English, Hindi, Kannada | Every visible screen, form, weather phrase, crop recommendation and knowledge card is translated; partially translated choices were removed. |
+| Location model | Selected city anchors a selected state | Enables honest state-specific benefit links while avoiding an unsupported claim of precise village eligibility. |
+| Government updates | Curated, direct official portals | More reliable and privacy-preserving than scraping pages in the browser; farmers complete eligibility checks on the official site. |
+| Demo crop | Tomato | Familiar, visual and perishable—useful for explaining the crop-cycle story. |
+| Market view | Clearly labelled illustrative comparison | Never presents fabricated market prices as live data. |
+| Crop safety | Guidance with uncertainty and expert escalation | A photo selection is not a pest diagnosis or pesticide prescription. |
+| Data privacy | Browser-local name and diary | No server, payment, Aadhaar, bank detail or account credential is collected. Sign-out clears local KisanSetu data. |
 
-## MVP boundaries
+## State-benefit coverage
 
-The product demonstrates the experience with realistic local sample data. Crop diagnosis, weather, mandi prices, logistics availability, and insurance eligibility require approved production data/API integrations before public deployment.
+The region selector dynamically swaps the official state cards and local forecast for these demo locations:
+
+| Selected location | State portals included |
+|---|---|
+| Hesaraghatta | Karnataka: Raita Mitra, FRUITS, Samrakshane, Krishi Marata Vahini |
+| Ludhiana | Punjab Agriculture Department, e-Mandikaran, Punjab Mandi Board |
+| Lucknow | AgriDarshan Uttar Pradesh, Nand Baba Dugdh Mission |
+| Nagpur | MahaDBT Farmer, Maharashtra Agriculture Department |
+| Bardhaman | West Bengal Agriculture Department, Krishak Bandhu, Bangla Sahayata Kendra |
+| Coimbatore | Uzhavan, Tamil Nadu Agrisnet, Tamil Mannvalam |
+| Jodhpur | Raj Kisan, Jan Soochna Agriculture, Jan Aadhaar |
+
+National cards always link to PM-KISAN, PM Fasal Bima Yojana, Farmers’ Portal and Kisan e-Mitra. Links are direct official destinations and are labelled as such.
 
 ## Free-first technical decisions
 
 | Need | Current implementation | Cost decision |
 |---|---|---|
-| Sign-up and login | Browser-local account and session | Free, works immediately; not suitable for multi-device production accounts. |
-| Live weather | Open-Meteo public forecast endpoint | Free, no key required for normal use. |
-| Voice input | Built-in browser Web Speech API when supported | Free; type fallback included. |
-| Hosting | GitHub Pages or Vercel static hosting | Both have free plans suitable for a public hackathon demo. |
-| Production authentication | Supabase free tier | Recommended next step before storing real farmer data. |
+| Profile | Browser-local display name | Free; appropriate for a single-device demo, not production authentication. |
+| Live weather | Open-Meteo public forecast endpoint | Free and keyless for normal use, with an offline fallback. |
+| Voice entry | Built-in browser speech recognition when supported | Free; the crop planner is the fallback. |
+| Hosting | GitHub Pages static hosting | Free public demo hosting. |
+| Motion | CSS transitions plus a pausable carousel | No image-generation or paid animation service; respects reduced-motion preference. |
 
-No paid API or subscription is required for the demonstration. Mandi pricing and crop diagnosis remain explicitly labelled as sample/safety-guided flows until verified sources and expert review are connected.
+## Boundaries before production
 
-## September 12 product review
-
-- Adopted the updated prototype’s regional weather picker, crop and fertiliser planner, expanded language menu, Kisan Gyan, farm services and feedback flow.
-- Added a dedicated Government updates page with direct, clearly labelled official Government of India and Karnataka links.
-- Removed an embedded local-file path from the supplied prototype before publishing.
-- Replaced its random pest-result behaviour with an explicit safe prototype message: an uploaded photo is **not** a diagnosis or treatment recommendation.
-- Added a planning disclaimer to the fertiliser advisor. Soil-test results and local agriculture-officer advice must guide real inputs.
+This demo deliberately does not make a diagnosis, book a provider, authenticate a scheme account, calculate real mandi profit, or determine benefit eligibility. Production work needs verified local data providers, consented encrypted storage, agronomist review, accessibility testing with farmers, and state-by-state content review.
 
 ## Winning story
 
-1. A farmer speaks in Kannada and uploads a tomato-leaf photo.
-2. KisanSetu gives a weather-aware, cautious next action.
-3. The action is saved automatically in the farm diary.
-4. At harvest, the farmer compares *net* market returns and joins a pooled transport trip.
+1. A farmer selects Hindi or Kannada and their state.
+2. KisanSetu updates the local forecast and only shows official benefits for that state.
+3. They make a low-risk crop plan, use the safe photo hand-off, and save a private farm note.
+4. They leave the demo through an official government service when they need a real scheme update.
 
-This proves one shared farm profile can power crop, protection, recordkeeping, and selling decisions.
+This presents KisanSetu as a trustworthy decision layer across the season—not another disconnected list of farmer features.

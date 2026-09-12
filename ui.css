@@ -1,0 +1,76 @@
+/* Small quality layer kept separate from the base styles for easy review. */
+.quick {
+  color: var(--ink);
+  text-align: left;
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+
+button:focus-visible,
+a:focus-visible,
+select:focus-visible,
+input:focus-visible {
+  outline: 3px solid #f4b844;
+  outline-offset: 3px;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  width: 270px;
+  height: 270px;
+  right: -90px;
+  top: -150px;
+  border: 1px solid rgba(214, 239, 146, .45);
+  border-radius: 50%;
+  box-shadow: 0 0 0 35px rgba(214, 239, 146, .06), 0 0 0 70px rgba(214, 239, 146, .04);
+}
+
+.hero-copy { animation: rise-in .55s ease both; }
+.carousel { animation: rise-in .62s .08s ease both; }
+.metric-card { animation: rise-in .45s ease both; }
+.metric-card:nth-child(2) { animation-delay: .04s; }
+.metric-card:nth-child(3) { animation-delay: .08s; }
+.metric-card:nth-child(4) { animation-delay: .12s; }
+.benefit-card { animation: rise-in .35s ease both; }
+.benefit-card:nth-child(2) { animation-delay: .04s; }
+.benefit-card:nth-child(3) { animation-delay: .08s; }
+.benefit-card:nth-child(4) { animation-delay: .12s; }
+
+.state-banner { position: relative; overflow: hidden; }
+.state-banner::after {
+  content: "";
+  position: absolute;
+  width: 90px;
+  height: 90px;
+  right: -24px;
+  top: -40px;
+  border-radius: 50%;
+  background: rgba(127, 191, 99, .12);
+}
+
+.top-select { transition: border-color .18s ease, box-shadow .18s ease; }
+.top-select:hover { border-color: var(--leaf); }
+.nav button { transition: background .18s ease, color .18s ease; }
+
+.diary-dialog {
+  width: min(480px, calc(100vw - 30px));
+  border: 0;
+  border-radius: 18px;
+  padding: 24px;
+  color: var(--ink);
+  box-shadow: 0 26px 70px rgba(20, 63, 44, .28);
+}
+
+.diary-dialog::backdrop { background: rgba(16, 60, 42, .48); backdrop-filter: blur(2px); }
+.diary-dialog h2 { margin: 0; font-size: 21px; letter-spacing: -.6px; }
+.diary-dialog textarea { display: block; resize: vertical; min-height: 102px; }
+.dialog-actions { display: flex; align-items: center; justify-content: flex-end; gap: 16px; margin-top: 16px; }
+
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-copy, .carousel, .metric-card, .benefit-card { animation: none; }
+}
