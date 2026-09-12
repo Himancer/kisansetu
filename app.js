@@ -10,6 +10,7 @@ let regionId = localStorage.getItem("kisansetu_region") || "karnataka";
 let slide = 0;
 let carouselPaused = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 let carouselTimer;
+let weatherRequest = 0;
 
 const T = {
   en: {
@@ -272,12 +273,14 @@ function benefitCard(name, url, scope) {
 async function loadWeather() {
   const region = REGIONS[regionId];
   if (!region) return;
+  const requestId = ++weatherRequest;
   $("#weatherDetail").textContent = t("loadingWeather");
   try {
     const endpoint = `https://api.open-meteo.com/v1/forecast?latitude=${region.lat}&longitude=${region.lon}&current=temperature_2m,apparent_temperature,weather_code&daily=precipitation_probability_max,temperature_2m_max&timezone=Asia%2FKolkata`;
     const response = await fetch(endpoint);
     if (!response.ok) throw new Error("weather response");
     const data = await response.json();
+    if (requestId !== weatherRequest) return;
     const current = data.current;
     const rain = data.daily.precipitation_probability_max?.[0] ?? 0;
     const high = data.daily.temperature_2m_max?.[0] ?? 0;
@@ -290,6 +293,7 @@ async function loadWeather() {
     $("#heroAlert").textContent = t(action);
     $("#heroAlertDetail").textContent = $("#weatherDetail").textContent;
   } catch {
+    if (requestId !== weatherRequest) return;
     $("#weatherValue").textContent = "🌦 25°C";
     $("#weatherDetail").textContent = t("weatherOffline");
     $("#actionTitle").textContent = t("normalAction");
@@ -440,6 +444,7 @@ $("#signout").addEventListener("click", () => {
   ["kisansetu_name", "kisansetu_diary", "kisansetu_lang", "kisansetu_region"].forEach((key) => localStorage.removeItem(key));
   lang = "en";
   regionId = "karnataka";
+  weatherRequest += 1;
   $("#region").value = regionId;
   applyLanguage();
   localStorage.removeItem("kisansetu_lang");
